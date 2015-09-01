@@ -61,12 +61,6 @@ module.exports = {
                                                         if (imagefile) {
                                                             var cropRight = canvaswidth - n.left - 1;
                                                             var cropBottom = canvasheight - n.top - 1;
-                                                            //                                                            if (cropRight < 0) {
-                                                            //                                                                cropRight = 0;
-                                                            //                                                            }
-                                                            //                                                            if (cropBottom < 0) {
-                                                            //                                                                cropBottom = 0;
-                                                            //                                                            }
                                                             console.log(cropRight);
                                                             console.log(cropBottom);
 
@@ -83,10 +77,7 @@ module.exports = {
                                                                         }
                                                                     }
                                                                 });
-
                                                             });
-
-
                                                         }
                                                     });
                                                 }
@@ -103,7 +94,7 @@ module.exports = {
 
                 function uploadimage(imagedata) {
                     var fileId = new sails.ObjectID();
-                    var mimetype = 'image/jpeg';
+                    var mimetype = 'image/gif';
                     var gridStore = new sails.GridStore(db, fileId, 'w', {
                         content_type: mimetype
                     });
@@ -111,7 +102,7 @@ module.exports = {
                         if (err) {
                             console.log(err);
                         }
-                        imagedata.toBuffer('jpg', {}, function (err, imagebuf) {
+                        imagedata.toBuffer('gif', {}, function (err, imagebuf) {
                             gridStore.write(imagebuf, function (err, doc) {
                                 if (err) {
                                     console.log(err);
