@@ -4,30 +4,30 @@ module.exports = {
         function callback(data) {
             res.json(data);
         };
-        Standings.save(req.body, callback);
+        Standing.save(req.body, callback);
     },
     delete: function (req, res) {
         function callback(data) {
             res.json(data);
         };
-        Standings.delete(req.body, callback);
+        Standing.delete(req.body, callback);
     },
     find: function (req, res) {
         function callback(data) {
             res.json(data);
         };
-        Standings.find(req.body, callback);
+        Standing.find(req.body, callback);
     },
     findlimited: function (req, res) {
         function callback(data) {
             res.json(data);
         };
-        Standings.findlimited(req.body, callback);
+        Standing.findlimited(req.body, callback);
     },
     findone: function (req, res) {
         function callback(data) {
             res.json(data);
         };
-        Standings.findone(req.body, callback);
+        Standing.findone(req.body, callback);
     }
 };

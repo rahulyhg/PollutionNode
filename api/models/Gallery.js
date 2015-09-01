@@ -1,4 +1,3 @@
-
 module.exports = {
     save: function (data, callback) {
         var user = sails.ObjectID(data.user);

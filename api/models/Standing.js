@@ -1,4 +1,3 @@
-
 module.exports = {
     save: function (data, callback) {
         var result = sails.ObjectID(data.result);
@@ -17,7 +16,7 @@ module.exports = {
                         _id: result
                     }, {
                         $push: {
-                            standings: data
+                            standing: data
                         }
                     }, function (err, updated) {
                         if (err) {
@@ -34,7 +33,7 @@ module.exports = {
         } else {
             data._id = sails.ObjectID(data._id);
             var tobechanged = {};
-            var attribute = "standings.$.";
+            var attribute = "standing.$.";
             _.forIn(data, function (value, key) {
                 tobechanged[attribute + key] = value;
             });
@@ -48,7 +47,7 @@ module.exports = {
                 if (db) {
                     db.collection('result').update({
                         "_id": result,
-                        "standings._id": data._id
+                        "standing._id": data._id
                     }, {
                         $set: tobechanged
                     }, function (err, updated) {
@@ -80,7 +79,7 @@ module.exports = {
                     "_id": result
                 }, {
                     $pull: {
-                        "standings": {
+                        "standing": {
                             "_id": sails.ObjectID(data._id)
                         }
                     }
@@ -118,23 +117,23 @@ module.exports = {
                     {
                         $match: {
                             _id: result,
-                            "standings.userid": {
+                            "standing.userid": {
                                 $exists: true
                             },
-                            "standings.userid": {
+                            "standing.userid": {
                                 $regex: check
                             }
                         }
                     },
                     {
-                        $unwind: "$standings"
+                        $unwind: "$standing"
                     },
                     {
                         $match: {
-                            "standings.userid": {
+                            "standing.userid": {
                                 $exists: true
                             },
-                            "standings.userid": {
+                            "standing.userid": {
                                 $regex: check
                             }
                         }
@@ -169,30 +168,30 @@ module.exports = {
                     {
                         $match: {
                             _id: result,
-                            "standings.userid": {
+                            "standing.userid": {
                                 $exists: true
                             },
-                            "standings.userid": {
+                            "standing.userid": {
                                 $regex: check
                             }
                         }
                     },
                     {
-                        $unwind: "$standings"
+                        $unwind: "$standing"
                     },
                     {
                         $match: {
-                            "standings.userid": {
+                            "standing.userid": {
                                 $exists: true
                             },
-                            "standings.userid": {
+                            "standing.userid": {
                                 $regex: check
                             }
                         }
                     },
                     {
                         $project: {
-                            standings: 1
+                            standing: 1
                         }
                     }
                 ]).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(
@@ -225,12 +224,12 @@ module.exports = {
             if (db) {
                 db.collection('result').find({
                     "_id": result,
-                    "standings._id": sails.ObjectID(data._id)
+                    "standing._id": sails.ObjectID(data._id)
                 }, {
-                    "standings.$": 1
+                    "standing.$": 1
                 }).each(function (err, data2) {
                     if (data2 != null) {
-                        callback(data2.standings[0]);
+                        callback(data2.standing[0]);
                     }
                 });
             }
@@ -250,7 +249,7 @@ module.exports = {
                     "_id": result
                 }).each(function (err, data) {
                     if (data != null) {
-                        callback(data.standings);
+                        callback(data.standing);
                     }
                 });
             }

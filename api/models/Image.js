@@ -7,7 +7,7 @@ module.exports = {
             }
             data.modificationtime = data.creationtime;
             sails.query(function (err, db) {
-                db.collection('images').insert(data, function (err, created) {
+                db.collection('image').insert(data, function (err, created) {
                     if (err) {
                         console.log(err);
                         callback({
@@ -23,12 +23,12 @@ module.exports = {
             });
         } else {
             sails.query(function (err, db) {
-                var images = data._id;
+                var image = data._id;
                 delete data._id;
                 var dummy = sails.ObjectID();
                 data.modificationtime = dummy.getTimestamp();
-                db.collection('images').update({
-                    "_id": sails.ObjectID(images)
+                db.collection('image').update({
+                    "_id": sails.ObjectID(image)
                 }, {
                     $set: data
                 }, function (err, updated) {
@@ -57,7 +57,7 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection('images').find({}).each(function (err, found) {
+                db.collection('image').find({}).each(function (err, found) {
                     if (err) {
                         callback({
                             value: false
@@ -90,7 +90,7 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("images").count({
+                db.collection("image").count({
                     type: {
                         '$regex': check
                     }
@@ -103,7 +103,7 @@ module.exports = {
                     }
 
                 });
-                db.collection("images").find({
+                db.collection("image").find({
                     type: {
                         '$regex': check
                     }
@@ -138,7 +138,7 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("images").find({
+                db.collection("image").find({
                     "_id": sails.ObjectID(data._id)
                 }).each(function (err, data) {
                     if (err) {
@@ -162,7 +162,7 @@ module.exports = {
                     value: false
                 });
             }
-            db.collection('images').remove({
+            db.collection('image').remove({
                 _id: sails.ObjectID(data._id)
             }, function (err, deleted) {
                 if (deleted) {

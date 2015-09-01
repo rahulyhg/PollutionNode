@@ -3,30 +3,30 @@ module.exports = {
         var print = function (data) {
             res.json(data);
         }
-        Images.save(req.body, print);
+        Image.save(req.body, print);
     },
     find: function (req, res) {
         var print = function (data) {
             res.json(data);
         }
-        Images.find(req.body, print);
+        Image.find(req.body, print);
     },
     findlimited: function (req, res) {
         var print = function (data) {
             res.json(data);
         }
-        Images.findlimited(req.body, print);
+        Image.findlimited(req.body, print);
     },
     findone: function (req, res) {
         var print = function (data) {
             res.json(data);
         }
-        Images.findone(req.body, print);
+        Image.findone(req.body, print);
     },
     delete: function (req, res) {
         var print = function (data) {
             res.json(data);
         }
-        Images.delete(req.body, print);
+        Image.delete(req.body, print);
     }
 };

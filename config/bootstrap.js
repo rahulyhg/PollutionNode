@@ -21,6 +21,10 @@ module.exports.bootstrap = function (cb) {
         sails.Grid = require('mongodb').Grid,
         sails.Code = require('mongodb').Code,
         sails.assert = require('assert'),
+        sails.mime = require('mime'),
+        sails.moment = require('moment'),
+        sails.fs = require('fs'),
+        sails.lwip = require('lwip'),
         // Connection URL
         sails.url = 'mongodb://localhost:27017/pollution';
     sails.query = function (myfunc) {
