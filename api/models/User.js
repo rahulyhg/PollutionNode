@@ -238,7 +238,7 @@ module.exports = {
             });
         }
     },
-    twitterpost: function (userid,message, callback) {
+    twitterpost: function (userid, message, callback) {
 
         var Twitter = new Twit({
             consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
@@ -250,20 +250,46 @@ module.exports = {
         Twitter.post('statuses/update', {
             status: message
         }, function (err, data, response) {
-            callback(err,data);
+            callback(err, data);
         });
     },
-    facebookpost: function (userid,message, link, callback) {
+    facebookpost: function (userid, message, link, callback) {
         request.post({
-            url: 'https://graph.facebook.com/v2.4/'+userfbid+'/feed',
+            url: 'https://graph.facebook.com/v2.4/' + userfbid + '/feed',
             form: {
                 access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
                 message: message,
                 link: link
             }
         }, function (err, httpResponse, body) {
-            callback(err,JSON.parse(body));
+            callback(err, JSON.parse(body));
         });
     },
+    twitterPostDetail: function (postid, message, link, callback) {
+        var Twitter = new Twit({
+            consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
+            consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
+            access_token: access_token,
+            access_token_secret: access_token_secret
+        })
+
+        Twitter.get('statuses/show/'+postid, {
+            status: message
+        }, function (err, data, response) {
+            callback(err, data);
+        });
+    },
+    facebookPostDetail: function (userid, message, link, callback) {
+        request.get({
+            url: 'https://graph.facebook.com/v2.4/' + postid + "/likes?summary=true" ,
+            form: {
+                access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs"
+            }
+        }, function (err, httpResponse, body) {
+            callback(err, JSON.parse(body));
+        });
+    },
+    
+    
 
 };
