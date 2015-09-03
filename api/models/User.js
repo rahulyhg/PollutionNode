@@ -178,5 +178,6 @@ module.exports = {
                 }
             });
         });
-    }
+    },
+    findorcreate: function (data, callback) {}
 };

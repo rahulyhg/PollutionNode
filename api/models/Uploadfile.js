@@ -57,25 +57,23 @@ module.exports = {
                                             if (type != '') {
                                                 if (canvasdata != "") {
                                                     sails.lwip.open(fileData, type, function (err, imagefile) {
-
                                                         if (imagefile) {
-                                                            var cropRight = canvaswidth - n.left - 1;
-                                                            var cropBottom = canvasheight - n.top - 1;
-                                                            console.log(cropRight);
-                                                            console.log(cropBottom);
-
-                                                            imagefile.crop(0, 0, cropRight, cropBottom, function (err, cropedimage) {
-                                                                newimagedata = cropedimage;
-                                                                canvasdata.paste(n.left, n.top, newimagedata, function (err, newimage) {
-                                                                    num++;
-                                                                    canvasdata = newimage;
-                                                                    if (newimage) {
-                                                                        if (num == data.image.length) {
-                                                                            uploadimage(newimage);
-                                                                        } else {
-                                                                            recimage(num);
+                                                            imagefile.rotate(n.rotate, function (err, rotateimage) {
+                                                                var cropRight = canvaswidth - n.left - 1;
+                                                                var cropBottom = canvasheight - n.top - 1;
+                                                                rotateimage.crop(0, 0, cropRight, cropBottom, function (err, cropedimage) {
+                                                                    newimagedata = cropedimage;
+                                                                    canvasdata.paste(n.left, n.top, newimagedata, function (err, newimage) {
+                                                                        num++;
+                                                                        canvasdata = newimage;
+                                                                        if (newimage) {
+                                                                            if (num == data.image.length) {
+                                                                                uploadimage(newimage);
+                                                                            } else {
+                                                                                recimage(num);
+                                                                            }
                                                                         }
-                                                                    }
+                                                                    });
                                                                 });
                                                             });
                                                         }
