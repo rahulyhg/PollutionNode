@@ -239,57 +239,109 @@ module.exports = {
         }
     },
     twitterpost: function (userid, message, callback) {
-
-        var Twitter = new Twit({
-            consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
-            consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
-            access_token: access_token,
-            access_token_secret: access_token_secret
-        })
-
-        Twitter.post('statuses/update', {
-            status: message
-        }, function (err, data, response) {
-            callback(err, data);
+        var usertweetid = "";
+        var access_token = "";
+        var access_token_secret = "";
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+            }
+            if (db) {
+                db.collection('user').find({
+                    "_id": sails.ObjectID(userid)
+                }).toArray(function (err, result) {
+                    if (result[0]) {
+                        usertweetid = result[0].tweetid;
+                        access_token = result[0].token;
+                        access_token_secret = result[0].tokenSecret;
+                        callrequest();
+                    }
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
         });
+
+        function callrequest() {
+            var Twitter = new Twit({
+                consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
+                consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
+                access_token: access_token,
+                access_token_secret: access_token_secret
+            })
+
+            Twitter.post('statuses/update', {
+                status: message
+            }, function (err, data, response) {
+                data.user = userid;
+                callback(err, data);
+            });
+        }
     },
     facebookpost: function (userid, message, link, callback) {
-        request.post({
-            url: 'https://graph.facebook.com/v2.4/' + userfbid + '/feed',
-            form: {
-                access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
-                message: message,
-                link: link
+        var userfbid = "";
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
             }
-        }, function (err, httpResponse, body) {
-            callback(err, JSON.parse(body));
+            if (db) {
+                db.collection('user').find({
+                    "_id": sails.ObjectID(userid)
+                }).toArray(function (err, result) {
+                    if (result[0]) {
+                        userfbid = result[0].fbid;
+                        callrequest();
+                    }
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
         });
+
+        function callrequest() {
+            request.post({
+                url: 'https://graph.facebook.com/v2.4/' + userfbid + '/feed',
+                form: {
+                    access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
+                    message: message,
+                    link: link
+                }
+            }, function (err, httpResponse, body) {
+                body = JSON.parse(body);
+                body.fbid = userfbid;
+                body.user = userid;
+                callback(err, body);
+            });
+        }
     },
-    twitterPostDetail: function (postid, message, link, callback) {
+    twitterPostDetail: function (twitterpostid, postid, userid, access_token, access_token_secret, callback) {
         var Twitter = new Twit({
             consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
             consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
             access_token: access_token,
             access_token_secret: access_token_secret
         })
-
-        Twitter.get('statuses/show/'+postid, {
-            status: message
+        Twitter.get('statuses/show', {
+            id: postid
         }, function (err, data, response) {
+            data.user = userid;
+            data._id = twitterpostid;
             callback(err, data);
         });
     },
-    facebookPostDetail: function (userid, message, link, callback) {
+    facebookPostDetail: function (fbpostid, postid,userid, callback) {
         request.get({
-            url: 'https://graph.facebook.com/v2.4/' + postid + "/likes?summary=true" ,
+            url: 'https://graph.facebook.com/v2.4/' + postid + "/likes?summary=true",
             form: {
                 access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs"
             }
         }, function (err, httpResponse, body) {
-            callback(err, JSON.parse(body));
+            body = JSON.parse(body);
+            body.user = userid;
+            data._id = fbpostid;
+            callback(err, body);
         });
-    },
-    
-    
-
+    }
 };

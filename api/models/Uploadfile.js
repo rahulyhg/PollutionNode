@@ -61,24 +61,24 @@ module.exports = {
                                                             imagefile.rotate(n.rotate, function (err, rotateimage) {
                                                                 console.log(rotateimage.width());
                                                                 console.log(rotateimage.height());
-                                                                rotateimage.resize( function (err, resizedimage) {
-                                                                    var cropRight = canvaswidth - n.left - 1;
-                                                                    var cropBottom = canvasheight - n.top - 1;
-                                                                    resizedimage.crop(0, 0, cropRight, cropBottom, function (err, cropedimage) {
-                                                                        newimagedata = cropedimage;
-                                                                        canvasdata.paste(n.left, n.top, newimagedata, function (err, newimage) {
-                                                                            num++;
-                                                                            canvasdata = newimage;
-                                                                            if (newimage) {
-                                                                                if (num == data.image.length) {
-                                                                                    uploadimage(newimage);
-                                                                                } else {
-                                                                                    recimage(num);
-                                                                                }
-                                                                            }
-                                                                        });
-                                                                    });
-                                                                });
+//                                                                rotateimage.resize( function (err, resizedimage) {
+//                                                                    var cropRight = canvaswidth - n.left - 1;
+//                                                                    var cropBottom = canvasheight - n.top - 1;
+//                                                                    resizedimage.crop(0, 0, cropRight, cropBottom, function (err, cropedimage) {
+//                                                                        newimagedata = cropedimage;
+//                                                                        canvasdata.paste(n.left, n.top, newimagedata, function (err, newimage) {
+//                                                                            num++;
+//                                                                            canvasdata = newimage;
+//                                                                            if (newimage) {
+//                                                                                if (num == data.image.length) {
+//                                                                                    uploadimage(newimage);
+//                                                                                } else {
+//                                                                                    recimage(num);
+//                                                                                }
+//                                                                            }
+//                                                                        });
+//                                                                    });
+//                                                                });
                                                             });
                                                         }
                                                     });

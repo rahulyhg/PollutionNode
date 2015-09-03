@@ -94,27 +94,56 @@ module.exports = {
         res.send("FAIL");
     },
     logout: function (req, res) {
-            req.session.destroy(function (err) {
-                res.send(req.session);
-            });
-        },
-    facebookPost: function(req,res) {
-        var message=req.param("message");
-        var link=req.param("link");
-        function showjson(err,data)
-        {
-            res.json(data);
-        };
-        User.facebookpost(message,link,showjson);
-        
+        req.session.destroy(function (err) {
+            res.send(req.session);
+        });
     },
-    twitterPost:function(req,res) {
-        var message=req.param("message");
-        function showjson(err,data)
-        {
-            res.json(data);
+    facebookPost: function (req, res) {
+        var userid = req.param("userid");
+        var message = req.param("message");
+        var link = req.param("link");
+
+        function showjson(err, data) {
+            Post.save(data, function (response) {
+                res.json(response);
+            });
         };
-        User.twitterpost(message,showjson);
-    }
+        User.facebookpost(userid, message, link, showjson);
+    },
+    twitterPost: function (req, res) {
+        var userid = req.param("userid");
+        var message = req.param("message");
+
+        function showjson(err, data) {
+            Post.save(data, function (response) {
+                res.json(response);
+            });
+        };
+        User.twitterpost(userid, message, showjson);
+    },
+    twitterPostDetail: function (req, res) {
+        var userid = req.param("userid");
+        var postid = req.param("postid");
+        var twitterpostid = req.param("twitterpostid");
+        var accesstToken = req.param("accessToken");
+        var accessTokenSecret = req.param("accessTokenSecret");
+        var showjson = function (err,data) {
+            Post.save(data, function (response) {
+                res.json(data);
+            });
+        }
+        User.twitterPostDetail(twitterpostid,postid, userid, accesstToken, accessTokenSecret, showjson);
+    },
+    facebookPostDetail: function (req, res) {
+        var userid = req.param("userid");
+        var postid = req.param("postid");
+        var fbpostid = req.param("fbpostid");
+            var showjson = function (data) {
+                Post.save(data, function (response) {
+                    res.json(data);
+                });
+            }
+            User.facebookPostDetail(fbpostid,postid, userid, showjson);
+        }
         //////////////////////////////////////
 };
