@@ -1,4 +1,15 @@
 var insertdata = {};
+var request = require('request');
+var Twit = require('twit')
+
+var Twitter = new Twit({
+    consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
+    consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
+    access_token: "121427044-0wkd542wWyT1XwYnM4w1xDNO2JOnUA0WckeL6KRp",
+    access_token_secret: "0jSkueYjEgF9LC4Ef9GWP203FxjAChwrZn4k6a3bEsC4E"
+})
+
+
 module.exports = {
     save: function (data, callback) {
         if (!data._id) {
@@ -181,7 +192,7 @@ module.exports = {
         });
     },
     findorcreate: function (data, callback) {
-        var orfunc={};
+        var orfunc = {};
         if (data.provider == "Twitter") {
             insertdata.tweetid = data.id;
             insertdata.fbid = '';
@@ -191,7 +202,7 @@ module.exports = {
             insertdata.profilepic = data.photos[0].value;
             insertdata.token = data.token;
             insertdata.tokenSecret = data.tokenSecret;
-            orfunc.tweetid=data.id;
+            orfunc.tweetid = data.id;
             dbcall(insertdata);
         } else {
             insertdata.tweetid = '';
@@ -203,14 +214,14 @@ module.exports = {
             insertdata.email = data.emails[0].value;
             insertdata.accessToken = data.accessToken;
             insertdata.refreshToken = data.refreshToken;
-            orfunc.fbid=data.id;
+            orfunc.fbid = data.id;
             dbcall(insertdata);
         }
 
         function dbcall(dbdata) {
             sails.query(function (err, db) {
                 if (err) {
-                    return 
+                    return
                 }
                 if (db) {
                     db.collection('user').findAndRemove(orfunc, function (err, removed) {
@@ -224,7 +235,7 @@ module.exports = {
                                     callback(err);
                                 }
                                 if (created) {
-                                    callback(null,{
+                                    callback(null, {
                                         value: "true"
                                     });
                                 }
@@ -234,5 +245,33 @@ module.exports = {
                 }
             });
         }
-    }
+    },
+    twitterpost: function (message, callback) {
+
+        var Twitter = new Twit({
+            consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
+            consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
+            access_token: "121427044-0wkd542wWyT1XwYnM4w1xDNO2JOnUA0WckeL6KRp",
+            access_token_secret: "0jSkueYjEgF9LC4Ef9GWP203FxjAChwrZn4k6a3bEsC4E"
+        })
+
+        Twitter.post('statuses/update', {
+            status: message
+        }, function (err, data, response) {
+            callback(data);
+        });
+    },
+    facebookpost: function (message, link, callback) {
+        request.post({
+            url: 'https://graph.facebook.com/v2.4/1034415706569621/feed',
+            form: {
+                access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
+                message: message,
+                link: link
+            }
+        }, function (err, httpResponse, body) {
+            callback(body);
+        });
+    },
+
 };

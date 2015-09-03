@@ -97,6 +97,24 @@ module.exports = {
             req.session.destroy(function (err) {
                 res.send(req.session);
             });
-        }
+        },
+    facebookPost: function(req,res) {
+        var message=req.param("message");
+        var link=req.param("link");
+        function showjson(data)
+        {
+            res.json(data);
+        };
+        User.facebookpost(message,link,showjson);
+        
+    },
+    twitterPost:function(req,res) {
+        var message=req.param("message");
+        function showjson(data)
+        {
+            res.json(data);
+        };
+        User.twitterpost(message,showjson);
+    }
         //////////////////////////////////////
 };
