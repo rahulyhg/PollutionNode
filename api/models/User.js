@@ -1,3 +1,4 @@
+var insertdata = {};
 module.exports = {
     save: function (data, callback) {
         if (!data._id) {
@@ -179,5 +180,59 @@ module.exports = {
             });
         });
     },
-    findorcreate: function (data, callback) {}
+    findorcreate: function (data, callback) {
+        var orfunc={};
+        if (data.provider == "Twitter") {
+            insertdata.tweetid = data.id;
+            insertdata.fbid = '';
+            insertdata.provider = data.provider;
+            insertdata.username = data.username;
+            insertdata.name = data.displayName;
+            insertdata.profilepic = data.photos[0].value;
+            insertdata.token = data.token;
+            insertdata.tokenSecret = data.tokenSecret;
+            orfunc.tweetid=data.id;
+            dbcall(insertdata);
+        } else {
+            insertdata.tweetid = '';
+            insertdata.fbid = data.id;
+            insertdata.provider = data.provider;
+            insertdata.username = data.username;
+            insertdata.name = data.displayName;
+            insertdata.profilepic = data.photos[0].value;
+            insertdata.email = data.emails[0].value;
+            insertdata.accessToken = data.accessToken;
+            insertdata.refreshToken = data.refreshToken;
+            orfunc.fbid=data.id;
+            dbcall(insertdata);
+        }
+
+        function dbcall(dbdata) {
+            sails.query(function (err, db) {
+                if (err) {
+                    return 
+                }
+                if (db) {
+                    db.collection('user').findAndRemove(orfunc, function (err, removed) {
+                        if (err) {
+                            callback(err);
+                        }
+                        if (removed) {
+                            db.collection('user').insert(dbdata, function (err, created) {
+                                insertdata = {};
+                                if (err) {
+                                    callback(err);
+                                }
+                                if (created) {
+                                    callback(null,{
+                                        value: "true"
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
 };

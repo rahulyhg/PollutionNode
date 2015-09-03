@@ -8,7 +8,10 @@ passport.use(new FacebookStrategy({
         callbackURL: "http://wohlig.biz/user/callbackf"
     },
     function (accessToken, refreshToken, profile, done) {
-        done(null, profile);
+        profile.accessToken = accessToken;
+        profile.refreshToken = refreshToken;
+        profile.provider = "Facebook";
+        User.findorcreate(profile, done);
     }
 ));
 
@@ -18,7 +21,10 @@ passport.use(new TwitterStrategy({
         callbackURL: "http://wohlig.biz/user/callbackt"
     },
     function (token, tokenSecret, profile, done) {
-        done(null, profile);
+        profile.token = token;
+        profile.tokenSecret = tokenSecret;
+        profile.provider = "Twitter";
+        User.findorcreate(profile, done);
     }
 ));
 
@@ -61,6 +67,14 @@ module.exports = {
         }
         User.delete(req.body, print);
     },
+    findorcreate: function (req, res) {
+        var print = function (data) {
+            res.json(data);
+        }
+        User.findorcreate(req.body, print);
+    },
+    /////////////////////////////
+    //LOGIN FUNCTIONS
     logint: passport.authenticate('twitter'),
     loginf: passport.authenticate('facebook', {
         scope: 'email,public_profile,user_posts,publish_actions'
@@ -74,26 +88,15 @@ module.exports = {
         failureRedirect: '/user/fail'
     }),
     success: function (req, res, data) {
-        console.log(req.session.passport);
         res.send("SUCCESS");
     },
     fail: function (req, res) {
         res.send("FAIL");
     },
-    profile: function (req, res) {
-        res.send(req.session.passport);
-    },
-    checkpassport: function (req, res) {
-        req.session.passport = {
-            name: "Chintan"
-        };
-        req.session.save(function (err) {
-            res.json(req.session);
-        })
-    },
     logout: function (req, res) {
-        req.session.destroy(function (err) {
-            res.send(req.session);
-        });
-    }
+            req.session.destroy(function (err) {
+                res.send(req.session);
+            });
+        }
+        //////////////////////////////////////
 };
