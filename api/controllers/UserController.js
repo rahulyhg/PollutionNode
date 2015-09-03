@@ -101,7 +101,7 @@ module.exports = {
     facebookPost: function(req,res) {
         var message=req.param("message");
         var link=req.param("link");
-        function showjson(data)
+        function showjson(err,data)
         {
             res.json(data);
         };
@@ -110,7 +110,7 @@ module.exports = {
     },
     twitterPost:function(req,res) {
         var message=req.param("message");
-        function showjson(data)
+        function showjson(err,data)
         {
             res.json(data);
         };

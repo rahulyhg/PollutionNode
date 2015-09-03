@@ -2,14 +2,6 @@ var insertdata = {};
 var request = require('request');
 var Twit = require('twit')
 
-var Twitter = new Twit({
-    consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
-    consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
-    access_token: "121427044-0wkd542wWyT1XwYnM4w1xDNO2JOnUA0WckeL6KRp",
-    access_token_secret: "0jSkueYjEgF9LC4Ef9GWP203FxjAChwrZn4k6a3bEsC4E"
-})
-
-
 module.exports = {
     save: function (data, callback) {
         if (!data._id) {
@@ -246,31 +238,31 @@ module.exports = {
             });
         }
     },
-    twitterpost: function (message, callback) {
+    twitterpost: function (userid,message, callback) {
 
         var Twitter = new Twit({
             consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
             consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
-            access_token: "121427044-0wkd542wWyT1XwYnM4w1xDNO2JOnUA0WckeL6KRp",
-            access_token_secret: "0jSkueYjEgF9LC4Ef9GWP203FxjAChwrZn4k6a3bEsC4E"
+            access_token: access_token,
+            access_token_secret: access_token_secret
         })
 
         Twitter.post('statuses/update', {
             status: message
         }, function (err, data, response) {
-            callback(data);
+            callback(err,data);
         });
     },
-    facebookpost: function (message, link, callback) {
+    facebookpost: function (userid,message, link, callback) {
         request.post({
-            url: 'https://graph.facebook.com/v2.4/1034415706569621/feed',
+            url: 'https://graph.facebook.com/v2.4/'+userfbid+'/feed',
             form: {
                 access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
                 message: message,
                 link: link
             }
         }, function (err, httpResponse, body) {
-            callback(body);
+            callback(err,JSON.parse(body));
         });
     },
 
