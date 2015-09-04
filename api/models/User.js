@@ -333,14 +333,11 @@ module.exports = {
     },
     facebookPostDetail: function (fbpostid, postid,userid, callback) {
         request.get({
-            url: 'https://graph.facebook.com/v2.4/' + postid + "/likes?summary=true",
-            form: {
-                access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs"
-            }
+            url: 'https://graph.facebook.com/v2.4/' + postid + "/likes?summary=true&access_token=1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
         }, function (err, httpResponse, body) {
             body = JSON.parse(body);
             body.user = userid;
-            data._id = fbpostid;
+            body._id = fbpostid;
             callback(err, body);
         });
     }

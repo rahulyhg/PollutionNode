@@ -138,7 +138,7 @@ module.exports = {
         var userid = req.param("userid");
         var postid = req.param("postid");
         var fbpostid = req.param("fbpostid");
-            var showjson = function (data) {
+            var showjson = function (err,data) {
                 Post.save(data, function (response) {
                     res.json(data);
                 });
