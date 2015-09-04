@@ -1,8 +1,8 @@
-
 module.exports = {
     save: function (data, callback) {
+        console.log(data);
         var user = sails.ObjectID(data.user);
-        if (!data._id) {
+        if (!data._id && data._id != '') {
             data._id = sails.ObjectID();
             sails.query(function (err, db) {
                 if (err) {
@@ -31,37 +31,71 @@ module.exports = {
                 }
             });
         } else {
-            data._id = sails.ObjectID(data._id);
-            var tobechanged = {};
-            var attribute = "post.$.";
-            _.forIn(data, function (value, key) {
-                tobechanged[attribute + key] = value;
-            });
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                }
-                if (db) {
-                    db.collection('user').update({
-                        "_id": user,
-                        "post._id": data._id
-                    }, {
-                        $set: tobechanged
-                    }, function (err, updated) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        if (updated) {
-                            callback({
-                                value: true
-                            });
-                        }
-                    });
-                }
-            });
+            if (data.provider == "facebook") {
+                data.total_count = data.summary.total_count;
+                delete data.summary;
+                var tobechanged = {};
+                var attribute = "post.$.";
+                _.forIn(data, function (value, key) {
+                    tobechanged[attribute + key] = value;
+                });
+                sails.query(function (err, db) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    }
+                    if (db) {
+                        db.collection('user').update({
+                            "_id": user,
+                            "post.id": data.id
+                        }, {
+                            $set: tobechanged
+                        }, function (err, updated) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            if (updated) {
+                                callback({
+                                    value: true
+                                });
+                            }
+                        });
+                    }
+                });
+            } else if (data.provider == "twitter") {
+                var tobechanged = {};
+                var attribute = "post.$.";
+                _.forIn(data, function (value, key) {
+                    tobechanged[attribute + key] = value;
+                });
+                sails.query(function (err, db) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    }
+                    if (db) {
+                        db.collection('user').update({
+                            "_id": user,
+                            "post.id_str": data.id_str
+                        }, {
+                            $set: tobechanged
+                        }, function (err, updated) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            if (updated) {
+                                callback({
+                                    value: true
+                                });
+                            }
+                        });
+                    }
+                });
+            }
         }
     },
     delete: function (data, callback) {

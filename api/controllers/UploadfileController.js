@@ -66,5 +66,21 @@ module.exports = {
                 res.json(result);
             });
         });
+    },
+    createimage: function (req, res) {
+
+        Uploadfile.createimage(req.body, function (data) {
+            Gallery.save(data, function (result) {
+                res.json(result);
+            });
+        });
+    },
+    getfsimage: function (req, res) {
+        var filename = req.param('file');
+        var path = './images/newimages/' + filename;
+        var image = sails.fs.readFileSync(path);
+        var mimetype = sails.mime.lookup(path);
+        res.set('Content-Type', mimetype);
+        res.send(image);
     }
 };

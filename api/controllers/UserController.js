@@ -123,7 +123,6 @@ module.exports = {
     },
     twitterPostDetail: function (req, res) {
         var userid = req.param("userid");
-        var postid = req.param("postid");
         var twitterpostid = req.param("twitterpostid");
         var accesstToken = req.param("accessToken");
         var accessTokenSecret = req.param("accessTokenSecret");
@@ -132,18 +131,18 @@ module.exports = {
                 res.json(data);
             });
         }
-        User.twitterPostDetail(twitterpostid,postid, userid, accesstToken, accessTokenSecret, showjson);
+        User.twitterPostDetail(twitterpostid, userid, accesstToken, accessTokenSecret, showjson);
     },
     facebookPostDetail: function (req, res) {
         var userid = req.param("userid");
-        var postid = req.param("postid");
         var fbpostid = req.param("fbpostid");
             var showjson = function (err,data) {
+                delete data.data;
                 Post.save(data, function (response) {
                     res.json(data);
                 });
             }
-            User.facebookPostDetail(fbpostid,postid, userid, showjson);
+            User.facebookPostDetail(fbpostid, userid, showjson);
         }
         //////////////////////////////////////
 };

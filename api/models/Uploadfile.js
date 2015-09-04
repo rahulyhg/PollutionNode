@@ -4,9 +4,11 @@
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/#!documentation/models
  */
-var imagedata = '';
-var type = '';
-var filetype = '';
+var extension = '';
+var returns = {};
+var filepath = '';
+var createdfilename = '';
+var newfilepath = '';
 var newimagedata = '';
 var canvasdata = '';
 var canvaswidth = 1024;
@@ -59,26 +61,24 @@ module.exports = {
                                                     sails.lwip.open(fileData, type, function (err, imagefile) {
                                                         if (imagefile) {
                                                             imagefile.rotate(n.rotate, function (err, rotateimage) {
-                                                                console.log(rotateimage.width());
-                                                                console.log(rotateimage.height());
-//                                                                rotateimage.resize( function (err, resizedimage) {
-//                                                                    var cropRight = canvaswidth - n.left - 1;
-//                                                                    var cropBottom = canvasheight - n.top - 1;
-//                                                                    resizedimage.crop(0, 0, cropRight, cropBottom, function (err, cropedimage) {
-//                                                                        newimagedata = cropedimage;
-//                                                                        canvasdata.paste(n.left, n.top, newimagedata, function (err, newimage) {
-//                                                                            num++;
-//                                                                            canvasdata = newimage;
-//                                                                            if (newimage) {
-//                                                                                if (num == data.image.length) {
-//                                                                                    uploadimage(newimage);
-//                                                                                } else {
-//                                                                                    recimage(num);
-//                                                                                }
-//                                                                            }
-//                                                                        });
-//                                                                    });
-//                                                                });
+                                                                rotateimage.resize(n.width, n.height, function (err, resizedimage) {
+                                                                    var cropRight = canvaswidth - n.left - 1;
+                                                                    var cropBottom = canvasheight - n.top - 1;
+                                                                    resizedimage.crop(0, 0, cropRight, cropBottom, function (err, cropedimage) {
+                                                                        newimagedata = cropedimage;
+                                                                        canvasdata.paste(n.left, n.top, newimagedata, function (err, newimage) {
+                                                                            num++;
+                                                                            canvasdata = newimage;
+                                                                            if (newimage) {
+                                                                                if (num == data.image.length) {
+                                                                                    uploadimage(newimage);
+                                                                                } else {
+                                                                                    recimage(num);
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    });
+                                                                });
                                                             });
                                                         }
                                                     });
@@ -120,6 +120,61 @@ module.exports = {
                     });
                 }
             });
+        });
+    },
+    createimage: function (data, callback) {
+        returns = data;
+        sails.lwip.create(canvaswidth, canvasheight, 'white', function (err, canvas) {
+            canvasdata = canvas;
+
+            function recimage(num) {
+                n = data.image[num];
+                if (n.img) {
+                    var filepath = './images/' + n.img;
+                }
+                createdfilename = sails.moment(new Date()).format('YYYY-MM-DDh-mm-ss-SSSSa');
+                returns.imagefinal = createdfilename + '.jpg';
+                newfilepath = './images/newimages/' + createdfilename + '.jpg';
+                imagecreate();
+
+                function imagecreate() {
+                    if (filepath != '' && newfilepath != '') {
+                        if (canvasdata != "") {
+                            sails.lwip.open(filepath, function (err, imagefile) {
+                                if (imagefile) {
+                                    imagefile.rotate(n.rotate, function (err, rotateimage) {
+                                        rotateimage.resize(n.width, n.height, function (err, resizedimage) {
+                                            var cropRight = canvaswidth - n.left - 1;
+                                            var cropBottom = canvasheight - n.top - 1;
+                                            resizedimage.crop(0, 0, cropRight, cropBottom, function (err, cropedimage) {
+                                                newimagedata = cropedimage;
+                                                canvasdata.paste(n.left, n.top, newimagedata, function (err, newimage) {
+                                                    num++;
+                                                    canvasdata = newimage;
+                                                    if (newimage) {
+                                                        if (num == data.image.length) {
+                                                            newimage.toBuffer('jpg', function (err, buffer) {
+                                                                sails.fs.writeFileSync(newfilepath, buffer);
+                                                                if (createdfilename != "") {
+                                                                    callback(returns);
+                                                                }
+                                                            });
+                                                        } else {
+                                                            recimage(num);
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            recimage(0);
+
         });
     }
 };

@@ -316,7 +316,7 @@ module.exports = {
             });
         }
     },
-    twitterPostDetail: function (twitterpostid, postid, userid, access_token, access_token_secret, callback) {
+    twitterPostDetail: function (twitterpostid, userid, access_token, access_token_secret, callback) {
         var Twitter = new Twit({
             consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
             consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
@@ -324,20 +324,24 @@ module.exports = {
             access_token_secret: access_token_secret
         })
         Twitter.get('statuses/show', {
-            id: postid
+            id: twitterpostid
         }, function (err, data, response) {
             data.user = userid;
-            data._id = twitterpostid;
+            data.provider="twitter";
+            data.id_str = twitterpostid;
+            data._id='';
             callback(err, data);
         });
     },
-    facebookPostDetail: function (fbpostid, postid,userid, callback) {
+    facebookPostDetail: function (fbpostid,userid, callback) {
         request.get({
-            url: 'https://graph.facebook.com/v2.4/' + postid + "/likes?summary=true&access_token=1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
+            url: 'https://graph.facebook.com/v2.4/' + fbpostid + "/likes?summary=true&access_token=1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
         }, function (err, httpResponse, body) {
             body = JSON.parse(body);
             body.user = userid;
-            body._id = fbpostid;
+            body.provider="facebook";
+            body.id = fbpostid;
+            body._id='';
             callback(err, body);
         });
     }
