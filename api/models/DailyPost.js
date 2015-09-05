@@ -1,8 +1,9 @@
-
 module.exports = {
     save: function (data, callback) {
         var user = sails.ObjectID(data.user);
-        delete data.user;
+        _.each(data.post, function (n) {
+            n.user = sails.ObjectID(n.user);
+        });
         if (!data._id) {
             data._id = sails.ObjectID();
             sails.query(function (err, db) {
@@ -13,6 +14,7 @@ module.exports = {
                     });
                 }
                 if (db) {
+                    delete data.user;
                     db.collection('user').update({
                         _id: user
                     }, {
@@ -214,7 +216,6 @@ module.exports = {
     },
     //Findlimited
     findone: function (data, callback) {
-        var user = sails.ObjectID(data.user);
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -224,8 +225,7 @@ module.exports = {
             }
             if (db) {
                 db.collection('user').find({
-                    "_id": user,
-                    "dailypost._id": sails.ObjectID(data._id)
+                    "dailypost.count.user": sails.ObjectID(data.user)
                 }, {
                     "dailypost.$": 1
                 }).each(function (err, data2) {
@@ -237,23 +237,56 @@ module.exports = {
         });
     },
     find: function (data, callback) {
-        var user = sails.ObjectID(data.user);
+        var sort = {};
+        sort['dailypost.count.totalcount'] = 1;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback({
                     value: false
                 });
+
             }
             if (db) {
-                db.collection('user').find({
-                    "_id": user
-                }).each(function (err, data) {
-                    if (data != null) {
-                        callback(data.dailypost);
+                db.collection("user").aggregate([{
+                    $match: {
+                        "dailypost._id": {
+                            $exists: true
+                        },
+                        "dailypost.creationtime": data.date
                     }
-                });
+        }, {
+                    $unwind: "$dailypost"
+        }, {
+                    $match: {
+                        "dailypost._id": {
+                            $exists: true
+                        },
+                        "dailypost.creationtime": data.date
+                    }
+        }, {
+                    $project: {
+                        dailypost: 1
+                    }
+        }, {
+                    $sort: sort
+        }]).limit(100).toArray(
+                    function (err, data2) {
+                        if (data != null) {
+                            callback(data2);
+                        }
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false
+                            });
+
+                        }
+                    });
             }
         });
+    },
+    orderbydays:function(data,callback){
+        
     }
 };

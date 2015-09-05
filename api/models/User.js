@@ -183,7 +183,11 @@ module.exports = {
         var orfunc = {};
         if (data.provider == "Twitter") {
             insertdata.tweetid = data.id;
-            insertdata.fbid = '';
+            if (data.fbid) {
+                insertdata.fbid = data.fbid;
+            } else {
+                insertdata.fbid = '';
+            }
             insertdata.provider = data.provider;
             insertdata.username = data.username;
             insertdata.name = data.displayName;
@@ -193,7 +197,13 @@ module.exports = {
             orfunc.tweetid = data.id;
             dbcall(insertdata);
         } else {
-            insertdata.tweetid = '';
+            if (data.tweetid) {
+                insertdata.tweetid = data.twwetid;
+                insertdata.token = data.token;
+                insertdata.tokenSecret = data.tokenSecret;
+            } else {
+                insertdata.tweetid = '';
+            }
             insertdata.fbid = data.id;
             insertdata.provider = data.provider;
             insertdata.username = data.username;
@@ -272,6 +282,7 @@ module.exports = {
                 status: message
             }, function (err, data, response) {
                 data.user = userid;
+                data.provider = "twitter";
                 db.close();
                 callback(err, data);
             });
@@ -310,6 +321,7 @@ module.exports = {
                 body = JSON.parse(body);
                 body.fbid = userfbid;
                 body.user = userid;
+                body.provider = "facebook";
                 db.close();
                 callback(err, body);
             });
@@ -326,7 +338,6 @@ module.exports = {
             id: twitterpostid
         }, function (err, data, response) {
             data.user = userid;
-            console.log(data.user);
             data.provider = "twitter";
             data.id_str = twitterpostid;
             data._id = '';

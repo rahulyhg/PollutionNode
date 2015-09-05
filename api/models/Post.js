@@ -1,9 +1,10 @@
 module.exports = {
     save: function (data, callback) {
-        
+
         var user = sails.ObjectID(data.user);
         if (!data._id && data._id != '') {
             data._id = sails.ObjectID();
+            data.creationtime = sails.moment().format('DD-MM-YYYY');
             sails.query(function (err, db) {
                 if (err) {
                     console.log(err);
@@ -32,103 +33,143 @@ module.exports = {
             });
         } else {
             if (data.provider == "facebook") {
-                data.total_likes = data.summary.total_count;
-                delete data.summary;
-                var tobechanged = {};
-                var attribute = "post.$.";
-                _.forIn(data, function (value, key) {
-                    tobechanged[attribute + key] = value;
-                });
-                sails.query(function (err, db) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false
-                        });
-                    }
-                    if (db) {
-                        db.collection('user').update({
-                            "_id": user,
-                            "post.id": data.id
-                        }, {
-                            $set: tobechanged
-                        }, function (err, updated) {
-                            if (err) {
-                                console.log(err);
-                            }
-                            if (updated) {
-                                callback({
-                                    value: true
-                                });
-                            }
-                        });
-                    }
-                });
+                if (data.summary && data.summary != "") {
+                    data.total_likes = data.summary.total_count;
+                    delete data.summary;
+                    var tobechanged = {};
+                    var attribute = "post.$.";
+                    _.forIn(data, function (value, key) {
+                        tobechanged[attribute + key] = value;
+                    });
+                    sails.query(function (err, db) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false
+                            });
+                        }
+                        if (db) {
+                            db.collection('user').update({
+                                "_id": user,
+                                "post.id": data.id
+                            }, {
+                                $set: tobechanged
+                            }, function (err, updated) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                if (updated) {
+                                    callback({
+                                        value: true
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Post.delete(data, callback);
+                }
             } else if (data.provider == "twitter") {
-                var tobechanged = {};
-                var attribute = "post.$.";
-                _.forIn(data, function (value, key) {
-                    tobechanged[attribute + key] = value;
-                });
-                sails.query(function (err, db) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false
-                        });
-                    }
-                    if (db) {
-                        db.collection('user').update({
-                            "_id": user,
-                            "post.id_str": data.id_str
-                        }, {
-                            $set: tobechanged
-                        }, function (err, updated) {
-                            if (err) {
-                                console.log(err);
-                            }
-                            if (updated) {
-                                callback({
-                                    value: true
-                                });
-                            }
-                        });
-                    }
-                });
+                if (data.retweet_count || data.retweet_count == 0) {
+                    var tobechanged = {};
+                    var attribute = "post.$.";
+                    _.forIn(data, function (value, key) {
+                        tobechanged[attribute + key] = value;
+                    });
+                    sails.query(function (err, db) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false
+                            });
+                        }
+                        if (db) {
+                            db.collection('user').update({
+                                "_id": user,
+                                "post.id_str": data.id_str
+                            }, {
+                                $set: tobechanged
+                            }, function (err, updated) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                if (updated) {
+                                    callback({
+                                        value: true
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    Post.delete(data, callback);
+                }
             }
         }
     },
     delete: function (data, callback) {
         var user = sails.ObjectID(data.user);
-        sails.query(function (err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false
-                });
-            }
-            if (db) {
+        if (data.id && data.id != "") {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                if (db) {
 
-                db.collection('user').update({
-                    "_id": user
-                }, {
-                    $pull: {
-                        "post": {
-                            "_id": sails.ObjectID(data._id)
+                    db.collection('user').update({
+                        "_id": user
+                    }, {
+                        $pull: {
+                            "post": {
+                                "id": data.id
+                            }
                         }
-                    }
-                }, function (err, updated) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    if (updated) {
-                        callback({
-                            value: true
-                        });
-                    }
-                });
-            }
-        });
+                    }, function (err, updated) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        if (updated) {
+                            callback({
+                                value: true
+                            });
+                        }
+                    });
+                }
+            });
+        } else if (data.id_str && data.id_str != "") {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                if (db) {
+
+                    db.collection('user').update({
+                        "_id": user
+                    }, {
+                        $pull: {
+                            "post": {
+                                "id_str": data.id_str
+                            }
+                        }
+                    }, function (err, updated) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        if (updated) {
+                            callback({
+                                value: true
+                            });
+                        }
+                    });
+                }
+            });
+        }
     },
     //Findlimited
     findlimited: function (data, callback) {
