@@ -193,55 +193,323 @@ module.exports = {
         }
     },
     getdailypost: function (req, res) {
-        var date=req.param('date');
-        var count = {};
-        var postdata = {};
-        postdata.count = [];
-        count.likes = 0;
-        count.favorites = 0;
-        count.retweets = 0;
-        count.totalcount = 0;
-        count.user = '';
+            var date = req.param('date');
+            var count = {};
+            var postdata = {};
+            postdata.count = [];
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
 
-        function trackstartsnow(trackarr) {
-            _.each(trackarr, function (n) {
-                count.user = n._id;
-                postdata.user = n._id;
-                if (n.post && n.post[0]) {
-                    _.each(n.post, function (m) {
-                        if (m.creationtime == sails.moment().format('DD-MM-YYYY')) {
-                            if (m.provider == "twitter") {
-                                count.retweets = m.retweet_count;
-                                count.favorites = m.favorite_count;
-                            } else {
-                                count.likes = m.total_likes;
+                }
+                if (db) {
+                    db.collection("user").aggregate([{
+                            $unwind: "$post"
+                    }, {
+                            $match: {
+                                "post.provider": {
+                                    $exists: true
+                                },
+                                $or: [{"post.creationtime": date}]
+
                             }
+                    }, {
+                            $group: {
+                                _id: "$_id",
+                                retweet: {
+                                    $sum: '$post.retweet_count'
+                                },
+                                favorite: {
+                                    $sum: '$post.favorite_count'
+                                },
+                                like: {
+                                    $sum: '$post.total_likes'
+                                },
+                                name: {
+                                    $addToSet: "$name"
+                                },
+                                profilepic: {
+                                    $addToSet: "$profilepic"
+                                }
+                            }
+                    },
+                        {
+                            $project: {
+                                _id: 1,
+                                retweet: 1,
+                                favorite: 1,
+                                like: 1,
+                                name: 1,
+                                profilepic: 1,
+                                total: {
+                                    $add: ["$like", "$retweet", "$favorite"]
+                                }
+                            }
+                        },
+                        {
+                            $unwind: "$name"
+                        },
+                        {
+                            $unwind: "$profilepic"
+                        }]).toArray(function (err, data2) {
+                        if (data2 != null) {
+                            console.log(data2);
+                            var dailypost = {};
+                            dailypost.leaderboard = data2;
+                            dailypost.date = date;
+                            DailyPost.save(dailypost, function (response) {
+                                res.json(dailypost);
+                            });
+                        }
+                        if (err) {
+                            console.log(err);
                         }
                     });
-                    count.totalcount = count.likes + count.retweets + count.favorites;
-                    postdata.date = date;
-                    postdata.count.push(count);
-                    count = {};
-                    dailyPost();
                 }
             });
-        }
+        },
+    date3leaderboard: function (req, res) {
+            var date = req.param('date');
+            var count = {};
+            var postdata = {};
+            postdata.count = [];
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
 
-        function dailyPost() {
-            DailyPost.save(postdata, function (response) {
-                if (response) {}
+                }
+                if (db) {
+                    db.collection("user").aggregate([{
+                            $unwind: "$post"
+                    }, {
+                            $match: {
+                                "post.provider": {
+                                    $exists: true
+                                },
+                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'}]
+
+                            }
+                    }, {
+                            $group: {
+                                _id: "$_id",
+                                retweet: {
+                                    $sum: '$post.retweet_count'
+                                },
+                                favorite: {
+                                    $sum: '$post.favorite_count'
+                                },
+                                like: {
+                                    $sum: '$post.total_likes'
+                                },
+                                name: {
+                                    $addToSet: "$name"
+                                },
+                                profilepic: {
+                                    $addToSet: "$profilepic"
+                                }
+                            }
+                    },
+                        {
+                            $project: {
+                                _id: 1,
+                                retweet: 1,
+                                favorite: 1,
+                                like: 1,
+                                name: 1,
+                                profilepic: 1,
+                                total: {
+                                    $add: ["$like", "$retweet", "$favorite"]
+                                }
+                            }
+                        },
+                        {
+                            $unwind: "$name"
+                        },
+                        {
+                            $unwind: "$profilepic"
+                        }]).toArray(function (err, data2) {
+                        if (data2 != null) {
+                            console.log(data2);
+                            var dailypost = {};
+                            dailypost.leaderboard = data2;
+                            dailypost.date = date;
+                            DailyPost.save(dailypost, function (response) {
+                                res.json(dailypost);
+                            });
+                        }
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                }
             });
-        }
-        var showjson = function (err, data) {
-            //            Post.save(data, function (response) {
-            //                if (response) {}
-            //            });
-        }
-        User.find(req.body, function (response) {
-            trackstartsnow(response);
-        });
+        },
+    
+    date5leaderboard: function (req, res) {
+            var date = req.param('date');
+            var count = {};
+            var postdata = {};
+            postdata.count = [];
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
 
-    }
+                }
+                if (db) {
+                    db.collection("user").aggregate([{
+                            $unwind: "$post"
+                    }, {
+                            $match: {
+                                "post.provider": {
+                                    $exists: true
+                                },
+                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'}]
 
-    /////////////////////////////////////
+                            }
+                    }, {
+                            $group: {
+                                _id: "$_id",
+                                retweet: {
+                                    $sum: '$post.retweet_count'
+                                },
+                                favorite: {
+                                    $sum: '$post.favorite_count'
+                                },
+                                like: {
+                                    $sum: '$post.total_likes'
+                                },
+                                name: {
+                                    $addToSet: "$name"
+                                },
+                                profilepic: {
+                                    $addToSet: "$profilepic"
+                                }
+                            }
+                    },
+                        {
+                            $project: {
+                                _id: 1,
+                                retweet: 1,
+                                favorite: 1,
+                                like: 1,
+                                name: 1,
+                                profilepic: 1,
+                                total: {
+                                    $add: ["$like", "$retweet", "$favorite"]
+                                }
+                            }
+                        },
+                        {
+                            $unwind: "$name"
+                        },
+                        {
+                            $unwind: "$profilepic"
+                        }]).toArray(function (err, data2) {
+                        if (data2 != null) {
+                            console.log(data2);
+                            var dailypost = {};
+                            dailypost.leaderboard = data2;
+                            dailypost.date = date;
+                            DailyPost.save(dailypost, function (response) {
+                                res.json(dailypost);
+                            });
+                        }
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+            });
+        },
+    
+    date10leaderboard: function (req, res) {
+            var date = req.param('date');
+            var count = {};
+            var postdata = {};
+            postdata.count = [];
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+
+                }
+                if (db) {
+                    db.collection("user").aggregate([{
+                            $unwind: "$post"
+                    }, {
+                            $match: {
+                                "post.provider": {
+                                    $exists: true
+                                },
+                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'}]
+
+                            }
+                    }, {
+                            $group: {
+                                _id: "$_id",
+                                retweet: {
+                                    $sum: '$post.retweet_count'
+                                },
+                                favorite: {
+                                    $sum: '$post.favorite_count'
+                                },
+                                like: {
+                                    $sum: '$post.total_likes'
+                                },
+                                name: {
+                                    $addToSet: "$name"
+                                },
+                                profilepic: {
+                                    $addToSet: "$profilepic"
+                                }
+                            }
+                    },
+                        {
+                            $project: {
+                                _id: 1,
+                                retweet: 1,
+                                favorite: 1,
+                                like: 1,
+                                name: 1,
+                                profilepic: 1,
+                                total: {
+                                    $add: ["$like", "$retweet", "$favorite"]
+                                }
+                            }
+                        },
+                        {
+                            $unwind: "$name"
+                        },
+                        {
+                            $unwind: "$profilepic"
+                        }]).toArray(function (err, data2) {
+                        if (data2 != null) {
+                            console.log(data2);
+                            var dailypost = {};
+                            dailypost.leaderboard = data2;
+                            dailypost.date = date;
+                            DailyPost.save(dailypost, function (response) {
+                                res.json(dailypost);
+                            });
+                        }
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+            });
+        },
+    
+        /////////////////////////////////////
 };

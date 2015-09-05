@@ -1,98 +1,68 @@
 module.exports = {
     save: function (data, callback) {
-        var user = sails.ObjectID(data.user);
-        _.each(data.post, function (n) {
-            n.user = sails.ObjectID(n.user);
-        });
         if (!data._id) {
             data._id = sails.ObjectID();
             sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                }
-                if (db) {
-                    delete data.user;
-                    db.collection('user').update({
-                        _id: user
-                    }, {
-                        $push: {
-                            dailypost: data
-                        }
-                    }, function (err, updated) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        if (updated) {
-                            callback({
-                                value: true
-                            });
-                        }
-                    });
-                }
+                db.collection('dailypost').insert(data, function (err, created) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    }
+                    if (created) {
+                        callback({
+                            value: true
+                        });
+                    }
+                });
             });
         } else {
-            data._id = sails.ObjectID(data._id);
-            var tobechanged = {};
-            var attribute = "dailypost.$.";
-            _.forIn(data, function (value, key) {
-                tobechanged[attribute + key] = value;
-            });
             sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                }
-                if (db) {
-                    db.collection('user').update({
-                        "_id": user,
-                        "dailypost._id": data._id
-                    }, {
-                        $set: tobechanged
-                    }, function (err, updated) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        if (updated) {
-                            callback({
-                                value: true
-                            });
-                        }
-                    });
-                }
+                var dailypost = data._id;
+                delete data._id;
+                db.collection('dailypost').update({
+                    "_id": sails.ObjectID(dailypost)
+                }, {
+                    $set: data
+                }, function (err, updated) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    }
+                    if (updated) {
+                        callback({
+                            value: true
+                        });
+                    }
+                });
             });
         }
     },
-    delete: function (data, callback) {
-        var user = sails.ObjectID(data.user);
+    find: function (data, callback) {
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback({
                     value: false
                 });
+
             }
             if (db) {
-
-                db.collection('user').update({
-                    "_id": user
-                }, {
-                    $pull: {
-                        "dailypost": {
-                            "_id": sails.ObjectID(data._id)
-                        }
+                db.collection("dailypost").find({
+                    date: data.date
+                }).sort({
+                    "count.totalcount": 1
+                }).limit(100).toArray(function (err, data2) {
+                    if (data != null) {
+                        callback(data2);
                     }
-                }, function (err, updated) {
                     if (err) {
                         console.log(err);
-                    }
-                    if (updated) {
                         callback({
-                            value: true
+                            value: false
                         });
                     }
                 });
@@ -105,9 +75,8 @@ module.exports = {
         var newreturns = {};
         newreturns.data = [];
         var check = new RegExp(data.search, "i");
-        var pagesize = data.pagesize;
-        var pagenumber = data.pagenumber;
-        var user = sails.ObjectID(data.user);
+        var pagesize = parseInt(data.pagesize);
+        var pagenumber = parseInt(data.pagenumber);
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -116,101 +85,41 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("user").aggregate([
-                    {
-                        $match: {
-                            _id: user,
-                            "dailypost.postid": {
-                                $exists: true
-                            },
-                            "dailypost.postid": {
-                                $regex: check
-                            }
-                        }
-                    },
-                    {
-                        $unwind: "$dailypost"
-                    },
-                    {
-                        $match: {
-                            "dailypost.postid": {
-                                $exists: true
-                            },
-                            "dailypost.postid": {
-                                $regex: check
-                            }
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: user,
-                            count: {
-                                $sum: 1
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            count: 1
-                        }
+                db.collection("image").count({
+                    type: {
+                        '$regex': check
                     }
-                ]).toArray(function (err, result) {
-                    if (result[0]) {
-                        newreturns.total = result[0].count;
-                        newreturns.totalpages = Math.ceil(result[0].count / data.pagesize);
-                        newcallback++;
+                }, function (err, number) {
+                    newreturns.total = number;
+                    newreturns.totalpages = Math.ceil(number / data.pagesize);
+                    newcallback++;
+                    if (newcallback == 2) {
+                        callback(newreturns);
                     }
+
+                });
+                db.collection("image").find({
+                    type: {
+                        '$regex': check
+                    }
+                }).skip(pagesize * (pagenumber - 1)).limit(pagesize).each(function (err, found) {
                     if (err) {
-                        console.log(err);
                         callback({
                             value: false
                         });
+                        console.log(err);
+                    }
+                    if (found != null) {
+                        newreturns.data.push(found);
+                    } else {
+                        if (found == null) {
+                            newcallback++;
+                            if (newcallback == 2) {
+                                callback(newreturns);
+                            }
+                        }
                     }
                 });
-                db.collection("user").aggregate([
-                    {
-                        $match: {
-                            _id: user,
-                            "dailypost.postid": {
-                                $exists: true
-                            },
-                            "dailypost.postid": {
-                                $regex: check
-                            }
-                        }
-                    },
-                    {
-                        $unwind: "$dailypost"
-                    },
-                    {
-                        $match: {
-                            "dailypost.postid": {
-                                $exists: true
-                            },
-                            "dailypost.postid": {
-                                $regex: check
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            dailypost: 1
-                        }
-                    }
-                ]).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(
-                    function (err, found) {
-                        if (data != null) {
-                            newreturns.data.push(found);
-                            callback(newreturns);
-
-                        }
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false
-                            });
-                        }
-                    });
             }
         });
     },
@@ -224,69 +133,39 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection('user').find({
-                    "dailypost.count.user": sails.ObjectID(data.user)
-                }, {
-                    "dailypost.$": 1
+                db.collection('dailypost').find({
+                    "user": sails.ObjectID(data.user)
                 }).each(function (err, data2) {
                     if (data2 != null) {
-                        callback(data2.dailypost[0]);
+                        callback(data2);
                     }
                 });
             }
         });
     },
-    find: function (data, callback) {
-        var sort = {};
-        sort['dailypost.count.totalcount'] = 1;
+    delete: function (data, callback) {
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback({
                     value: false
                 });
-
             }
-            if (db) {
-                db.collection("user").aggregate([{
-                    $match: {
-                        "dailypost._id": {
-                            $exists: true
-                        },
-                        "dailypost.creationtime": data.date
-                    }
-        }, {
-                    $unwind: "$dailypost"
-        }, {
-                    $match: {
-                        "dailypost._id": {
-                            $exists: true
-                        },
-                        "dailypost.creationtime": data.date
-                    }
-        }, {
-                    $project: {
-                        dailypost: 1
-                    }
-        }, {
-                    $sort: sort
-        }]).limit(100).toArray(
-                    function (err, data2) {
-                        if (data != null) {
-                            callback(data2);
-                        }
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false
-                            });
-
-                        }
+            db.collection('image').remove({
+                _id: sails.ObjectID(data._id)
+            }, function (err, deleted) {
+                if (deleted) {
+                    callback({
+                        value: true
                     });
-            }
+                }
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+            });
         });
-    },
-    orderbydays:function(data,callback){
-        
     }
 };

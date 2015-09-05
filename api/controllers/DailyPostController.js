@@ -1,33 +1,40 @@
+/**
+ * DailyPostController
+ *
+ * @description :: Server-side logic for managing Dailyposts
+ * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ */
 
 module.exports = {
-    save: function (req, res) {
-        function callback(data) {
+	  save: function (req, res) {
+        var print = function (data) {
             res.json(data);
-        };
-        DailyPost.save(req.body, callback);
-    },
-    delete: function (req, res) {
-        function callback(data) {
-            res.json(data);
-        };
-        DailyPost.delete(req.body, callback);
+        }
+        DailyPost.save(req.body, print);
     },
     find: function (req, res) {
-        function callback(data) {
+        var print = function (data) {
             res.json(data);
-        };
-        DailyPost.find(req.body, callback);
+        }
+        DailyPost.find(req.body, print);
     },
     findlimited: function (req, res) {
-        function callback(data) {
+        var print = function (data) {
             res.json(data);
-        };
-        DailyPost.findlimited(req.body, callback);
+        }
+        DailyPost.findlimited(req.body, print);
     },
     findone: function (req, res) {
-        function callback(data) {
+        var print = function (data) {
             res.json(data);
-        };
-        DailyPost.findone(req.body, callback);
+        }
+        DailyPost.findone(req.body, print);
+    },
+    delete: function (req, res) {
+        var print = function (data) {
+            res.json(data);
+        }
+        DailyPost.delete(req.body, print);
     }
 };
+
