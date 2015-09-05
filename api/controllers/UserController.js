@@ -221,7 +221,6 @@ module.exports = {
         }
     },
     getdailypost: function (req, res) {
-<<<<<<< HEAD
             var date = req.param('date');
             var count = {};
             var postdata = {};
@@ -243,17 +242,6 @@ module.exports = {
                                     $exists: true
                                 },
                                 $or: [{"post.creationtime": date}]
-=======
-        var date = req.param('date');
-        var count = {};
-        var postdata = {};
-        postdata.count = [];
-        count.likes = 0;
-        count.favorites = 0;
-        count.retweets = 0;
-        count.totalcount = 0;
-        count.user = '';
->>>>>>> origin/master
 
                             }
                     }, {
