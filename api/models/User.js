@@ -61,18 +61,14 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection('user').find({}).each(function (err, found) {
+                db.collection('user').find({}).toArray(function (err, found) {
                     if (err) {
                         callback({
                             value: false
                         });
                     }
                     if (found != null) {
-                        returns.push(found);
-                    } else {
-                        if (found == null) {
-                            callback(returns);
-                        }
+                        callback(found);
                     }
                 });
             }
@@ -230,6 +226,7 @@ module.exports = {
                                     callback(null, {
                                         value: "true"
                                     });
+                                    db.close();
                                 }
                             });
                         }
@@ -254,7 +251,7 @@ module.exports = {
                         usertweetid = result[0].tweetid;
                         access_token = result[0].token;
                         access_token_secret = result[0].tokenSecret;
-                        callrequest();
+                        callrequest(db);
                     }
                     if (err) {
                         console.log(err);
@@ -263,7 +260,7 @@ module.exports = {
             }
         });
 
-        function callrequest() {
+        function callrequest(db) {
             var Twitter = new Twit({
                 consumer_key: "6gOb3JlMDgqYw27fLN29l5Vmp",
                 consumer_secret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
@@ -275,6 +272,7 @@ module.exports = {
                 status: message
             }, function (err, data, response) {
                 data.user = userid;
+                db.close();
                 callback(err, data);
             });
         }
@@ -291,7 +289,7 @@ module.exports = {
                 }).toArray(function (err, result) {
                     if (result[0]) {
                         userfbid = result[0].fbid;
-                        callrequest();
+                        callrequest(db);
                     }
                     if (err) {
                         console.log(err);
@@ -300,7 +298,7 @@ module.exports = {
             }
         });
 
-        function callrequest() {
+        function callrequest(db) {
             request.post({
                 url: 'https://graph.facebook.com/v2.4/' + userfbid + '/feed',
                 form: {
@@ -312,6 +310,7 @@ module.exports = {
                 body = JSON.parse(body);
                 body.fbid = userfbid;
                 body.user = userid;
+                db.close();
                 callback(err, body);
             });
         }
@@ -327,21 +326,22 @@ module.exports = {
             id: twitterpostid
         }, function (err, data, response) {
             data.user = userid;
-            data.provider="twitter";
+            console.log(data.user);
+            data.provider = "twitter";
             data.id_str = twitterpostid;
-            data._id='';
+            data._id = '';
             callback(err, data);
         });
     },
-    facebookPostDetail: function (fbpostid,userid, callback) {
+    facebookPostDetail: function (fbpostid, userid, callback) {
         request.get({
             url: 'https://graph.facebook.com/v2.4/' + fbpostid + "/likes?summary=true&access_token=1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
         }, function (err, httpResponse, body) {
             body = JSON.parse(body);
             body.user = userid;
-            body.provider="facebook";
+            body.provider = "facebook";
             body.id = fbpostid;
-            body._id='';
+            body._id = '';
             callback(err, body);
         });
     }

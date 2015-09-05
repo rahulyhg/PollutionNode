@@ -1,6 +1,6 @@
 module.exports = {
     save: function (data, callback) {
-        console.log(data);
+        
         var user = sails.ObjectID(data.user);
         if (!data._id && data._id != '') {
             data._id = sails.ObjectID();
@@ -32,7 +32,7 @@ module.exports = {
             });
         } else {
             if (data.provider == "facebook") {
-                data.total_count = data.summary.total_count;
+                data.total_likes = data.summary.total_count;
                 delete data.summary;
                 var tobechanged = {};
                 var attribute = "post.$.";

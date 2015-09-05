@@ -214,23 +214,25 @@ module.exports = {
     },
     //Findlimited
     findone: function (data, callback) {
-        var user = sails.ObjectID(data.user);
         sails.query(function (err, db) {
             if (err) {
-                console.log(err);
                 callback({
                     value: false
                 });
             }
             if (db) {
                 db.collection('user').find({
-                    "_id": user,
-                    "gallery._id": sails.ObjectID(data._id)
+                    "gallery._id": sails.ObjectID(data)
                 }, {
                     "gallery.$": 1
                 }).each(function (err, data2) {
+                    if (err) {
+                        callback({
+                            value: false
+                        });
+                    }
                     if (data2 != null) {
-                        callback(data2.gallery[0]);
+                        callback(data2.gallery[0].imagefinal);
                     }
                 });
             }

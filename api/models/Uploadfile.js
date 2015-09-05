@@ -9,10 +9,9 @@ var returns = {};
 var filepath = '';
 var createdfilename = '';
 var newfilepath = '';
-var newimagedata = '';
 var canvasdata = '';
-var canvaswidth = 1024;
-var canvasheight = 768;
+var canvaswidth = 414;
+var canvasheight = 736;
 var i = 0;
 module.exports = {
     findeach: function (data, callback) {
@@ -134,36 +133,80 @@ module.exports = {
                 }
                 createdfilename = sails.moment(new Date()).format('YYYY-MM-DDh-mm-ss-SSSSa');
                 returns.imagefinal = createdfilename + '.jpg';
-                newfilepath = './images/newimages/' + createdfilename + '.jpg';
+                newfilepath = './assets/userimage/' + createdfilename + '.jpg';
+
+                n.rotate = parseFloat(n.rotate);
+                n.width = parseFloat(n.width);
+                n.height = parseFloat(n.height);
+                n.top = parseFloat(n.top);
+                n.left = parseFloat(n.left);
                 imagecreate();
 
                 function imagecreate() {
                     if (filepath != '' && newfilepath != '') {
                         if (canvasdata != "") {
                             sails.lwip.open(filepath, function (err, imagefile) {
+                                if (err) {
+                                    console.log(err);
+                                }
                                 if (imagefile) {
-                                    imagefile.rotate(n.rotate, function (err, rotateimage) {
-                                        rotateimage.resize(n.width, n.height, function (err, resizedimage) {
-                                            var cropRight = canvaswidth - n.left - 1;
-                                            var cropBottom = canvasheight - n.top - 1;
-                                            resizedimage.crop(0, 0, cropRight, cropBottom, function (err, cropedimage) {
-                                                newimagedata = cropedimage;
-                                                canvasdata.paste(n.left, n.top, newimagedata, function (err, newimage) {
-                                                    num++;
-                                                    canvasdata = newimage;
-                                                    if (newimage) {
-                                                        if (num == data.image.length) {
-                                                            newimage.toBuffer('jpg', function (err, buffer) {
-                                                                sails.fs.writeFileSync(newfilepath, buffer);
-                                                                if (createdfilename != "") {
-                                                                    callback(returns);
-                                                                }
-                                                            });
-                                                        } else {
-                                                            recimage(num);
-                                                        }
+
+                                    //                                    imagefile.rotate(n.rotate, {
+                                    //                                        r: 0,
+                                    //                                        g: 0,
+                                    //                                        b: 0,
+                                    //                                        a: 0
+                                    //                                    }, function (err, rotateimage) {
+                                    //                                        if (err) {
+                                    //                                            console.log(err);
+                                    //                                        }
+                                    imagefile.resize(n.width, n.height, function (err, resizedimage) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                        var cropRight = 0;
+                                        var cropBottom = 0;
+                                        var cropTop = 0;
+                                        var cropLeft = 0;
+                                        if (n.left >= 0) {
+                                            cropRight = canvaswidth - n.left - 1;
+                                        } else {
+                                            cropLeft = (-1 * n.left) + 1;
+                                            cropRight = n.width;
+                                            n.left = 0;
+                                        }
+                                        if (n.top >= 0) {
+                                            cropBottom = canvasheight - n.top - 1;
+                                        } else {
+                                            cropTop = (-1 * n.top) + 1;
+                                            cropBottom = n.height;
+                                            n.top = 0;
+                                        }
+
+                                        resizedimage.crop(parseInt(cropLeft), parseInt(cropTop), parseInt(cropRight), parseInt(cropBottom), function (err, cropedimage) {
+
+                                            if (err) {
+                                                console.log(err);
+                                            }
+                                            canvasdata.paste(n.left, n.top, cropedimage, function (err, newimage) {
+                                                if (err) {
+                                                    console.log(err);
+                                                }
+                                                num++;
+                                                canvasdata = newimage;
+                                                if (newimage) {
+                                                    if (num == data.image.length) {
+                                                        newimage.toBuffer('jpg', function (err, buffer) {
+                                                            sails.fs.writeFileSync(newfilepath, buffer);
+                                                            if (createdfilename != "") {
+                                                                callback(returns);
+                                                            }
+                                                        });
+                                                    } else {
+                                                        recimage(num);
                                                     }
-                                                });
+                                                }
+                                                //                                                });
                                             });
                                         });
                                     });

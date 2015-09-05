@@ -77,7 +77,7 @@ module.exports = {
     },
     getfsimage: function (req, res) {
         var filename = req.param('file');
-        var path = './images/newimages/' + filename;
+        var path = './assets/userimage/' + filename;
         var image = sails.fs.readFileSync(path);
         var mimetype = sails.mime.lookup(path);
         res.set('Content-Type', mimetype);
