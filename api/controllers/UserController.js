@@ -75,10 +75,18 @@ module.exports = {
     },
     /////////////////////////////
     //LOGIN FUNCTIONS
-    logint: passport.authenticate('twitter'),
-    loginf: passport.authenticate('facebook', {
-        scope: 'email,public_profile,user_posts,publish_actions'
-    }),
+    logint: function (req, res) {
+        var loginid = req.param("loginid");
+        req.session.loginid = loginid;
+        passport.authenticate('twitter')(req, res);
+    },
+    loginf: function (req, res) {
+        var loginid = req.param("loginid");
+        req.session.loginid = loginid;
+        passport.authenticate('facebook', {
+            scope: 'email,public_profile,user_posts,publish_actions'
+        })(req, res);
+    },
     callbackt: passport.authenticate('twitter', {
         successRedirect: '/user/success',
         failureRedirect: '/user/fail'
@@ -88,10 +96,12 @@ module.exports = {
         failureRedirect: '/user/fail'
     }),
     success: function (req, res, data) {
-        res.send("SUCCESS");
+        sails.sockets.blast("login",{loginid:req.session.loginid,status:"success"});
+        res.send("Login Successful");
     },
     fail: function (req, res) {
-        res.send("FAIL");
+        sails.sockets.blast("login",{loginid:req.session.loginid,status:"fail"});
+        res.send("Login Failed");
     },
     logout: function (req, res) {
         req.session.destroy(function (err) {
@@ -99,6 +109,7 @@ module.exports = {
         });
     },
     facebookPost: function (req, res) {
+
         var userid = req.param("userid");
         var galleryid = req.param("galleryid");
         var message = req.param("message");
@@ -193,6 +204,7 @@ module.exports = {
         }
     },
     getdailypost: function (req, res) {
+<<<<<<< HEAD
             var date = req.param('date');
             var count = {};
             var postdata = {};
@@ -214,6 +226,17 @@ module.exports = {
                                     $exists: true
                                 },
                                 $or: [{"post.creationtime": date}]
+=======
+        var date = req.param('date');
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        count.likes = 0;
+        count.favorites = 0;
+        count.retweets = 0;
+        count.totalcount = 0;
+        count.user = '';
+>>>>>>> origin/master
 
                             }
                     }, {
