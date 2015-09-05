@@ -96,12 +96,29 @@ module.exports = {
         failureRedirect: '/user/fail'
     }),
     success: function (req, res, data) {
-        sails.sockets.blast("login",{loginid:req.session.loginid,status:"success"});
+        console.log("LOGIN DONE");
+        if (req.session.passport) {
+            sails.sockets.blast("login", {
+                loginid: req.session.loginid,
+                status: "success",
+                user: req.session.passport.user
+            });
+        }
         res.send("Login Successful");
     },
     fail: function (req, res) {
-        sails.sockets.blast("login",{loginid:req.session.loginid,status:"fail"});
+        sails.sockets.blast("login", {
+            loginid: req.session.loginid,
+            status: "fail"
+        });
         res.send("Login Failed");
+    },
+    profile: function (req, res) {
+        if (req.session.passport) {
+            res.json(req.session.passport.user);
+        } else {
+            res.json({});
+        }
     },
     logout: function (req, res) {
         req.session.destroy(function (err) {

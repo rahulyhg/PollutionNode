@@ -233,9 +233,13 @@ module.exports = {
                                     callback(err);
                                 }
                                 if (created) {
-                                    callback(null, {
-                                        value: "true"
-                                    });
+                                    delete data._raw;
+                                    delete data._json;
+                                    delete data.token;
+                                    delete data.tokenSecret;
+                                    delete data.accessToken;
+                                    delete data._accessLevel;
+                                    callback(null, data);
                                     db.close();
                                 }
                             });
