@@ -95,7 +95,8 @@ module.exports = {
                         }
         }, {
                         $project: {
-                            leaderboard: 1
+                            date: 1,
+                            leaderboard: 1,
                         }
         }]).toArray(
                         function (err, data) {
@@ -108,7 +109,6 @@ module.exports = {
                                 callback({
                                     value: false
                                 });
-
                             }
                         });
                 } else {
@@ -124,6 +124,7 @@ module.exports = {
                         }
         }, {
                         $project: {
+                            type: 1,
                             leaderboard: 1
                         }
         }]).toArray(
@@ -227,7 +228,7 @@ module.exports = {
                             like: {
                                 $sum: '$post.total_likes'
                             },
-                           
+
                         }
                     },
                     {
@@ -243,7 +244,7 @@ module.exports = {
                         },
                     ]).toArray(function (err, data2) {
 
-                   
+
                     if (err) {
                         console.log(err);
                         callback({
