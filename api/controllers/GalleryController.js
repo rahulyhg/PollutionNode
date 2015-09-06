@@ -1,4 +1,3 @@
-
 module.exports = {
     save: function (req, res) {
         function callback(data) {
@@ -13,10 +12,15 @@ module.exports = {
         Gallery.delete(req.body, callback);
     },
     find: function (req, res) {
-        function callback(data) {
-            res.json(data);
-        };
-        Gallery.find(req.body, callback);
+        var user = req.param("user");
+        if (user && sails.ObjectID.isValid(user)) {
+            function callback(data) {
+                res.json(data);
+            };
+            Gallery.find(user, callback);
+        } else {
+            return res.badRequest();
+        }
     },
     findlimited: function (req, res) {
         function callback(data) {
@@ -25,9 +29,14 @@ module.exports = {
         Gallery.findlimited(req.body, callback);
     },
     findone: function (req, res) {
-        function callback(data) {
-            res.json(data);
-        };
-        Gallery.findone(req.body, callback);
+        var gallery = req.param("gallery");
+        if (gallery && sails.ObjectID.isValid(gallery)) {
+            function callback(data) {
+                res.json(data);
+            };
+            Gallery.findone(gallery, callback);
+        } else {
+            return res.badRequest();
+        }
     }
 };

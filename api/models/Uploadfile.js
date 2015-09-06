@@ -129,6 +129,7 @@ module.exports = {
             function recimage(num) {
                 n = data.image[num];
                 if (n.img) {
+                    console.log(n.img);
                     var filepath = './images/' + n.img;
                 }
                 createdfilename = sails.moment(new Date()).format('YYYY-MM-DDh-mm-ss-SSSSa');

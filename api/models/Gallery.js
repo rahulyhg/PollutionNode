@@ -239,8 +239,7 @@ module.exports = {
         });
     },
     find: function (data, callback) {
-        console.log(data);
-        var user = sails.ObjectID(data.user);
+        var user = sails.ObjectID(data);
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -249,16 +248,12 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection('user').find({
-                    "_id": user
-                }).toArray(function (err, data2) {
-                    if (data2 && data2[0].gallery) {
-                        console.log("in if");
+                db.collection("user").find({"_id":user},{_id:0,"gallery._id":1,"gallery.imagefinal":1}).toArray(function (err, data2) {
+                    if (err) {
+                        callback(err);
+                    }
+                    if (data2 && data2[0]) {
                         callback(data2[0].gallery);
-                    } else {
-                        callback({
-                            value: "false"
-                        });
                     }
                 });
             }
