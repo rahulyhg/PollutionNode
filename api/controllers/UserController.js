@@ -56,7 +56,7 @@ module.exports = {
             function callback(data) {
                 res.json(data);
             };
-            User.findone(user, callback);
+            User.getOneUser(user, callback);
         } else {
             return res.badRequest();
         }
