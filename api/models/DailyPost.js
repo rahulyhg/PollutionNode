@@ -229,7 +229,6 @@ module.exports = {
                         $unwind: "$post"
                     }, {
                         $group: {
-                            _id: "$_id",
                             retweet: {
                                 $sum: '$post.retweet_count'
                             },
@@ -239,35 +238,22 @@ module.exports = {
                             like: {
                                 $sum: '$post.total_likes'
                             },
-                            name: {
-                                $addToSet: "$name"
-                            },
-                            profilepic: {
-                                $addToSet: "$profilepic"
-                            }
+                           
                         }
                     },
                     {
                         $project: {
-                            _id: 1,
                             retweet: 1,
                             favorite: 1,
                             like: 1,
-                            name: 1,
-                            profilepic: 1,
                             total: {
                                 $add: ["$like", "$retweet", "$favorite"]
                             }
                         }
                         },
-                    {
-                        $unwind: "$name"
-                        },
-                    {
-                        $unwind: "$profilepic"
-                        }]).toArray(function (err, data2) {
+                    ]).toArray(function (err, data2) {
 
-                    console.log(data2.length);
+                   
                     if (err) {
                         callback({
                             "retweet": 0,
