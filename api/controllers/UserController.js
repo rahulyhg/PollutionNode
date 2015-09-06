@@ -232,16 +232,10 @@ module.exports = {
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
-<<<<<<< HEAD
-                callback({
-                    value: false
-                });
 
-=======
                 res.json({
                     value: "false"
                 });
->>>>>>> origin/master
             }
             if (db) {
                 db.collection("user").aggregate([{
@@ -295,13 +289,7 @@ module.exports = {
                     {
                         $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-<<<<<<< HEAD
-                    if (data2 != null) {
-                        console.log(data2);
-                        var dailypost = {};
-                        dailypost.leaderboard = data2;
-                        dailypost.date = date;
-=======
+
                     if (err) {
                         res.json({
                             value: "false"
@@ -312,39 +300,26 @@ module.exports = {
                         dailypost.leaderboard = data2;
                         dailypost.date = date;
                         dailypost.type = "DailyPost";
->>>>>>> origin/master
                         DailyPost.save(dailypost, function (response) {
                             res.json(dailypost);
                         });
                     }
-<<<<<<< HEAD
-                    if (err) {
-                        console.log(err);
-                    }
-=======
->>>>>>> origin/master
+
                 });
             }
         });
     },
     date3leaderboard: function (req, res) {
-<<<<<<< HEAD
-        var date = req.param('date');
-=======
->>>>>>> origin/master
+
         var count = {};
         var postdata = {};
         postdata.count = [];
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
-<<<<<<< HEAD
-                callback({
-                    value: false
-=======
+
                 res.json({
                     value: "false"
->>>>>>> origin/master
                 });
 
             }
@@ -404,13 +379,7 @@ module.exports = {
                     {
                         $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-<<<<<<< HEAD
-                    if (data2 != null) {
-                        console.log(data2);
-                        var dailypost = {};
-                        dailypost.leaderboard = data2;
-                        dailypost.date = date;
-=======
+
                     if (err) {
                         res.json({
                             value: "false"
@@ -419,41 +388,28 @@ module.exports = {
                     if (data2 != null) {
                         var dailypost = {};
                         dailypost.leaderboard = data2;
-                        dailypost.type = "ThreeDays";
->>>>>>> origin/master
+                        dailypost.type = "ThreeDays"
                         DailyPost.save(dailypost, function (response) {
                             res.json(dailypost);
                         });
                     }
-<<<<<<< HEAD
-                    if (err) {
-                        console.log(err);
-                    }
-=======
->>>>>>> origin/master
+
                 });
             }
         });
     },
 
     date5leaderboard: function (req, res) {
-<<<<<<< HEAD
-        var date = req.param('date');
-=======
->>>>>>> origin/master
+
         var count = {};
         var postdata = {};
         postdata.count = [];
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
-<<<<<<< HEAD
-                callback({
-                    value: false
-=======
+
                 res.json({
                     value: "false"
->>>>>>> origin/master
                 });
 
             }
@@ -517,56 +473,38 @@ module.exports = {
                     {
                         $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-<<<<<<< HEAD
-=======
+
                     if (err) {
                         res.json({
                             value: "false"
                         });
                     }
->>>>>>> origin/master
                     if (data2 != null) {
                         console.log(data2);
                         var dailypost = {};
                         dailypost.leaderboard = data2;
-<<<<<<< HEAD
-                        dailypost.date = date;
-=======
+
                         dailypost.type = "FiveDays";
->>>>>>> origin/master
                         DailyPost.save(dailypost, function (response) {
                             res.json(dailypost);
                         });
                     }
-<<<<<<< HEAD
-                    if (err) {
-                        console.log(err);
-                    }
-=======
->>>>>>> origin/master
+
                 });
             }
         });
     },
 
     date10leaderboard: function (req, res) {
-<<<<<<< HEAD
-        var date = req.param('date');
-=======
->>>>>>> origin/master
         var count = {};
         var postdata = {};
         postdata.count = [];
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
-<<<<<<< HEAD
-                callback({
-                    value: false
-=======
+
                 res.json({
                     value: "false"
->>>>>>> origin/master
                 });
 
             }
@@ -640,33 +578,22 @@ module.exports = {
                     {
                         $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-<<<<<<< HEAD
-=======
+
                     if (err) {
                         res.json({
                             value: "false"
                         });
                     }
->>>>>>> origin/master
                     if (data2 != null) {
                         console.log(data2);
                         var dailypost = {};
                         dailypost.leaderboard = data2;
-<<<<<<< HEAD
-                        dailypost.date = date;
-=======
                         dailypost.type = "TenDays";
->>>>>>> origin/master
+
                         DailyPost.save(dailypost, function (response) {
                             res.json(dailypost);
                         });
                     }
-<<<<<<< HEAD
-                    if (err) {
-                        console.log(err);
-                    }
-=======
->>>>>>> origin/master
                 });
             }
         });
