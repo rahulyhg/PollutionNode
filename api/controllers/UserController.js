@@ -54,7 +54,7 @@ module.exports = {
         passport.use(new TwitterStrategy({
                 consumerKey: "6gOb3JlMDgqYw27fLN29l5Vmp",
                 consumerSecret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
-                callbackURL: sails.myurl+"user/callbackt"
+                callbackURL: sails.myurl + "user/callbackt"
             },
             function (token, tokenSecret, profile, done) {
                 console.log("Twitter Page");
@@ -74,7 +74,7 @@ module.exports = {
         passport.use(new FacebookStrategy({
                 clientID: "1616856265259993",
                 clientSecret: "6e8052bdbe29f02ead4f618549e98cac",
-                callbackURL: sails.myurl+"user/callbackf"
+                callbackURL: sails.myurl + "user/callbackf"
             },
             function (accessToken, refreshToken, profile, done) {
                 profile.accessToken = accessToken;
@@ -167,7 +167,7 @@ module.exports = {
         }
         User.twitterPostDetail(twitterpostid, userid, accesstToken, accessTokenSecret, showjson);
     },
-    
+
     facebookPostDetail: function (req, res) {
         var userid = req.param("userid");
         var fbpostid = req.param("fbpostid");
@@ -179,7 +179,7 @@ module.exports = {
         }
         User.facebookPostDetail(fbpostid, userid, showjson);
     },
-    
+
     card: function (req, res) {
         var galleryid = req.param("galleryid");
         if (!galleryid || galleryid == "" || !sails.ObjectID.isValid(galleryid)) {
@@ -198,7 +198,7 @@ module.exports = {
         }
 
     },
-    
+
     tracker: function (req, res) {
 
         function trackstartsnow(trackarr) {
@@ -227,7 +227,7 @@ module.exports = {
             });
         }
     },
-    
+
     getdailypost: function (req, res) {
         var date = req.param('date');
         var count = {};
@@ -292,7 +292,16 @@ module.exports = {
                         },
                     {
                         $unwind: "$profilepic"
-                        }]).toArray(function (err, data2) {
+                        },
+                    {
+                        $sort: {
+                            total: -1,
+                            like: -1,
+                            retweet: -1,
+                            favorite: -1,
+                            name: 1
+                        }
+                    }]).toArray(function (err, data2) {
 
                     if (err) {
                         res.json({
@@ -313,7 +322,7 @@ module.exports = {
             }
         });
     },
-    
+
     date3leaderboard: function (req, res) {
 
         var count = {};

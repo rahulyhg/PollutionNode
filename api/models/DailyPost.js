@@ -74,6 +74,9 @@ module.exports = {
         });
     },
     find: function (data, callback) {
+        var sortnum = parseInt(data.sort);
+        var sort = {};
+        sort['total'] = 1;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -83,26 +86,16 @@ module.exports = {
             }
             if (db) {
                 if (data.date) {
-                    db.collection("dailypost").aggregate([{
-                        $match: {
-                            date: data.date
-                        }
+                    db.collection("dailypost").find({
+                        date: data.date
                     }, {
-                        $unwind: "$leaderboard"
-        }, {
-                        $match: {
-                            date: data.date
+                        leaderboard: {
+                            $slice: 100
                         }
-        }, {
-                        $project: {
-                            date: 1,
-                            leaderboard: 1,
-                        }
-        }]).toArray(
-                        function (err, data) {
-                            if (data != null) {
-                                callback(data);
-
+                    }).toArray(
+                        function (err, data2) {
+                            if (data2 != null) {
+                                callback(data2[0].leaderboard);
                             }
                             if (err) {
                                 console.log(err);
@@ -112,33 +105,22 @@ module.exports = {
                             }
                         });
                 } else {
-                    db.collection("dailypost").aggregate([{
-                        $match: {
-                            type: data.type
+                    db.collection("dailypost").find({
+                        type: data.type
+                    }, {
+                        leaderboard: {
+                            $slice: 100
                         }
-        }, {
-                        $unwind: "$leaderboard"
-        }, {
-                        $match: {
-                            type: data.type
-                        }
-        }, {
-                        $project: {
-                            type: 1,
-                            leaderboard: 1
-                        }
-        }]).toArray(
-                        function (err, data) {
-                            if (data != null) {
-                                callback(data);
-
+                    }).toArray(
+                        function (err, data2) {
+                            if (data2 != null) {
+                                callback(data2[0].leaderboard);
                             }
                             if (err) {
                                 console.log(err);
                                 callback({
                                     value: false
                                 });
-
                             }
                         });
                 }
@@ -218,7 +200,7 @@ module.exports = {
                         $unwind: "$post"
                     }, {
                         $group: {
-                            _id:"$_id",
+                            _id: "$_id",
                             retweet: {
                                 $sum: '$post.retweet_count'
                             },
@@ -233,7 +215,7 @@ module.exports = {
                     },
                     {
                         $project: {
-                            _id:0,
+                            _id: 0,
                             retweet: 1,
                             favorite: 1,
                             like: 1,
