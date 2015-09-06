@@ -25,7 +25,11 @@ module.exports.bootstrap = function (cb) {
         sails.moment = require('moment'),
         sails.fs = require('fs'),
         sails.lwip = require('mongodb'),
+<<<<<<< HEAD
         sails.myurl = "http://timesbappa.com/",
+=======
+        sails.myurl = "http://wohlig.biz/",
+>>>>>>> origin/master
         // Connection URL
         sails.url = 'mongodb://localhost:27017/pollution';
     sails.query = function (myfunc) {

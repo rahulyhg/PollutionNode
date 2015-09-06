@@ -185,11 +185,6 @@ module.exports = {
     var orfunc = {};
     if (data.provider == "Twitter") {
       insertdata.tweetid = data.id;
-      if (data.fbid) {
-        insertdata.fbid = data.fbid;
-      } else {
-        insertdata.fbid = '';
-      }
       insertdata.provider = data.provider;
       insertdata.username = data.username;
       insertdata.name = data.displayName;
@@ -199,13 +194,6 @@ module.exports = {
       orfunc.tweetid = data.id;
       dbcall(insertdata);
     } else {
-      if (data.tweetid) {
-        insertdata.tweetid = data.twwetid;
-        insertdata.token = data.token;
-        insertdata.tokenSecret = data.tokenSecret;
-      } else {
-        insertdata.tweetid = '';
-      }
       insertdata.fbid = data.id;
       insertdata.provider = data.provider;
       insertdata.username = data.username;
