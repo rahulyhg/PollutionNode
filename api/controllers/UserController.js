@@ -392,7 +392,15 @@ module.exports = {
                         },
                     {
                         $unwind: "$profilepic"
-                        }]).toArray(function (err, data2) {
+                        }, {
+                        $sort: {
+                            total: -1,
+                            like: -1,
+                            retweet: -1,
+                            favorite: -1,
+                            name: 1
+                        }
+                    }]).toArray(function (err, data2) {
 
                     if (err) {
                         res.json({
@@ -486,7 +494,15 @@ module.exports = {
                         },
                     {
                         $unwind: "$profilepic"
-                        }]).toArray(function (err, data2) {
+                        }, {
+                        $sort: {
+                            total: -1,
+                            like: -1,
+                            retweet: -1,
+                            favorite: -1,
+                            name: 1
+                        }
+                    }]).toArray(function (err, data2) {
 
                     if (err) {
                         res.json({
@@ -591,7 +607,15 @@ module.exports = {
                         },
                     {
                         $unwind: "$profilepic"
-                        }]).toArray(function (err, data2) {
+                        }, {
+                        $sort: {
+                            total: -1,
+                            like: -1,
+                            retweet: -1,
+                            favorite: -1,
+                            name: 1
+                        }
+                    }]).toArray(function (err, data2) {
 
                     if (err) {
                         res.json({
