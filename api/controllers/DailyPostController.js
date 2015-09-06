@@ -31,7 +31,7 @@ module.exports = {
         if (req.body && sails.ObjectID.isValid(req.body.user)) {
             DailyPost.findone(req.body, print);
         } else {
-            req.json({
+            res.json({
                 "retweet": 0,
                 "favorite": 0,
                 "like": 0,

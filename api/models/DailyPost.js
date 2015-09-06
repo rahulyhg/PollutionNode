@@ -217,6 +217,7 @@ module.exports = {
                         $unwind: "$post"
                     }, {
                         $group: {
+                            _id:"$_id",
                             retweet: {
                                 $sum: '$post.retweet_count'
                             },
@@ -231,6 +232,7 @@ module.exports = {
                     },
                     {
                         $project: {
+                            _id:0,
                             retweet: 1,
                             favorite: 1,
                             like: 1,
@@ -243,6 +245,7 @@ module.exports = {
 
                    
                     if (err) {
+                        console.log(err);
                         callback({
                             "retweet": 0,
                             "favorite": 0,
