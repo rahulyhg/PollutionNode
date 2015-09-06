@@ -74,21 +74,24 @@ module.exports = {
         });
     },
     find: function (data, callback) {
+        var findcase = {};
+        if (data.date) {
+            findcase.date = data.date;
+        } else {
+            findcase.type = data.type;
+        }
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback({
                     value: false
                 });
-
             }
             if (db) {
-                db.collection("dailypost").find({
-                    date: data.date
-                }).sort({
+                db.collection("dailypost").find(findcase).sort({
                     "count.totalcount": 1
                 }).limit(100).toArray(function (err, data2) {
-                    if (data != null) {
+                    if (data2 != null) {
                         callback(data2);
                     }
                     if (err) {
