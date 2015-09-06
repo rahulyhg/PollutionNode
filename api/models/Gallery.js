@@ -239,6 +239,7 @@ module.exports = {
         });
     },
     find: function (data, callback) {
+        console.log(data);
         var user = sails.ObjectID(data.user);
         sails.query(function (err, db) {
             if (err) {
@@ -251,7 +252,8 @@ module.exports = {
                 db.collection('user').find({
                     "_id": user
                 }).toArray(function (err, data2) {
-                    if (data2 && data2[0]) {
+                    if (data2 && data2[0].gallery) {
+                        console.log("in if");
                         callback(data2[0].gallery);
                     } else {
                         callback({
