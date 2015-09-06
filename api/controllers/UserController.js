@@ -170,19 +170,26 @@ module.exports = {
         var message = req.param("message");
         var link = sails.myurl + galleryid;
 
-        function showjson(err, data) {
-            Post.save(data, function (response) {
-                res.json(response);
-            });
-        };
-        User.facebookpost(userid, message, link, showjson);
+        if (!userid || userid == "" || !sails.ObjectID.isValid(userid)) {
+            return res.badRequest();
+        } else {
+            function showjson(err, data) {
+                if (err) {
+                    res.json(err);
+                } else {
+                    Post.save(data, function (response) {
+                        res.json(response);
+                    });
+                }
+            };
+            User.facebookpost(userid, message, link, showjson);
+        }
     },
     twitterPost: function (req, res) {
 
         var galleryid = req.param("galleryid");
         var userid = req.param("userid");
         var message = sails.myurl + galleryid;
-        message = req.param("message");
 
         if (!userid || userid == "" || !sails.ObjectID.isValid(userid)) {
             return res.badRequest();

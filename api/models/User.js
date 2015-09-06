@@ -163,25 +163,25 @@ module.exports = {
                 });
             }
             if (db) {
-                    db.collection("user").find({
-                        "_id": sails.ObjectID(data)
-                    }, {
-                        _id: 1,
-                        fbid: 1,
-                        tweetid: 1,
-                        name: 1,
-                        profilepic: 1
-                    }).toArray(function (err, data) {
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false
-                            });
-                        }
-                        if (data && data[0]) {
-                            callback(data[0]);
-                        }
-                    });
+                db.collection("user").find({
+                    "_id": sails.ObjectID(data)
+                }, {
+                    _id: 1,
+                    fbid: 1,
+                    tweetid: 1,
+                    name: 1,
+                    profilepic: 1
+                }).toArray(function (err, data) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    }
+                    if (data && data[0]) {
+                        callback(data[0]);
+                    }
+                });
             }
         });
     },
@@ -269,7 +269,6 @@ module.exports = {
                             delete data2.tokenSecret;
                             callback(null, found[0]);
                         } else {
-                            console.log(data);
                             db.collection('user').insert(data, function (err, created) {
                                 if (err) {
                                     console.log(err);
@@ -278,7 +277,6 @@ module.exports = {
                                     });
                                 }
                                 if (created) {
-                                    console.log(created);
                                     data.id = created.ops[0]._id;
                                     delete data.accessToken;
                                     delete data.token;
@@ -339,7 +337,7 @@ module.exports = {
                     if (err) {
                         console.log(err);
                         callback(err, null);
-                    } else if (data2.length >0) {
+                    } else if (data2.length > 0) {
                         callback({
                             value: false,
                             comment: "wait"
@@ -348,20 +346,21 @@ module.exports = {
                         db.collection('user').find({
                             "_id": sails.ObjectID(userid)
                         }).toArray(function (err, result) {
-                            console.log(result.length);
                             if (err) {
                                 console.log(err);
                                 callback({
                                     value: false
                                 });
-                            } 
-                            else if (result.length > 0) {
+                            } else if (result.length > 0) {
                                 usertweetid = result[0].tweetid;
                                 access_token = result[0].token;
                                 access_token_secret = result[0].tokenSecret;
                                 callrequest(db);
                             } else {
-                                callback({value:false,comment:"NO SUCH USER"});
+                                callback({
+                                    value: false,
+                                    comment: "NO SUCH USER"
+                                });
                             }
                         });
                     }
@@ -389,7 +388,8 @@ module.exports = {
     },
     facebookpost: function (userid, message, link, callback) {
         var userfbid = "";
-       sails.query(function (err, db) {
+        userid = sails.ObjectID(userid);
+        sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback(err, null);
@@ -403,7 +403,7 @@ module.exports = {
                     if (err) {
                         console.log(err);
                         callback(err, null);
-                    } else if (data2.length >0) {
+                    } else if (data2.length > 0) {
                         callback({
                             value: false,
                             comment: "wait"
@@ -412,20 +412,19 @@ module.exports = {
                         db.collection('user').find({
                             "_id": sails.ObjectID(userid)
                         }).toArray(function (err, result) {
-                            console.log(result.length);
                             if (err) {
                                 console.log(err);
                                 callback({
                                     value: false
                                 });
-                            } 
-                            else if (result.length > 0) {
-                                usertweetid = result[0].tweetid;
-                                access_token = result[0].token;
-                                access_token_secret = result[0].tokenSecret;
+                            } else if (result.length > 0) {
+                                userfbid = result[0].fbid;
                                 callrequest(db);
                             } else {
-                                callback({value:false,comment:"NO SUCH USER"});
+                                callback({
+                                    value: false,
+                                    comment: "NO SUCH USER"
+                                });
                             }
                         });
                     }
@@ -443,11 +442,15 @@ module.exports = {
                 }
             }, function (err, httpResponse, body) {
                 body = JSON.parse(body);
-                body.fbid = userfbid;
-                body.user = userid;
-                body.provider = "facebook";
-                db.close();
-                callback(err, body);
+                if (body.error) {
+                    callback(err, body);
+                } else {
+                    body.fbid = userfbid;
+                    body.user = userid;
+                    body.provider = "facebook";
+                    db.close();
+                    callback(err, body);
+                }
             });
         }
     },

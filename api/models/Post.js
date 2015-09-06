@@ -2,6 +2,7 @@ module.exports = {
     save: function (data, callback) {
         var user = sails.ObjectID(data.user);
         if (!data._id && data._id != '') {
+            
             data._id = sails.ObjectID();
             data.creationtime = sails.moment().format('DD-MM-YYYY');
             sails.query(function (err, db) {
