@@ -250,9 +250,9 @@ module.exports = {
             if (db) {
                 db.collection('user').find({
                     "_id": user
-                }).each(function (err, data2) {
-                    if (data != null) {
-                        callback(data2.gallery);
+                }).toArray(function (err, data2) {
+                    if (data2 && data2[0]) {
+                        callback(data2[0].gallery);
                     }
                 });
             }
