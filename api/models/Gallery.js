@@ -253,8 +253,10 @@ module.exports = {
                 }).toArray(function (err, data2) {
                     if (data2 && data2[0]) {
                         callback(data2[0].gallery);
-                    }else{
-                        callback({value:"false"});
+                    } else {
+                        callback({
+                            value: "false"
+                        });
                     }
                 });
             }
