@@ -3,272 +3,38 @@ var request = require('request');
 var Twit = require('twit')
 
 module.exports = {
-    save: function (data, callback) {
-        if (!data._id) {
-            data._id = sails.ObjectID();
-            if (!data.creationtime) {
-                data.creationtime = data._id.getTimestamp();
-            }
-            data.modificationtime = data.creationtime;
-            sails.query(function (err, db) {
-                db.collection('user').insert(data, function (err, created) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false
-                        });
-                    }
-                    if (created) {
-                        callback({
-                            value: true
-                        });
-                    }
-                });
-            });
-        } else {
-            sails.query(function (err, db) {
-                var user = data._id;
-                delete data._id;
-                var dummy = sails.ObjectID();
-                data.modificationtime = dummy.getTimestamp();
-                db.collection('user').update({
-                    "_id": sails.ObjectID(user)
-                }, {
-                    $set: data
-                }, function (err, updated) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false
-                        });
-                    }
-                    if (updated) {
-                        callback({
-                            value: true
-                        });
-                    }
-                });
-            });
-        }
-    },
-    find: function (data, callback) {
-        var returns = [];
-        sails.query(function (err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false
-                });
-            }
-            if (db) {
-                db.collection('user').find({}).toArray(function (err, found) {
-                    if (err) {
-                        callback({
-                            value: false
-                        });
-                    }
-                    if (found != null) {
-                        callback(found);
-                    }
-                });
-            }
-        });
-    },
-    //Findlimited
-    findlimited: function (data, callback) {
-        var newcallback = 0;
-        var newreturns = {};
-        newreturns.data = [];
-        var check = new RegExp(data.search, "i");
-        var pagesize = parseInt(data.pagesize);
-        var pagenumber = parseInt(data.pagenumber);
-        sails.query(function (err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false
-                });
-            }
-            if (db) {
-                db.collection("user").count({
-                    name: {
-                        '$regex': check
-                    }
-                }, function (err, number) {
-                    newreturns.total = number;
-                    newreturns.totalpages = Math.ceil(number / data.pagesize);
-                    newcallback++;
-                    if (newcallback == 2) {
-                        callback(newreturns);
-                    }
-
-                });
-                db.collection("user").find({
-                    name: {
-                        '$regex': check
-                    }
-                }).skip(pagesize * (pagenumber - 1)).limit(pagesize).each(function (err, found) {
-                    if (err) {
-                        callback({
-                            value: false
-                        });
-                        console.log(err);
-                    }
-                    if (found != null) {
-                        newreturns.data.push(found);
-                    } else {
-                        if (found == null) {
-                            newcallback++;
-                            if (newcallback == 2) {
-                                callback(newreturns);
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    },
-    //Findlimited
-    findone: function (data, callback) {
-        sails.query(function (err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false
-                });
-            }
-            if (db) {
-                if (sails.ObjectID.isValid(data._id)) {
-                    db.collection("user").find({
-                        "_id": sails.ObjectID(data._id)
-                    }).each(function (err, data) {
+        save: function (data, callback) {
+            if (!data._id) {
+                data._id = sails.ObjectID();
+                if (!data.creationtime) {
+                    data.creationtime = data._id.getTimestamp();
+                }
+                data.modificationtime = data.creationtime;
+                sails.query(function (err, db) {
+                    db.collection('user').insert(data, function (err, created) {
                         if (err) {
                             console.log(err);
                             callback({
                                 value: false
                             });
                         }
-                        if (data != null) {
-                            callback(data);
-                        }
-                    });
-                }
-            }
-        });
-    },
-    delete: function (data, callback) {
-        sails.query(function (err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false
-                });
-            }
-            db.collection('user').remove({
-                _id: sails.ObjectID(data._id)
-            }, function (err, deleted) {
-                if (deleted) {
-                    callback({
-                        value: true
-                    });
-                }
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                }
-            });
-        });
-    },
-    findorcreate: function (data, callback) {
-        var orfunc = {};
-        var insertdata = {};
-        var updatedata = {
-            _id: data._id
-        };
-        if (data.provider == "Twitter") {
-            updatedata.tweetid = data.id;
-            updatedata.token = data.token;
-            updatedata.tokenSecret = data.tokenSecret;
-
-            insertdata.tweetid = data.id;
-            insertdata.provider = data.provider;
-            insertdata.username = data.username;
-            insertdata.name = data.displayName;
-            insertdata.profilepic = data.photos[0].value;
-            insertdata.token = data.token;
-            insertdata.tokenSecret = data.tokenSecret;
-            orfunc.tweetid = data.id;
-            dbcall(insertdata, updatedata);
-        } else {
-            updatedata.fbid = data.id;
-            updatedata.accessToken = data.accessToken;
-            updatedata.refreshToken = data.refreshToken;
-
-            insertdata.fbid = data.id;
-            insertdata.provider = data.provider;
-            insertdata.username = data.username;
-            insertdata.name = data.displayName;
-            insertdata.profilepic = data.photos[0].value;
-            insertdata.email = data.emails[0].value;
-            insertdata.accessToken = data.accessToken;
-            insertdata.refreshToken = data.refreshToken;
-            orfunc.fbid = data.id;
-            dbcall(insertdata, updatedata);
-        }
-
-        function dbcall(data, updatedata) {
-            sails.query(function (err, db) {
-                if (err) {
-                    callback({
-                        value: false
-                    });
-                }
-                if (!updatedata._id) {
-                    data._id = sails.ObjectID();
-                    db.collection('user').find(orfunc).toArray(function (err, found) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        if (found.length != 0 && found[0]) {
-                            var data = found[0];
-                            delete data.accessToken;
-                            delete data.token;
-                            delete data.fbid;
-                            delete data.tweetid;
-                            delete data.tokenSecret;
-                            callback(null, found[0]);
-                        } else {
-                            db.collection('user').insert(data, function (err, created) {
-                                console.log(data);
-                                if (err) {
-                                    console.log(err);
-                                    callback({
-                                        value: false
-                                    });
-                                }
-                                if (created) {
-                                    data._id = created.ops[0]._id;
-                                    delete data.accessToken;
-                                    delete data.token;
-                                    delete data.fbid;
-                                    delete data.tweetid;
-                                    delete data.tokenSecret;
-                                    callback(null, data);
-                                }
+                        if (created) {
+                            callback({
+                                value: true
                             });
                         }
                     });
-                }
-                else {
-                    var user = updatedata._id;
-                    delete updatedata._id;
-                    
+                });
+            } else {
+                sails.query(function (err, db) {
+                    var user = data._id;
+                    delete data._id;
+                    var dummy = sails.ObjectID();
+                    data.modificationtime = dummy.getTimestamp();
                     db.collection('user').update({
                         "_id": sails.ObjectID(user)
                     }, {
-                        $set: updatedata
+                        $set: data
                     }, function (err, updated) {
                         if (err) {
                             console.log(err);
@@ -277,44 +43,327 @@ module.exports = {
                             });
                         }
                         if (updated) {
-                            updated._id = user;
-                            delete updated.accessToken;
-                            delete updated.token;
-                            delete updated.fbid;
-                            delete updated.tweetid;
-                            delete updated.tokenSecret;
-                            callback(null, updated);
+                            callback({
+                                value: true
+                            });
+                        }
+                    });
+                });
+            }
+        },
+        find: function (data, callback) {
+            var returns = [];
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                if (db) {
+                    db.collection('user').find({}).toArray(function (err, found) {
+                        if (err) {
+                            callback({
+                                value: false
+                            });
+                        }
+                        if (found != null) {
+                            callback(found);
                         }
                     });
                 }
-
             });
-        }
-    },
-    twitterpost: function (userid, message, callback) {
-        var usertweetid = "";
-        var access_token = "";
-        var access_token_secret = "";
-        sails.query(function (err, db) {
-            if (err) {
-                console.log(err);
-            }
-            if (db) {
-                db.collection('user').find({
-                    "_id": sails.ObjectID(userid)
-                }).toArray(function (err, result) {
-                    if (result[0]) {
-                        usertweetid = result[0].tweetid;
-                        access_token = result[0].token;
-                        access_token_secret = result[0].tokenSecret;
-                        callrequest(db);
+        },
+        //Findlimited
+        findlimited: function (data, callback) {
+            var newcallback = 0;
+            var newreturns = {};
+            newreturns.data = [];
+            var check = new RegExp(data.search, "i");
+            var pagesize = parseInt(data.pagesize);
+            var pagenumber = parseInt(data.pagenumber);
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                if (db) {
+                    db.collection("user").count({
+                        name: {
+                            '$regex': check
+                        }
+                    }, function (err, number) {
+                        newreturns.total = number;
+                        newreturns.totalpages = Math.ceil(number / data.pagesize);
+                        newcallback++;
+                        if (newcallback == 2) {
+                            callback(newreturns);
+                        }
+
+                    });
+                    db.collection("user").find({
+                        name: {
+                            '$regex': check
+                        }
+                    }).skip(pagesize * (pagenumber - 1)).limit(pagesize).each(function (err, found) {
+                        if (err) {
+                            callback({
+                                value: false
+                            });
+                            console.log(err);
+                        }
+                        if (found != null) {
+                            newreturns.data.push(found);
+                        } else {
+                            if (found == null) {
+                                newcallback++;
+                                if (newcallback == 2) {
+                                    callback(newreturns);
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        },
+        //Findlimited
+        findone: function (data, callback) {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                if (db) {
+                    if (sails.ObjectID.isValid(data._id)) {
+                        db.collection("user").find({
+                            "_id": sails.ObjectID(data._id)
+                        }).each(function (err, data) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            }
+                            if (data != null) {
+                                callback(data);
+                            }
+                        });
+                    }
+                }
+            });
+        },
+        getOneUser: function (data, callback) {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                if (db) {
+                    if (sails.ObjectID.isValid(data._id)) {
+                        db.collection("user").find({
+                            "_id": sails.ObjectID(data._id)
+                        }, {
+                            _id: 1,
+                            fbid: 1,
+                            tweetid: 1,
+                            name: 1,
+                            profilepic: 1
+                        }).toArray(function (err, data) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            }
+                            if (data && data[0]) {
+                                callback(data[0]);
+                            }
+                        });
+                    }
+                }
+            });
+        },
+        delete: function (data, callback) {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                db.collection('user').remove({
+                    _id: sails.ObjectID(data._id)
+                }, function (err, deleted) {
+                    if (deleted) {
+                        callback({
+                            value: true
+                        });
                     }
                     if (err) {
                         console.log(err);
+                        callback({
+                            value: false
+                        });
                     }
                 });
+            });
+        },
+        findorcreate: function (data, callback) {
+            var orfunc = {};
+            var insertdata = {};
+            var updatedata = {
+                _id: data._id
+            };
+            if (data.provider == "Twitter") {
+                updatedata.tweetid = data.id;
+                updatedata.token = data.token;
+                updatedata.tokenSecret = data.tokenSecret;
+
+                insertdata.tweetid = data.id;
+                insertdata.provider = data.provider;
+                insertdata.username = data.username;
+                insertdata.name = data.displayName;
+                insertdata.profilepic = data.photos[0].value;
+                insertdata.token = data.token;
+                insertdata.tokenSecret = data.tokenSecret;
+                orfunc.tweetid = data.id;
+                dbcall(insertdata, updatedata);
+            } else {
+                updatedata.fbid = data.id;
+                updatedata.accessToken = data.accessToken;
+                updatedata.refreshToken = data.refreshToken;
+
+                insertdata.fbid = data.id;
+                insertdata.provider = data.provider;
+                insertdata.username = data.username;
+                insertdata.name = data.displayName;
+                insertdata.profilepic = data.photos[0].value;
+                insertdata.email = data.emails[0].value;
+                insertdata.accessToken = data.accessToken;
+                insertdata.refreshToken = data.refreshToken;
+                orfunc.fbid = data.id;
+                dbcall(insertdata, updatedata);
             }
-        });
+
+            function dbcall(data, updatedata) {
+                sails.query(function (err, db) {
+                    if (err) {
+                        callback({
+                            value: false
+                        });
+                    }
+                    if (!updatedata._id) {
+                        data._id = sails.ObjectID();
+                        db.collection('user').find(orfunc).toArray(function (err, found) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            if (found.length != 0 && found[0]) {
+                                var data = found[0];
+                                delete data.accessToken;
+                                delete data.token;
+                                delete data.fbid;
+                                delete data.tweetid;
+                                delete data.tokenSecret;
+                                callback(null, found[0]);
+                            } else {
+                                db.collection('user').insert(data, function (err, created) {
+                                    console.log(data);
+                                    if (err) {
+                                        console.log(err);
+                                        callback({
+                                            value: false
+                                        });
+                                    }
+                                    if (created) {
+                                        data._id = created.ops[0]._id;
+                                        delete data.accessToken;
+                                        delete data.token;
+                                        delete data.fbid;
+                                        delete data.tweetid;
+                                        delete data.tokenSecret;
+                                        callback(null, data);
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        var user = updatedata._id;
+                        delete updatedata._id;
+
+                        db.collection('user').update({
+                            "_id": sails.ObjectID(user)
+                        }, {
+                            $set: updatedata
+                        }, function (err, updated) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            }
+                            if (updated) {
+                                updated._id = user;
+                                delete updated.accessToken;
+                                delete updated.token;
+                                delete updated.fbid;
+                                delete updated.tweetid;
+                                delete updated.tokenSecret;
+                                callback(null, updated);
+                            }
+                        });
+                    }
+
+                });
+            }
+        },
+        twitterpost: function (userid, message, callback) {
+            var usertweetid = "";
+            var access_token = "";
+            var access_token_secret = "";
+            sails.query(function (err, db) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (db) {
+                        db.collection("user").aggregate([{
+                                $unwind: "$post"
+                    }, {
+                                $match: {
+                                    "post.provider": {
+                                        $exists: true
+                                    },
+                                    "post.creationtime": sails.moment().format('DD-MM-YYYY')
+                                }
+                    }
+                        }]).toArray(function (err, data2) {
+                            if(data2 && data2){
+                                callback(err,data2);
+                            }
+                            else{
+                        db.collection('user').find({
+                            "_id": sails.ObjectID(userid)
+                        }).toArray(function (err, result) {
+                            if (result[0]) {
+                                usertweetid = result[0].tweetid;
+                                access_token = result[0].token;
+                                access_token_secret = result[0].tokenSecret;
+                                callrequest(db);
+                            }
+                            if (err) {
+                                console.log(err);
+                            }
+                        });
+                            }
+                    });
+                }
+            });
 
         function callrequest(db) {
             var Twitter = new Twit({

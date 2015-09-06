@@ -50,6 +50,12 @@ module.exports = {
         }
         User.findone(req.body, print);
     },
+    getOneUser: function (req, res) {
+        var print = function (data) {
+            res.json(data);
+        }
+        User.getOneUser(req.body, print);
+    },
     delete: function (req, res) {
         var print = function (data) {
             res.json(data);
@@ -153,7 +159,7 @@ module.exports = {
         });
     },
     facebookPost: function (req, res) {
-
+        
         var userid = req.param("userid");
         var galleryid = req.param("galleryid");
         var message = req.param("message");
@@ -173,6 +179,10 @@ module.exports = {
         var message = sails.myurl + galleryid;
 
         function showjson(err, data) {
+            if(err)
+            {
+                res.json({value:false});
+            }
             Post.save(data, function (response) {
                 res.json(response);
             });
