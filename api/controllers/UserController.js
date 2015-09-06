@@ -50,6 +50,7 @@ module.exports = {
     /////////////////////////////
     //LOGIN FUNCTIONS
     logint: function (req, res) {
+        var user = req.param("user");
 
         passport.use(new TwitterStrategy({
                 consumerKey: "6gOb3JlMDgqYw27fLN29l5Vmp",
@@ -61,6 +62,9 @@ module.exports = {
                 profile.token = token;
                 profile.tokenSecret = tokenSecret;
                 profile.provider = "Twitter";
+                if (user && sails.ObjectID.isValid(user)) {
+                    profile._id = user;
+                }
                 User.findorcreate(profile, done);
             }
         ));
@@ -70,6 +74,7 @@ module.exports = {
         passport.authenticate('twitter')(req, res);
     },
     loginf: function (req, res) {
+        var user = req.param("user");
 
         passport.use(new FacebookStrategy({
                 clientID: "1616856265259993",
@@ -80,6 +85,9 @@ module.exports = {
                 profile.accessToken = accessToken;
                 profile.refreshToken = refreshToken;
                 profile.provider = "Facebook";
+                if (user && sails.ObjectID.isValid(user)) {
+                    profile._id = user;
+                }
                 User.findorcreate(profile, done);
             }
         ));
