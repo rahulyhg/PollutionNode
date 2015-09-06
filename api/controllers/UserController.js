@@ -167,6 +167,7 @@ module.exports = {
         }
         User.twitterPostDetail(twitterpostid, userid, accesstToken, accessTokenSecret, showjson);
     },
+    
     facebookPostDetail: function (req, res) {
         var userid = req.param("userid");
         var fbpostid = req.param("fbpostid");
@@ -178,6 +179,7 @@ module.exports = {
         }
         User.facebookPostDetail(fbpostid, userid, showjson);
     },
+    
     card: function (req, res) {
         var galleryid = req.param("galleryid");
         if (!galleryid || galleryid == "" || !sails.ObjectID.isValid(galleryid)) {
@@ -196,6 +198,7 @@ module.exports = {
         }
 
     },
+    
     tracker: function (req, res) {
 
         function trackstartsnow(trackarr) {
@@ -224,6 +227,7 @@ module.exports = {
             });
         }
     },
+    
     getdailypost: function (req, res) {
         var date = req.param('date');
         var count = {};
@@ -309,6 +313,7 @@ module.exports = {
             }
         });
     },
+    
     date3leaderboard: function (req, res) {
 
         var count = {};

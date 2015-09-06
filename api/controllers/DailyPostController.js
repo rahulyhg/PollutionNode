@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-	  save: function (req, res) {
+    save: function (req, res) {
         var print = function (data) {
             res.json(data);
         }
@@ -28,7 +28,16 @@ module.exports = {
         var print = function (data) {
             res.json(data);
         }
-        DailyPost.findone(req.body, print);
+        if (req.body && sails.ObjectID.isValid(req.body.user)) {
+            DailyPost.findone(req.body, print);
+        } else {
+            req.json({
+                "retweet": 0,
+                "favorite": 0,
+                "like": 0,
+                "total": 0
+            });
+        }
     },
     delete: function (req, res) {
         var print = function (data) {
@@ -37,4 +46,3 @@ module.exports = {
         DailyPost.delete(req.body, print);
     }
 };
-

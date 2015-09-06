@@ -163,20 +163,82 @@ module.exports = {
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
-                callback({
-                    value: false
+                res.json({
+                    value: "false"
                 });
             }
             if (db) {
-                db.collection('dailypost').find({
-                    "leaderboard.user": sails.ObjectID(data.user)
-                }).each(function (err, data2) {
-                    if (data2 != null) {
-                        callback(data2);
+                db.collection("user").aggregate([
+                    {
+                        $match: {
+                            "_id": sails.ObjectID(data.user)
+                        }
+                    }, {
+                        $unwind: "$post"
+                    }, {
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
+                            }
+                        }
+                        },
+                    {
+                        $unwind: "$name"
+                        },
+                    {
+                        $unwind: "$profilepic"
+                        }]).toArray(function (err, data2) {
+
+                    console.log(data2.length);
+                    if (err) {
+                        callback({
+                            "retweet": 0,
+                            "favorite": 0,
+                            "like": 0,
+                            "total": 0
+                        });
                     }
+                    if (data2.length != 0) {
+                        callback(data2[0]);
+                    } else {
+                        callback({
+                            "retweet": 0,
+                            "favorite": 0,
+                            "like": 0,
+                            "total": 0
+                        });
+                    }
+
                 });
             }
         });
+
     },
     delete: function (data, callback) {
         sails.query(function (err, db) {
