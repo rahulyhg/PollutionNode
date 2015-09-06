@@ -221,323 +221,364 @@ module.exports = {
         }
     },
     getdailypost: function (req, res) {
-            var date = req.param('date');
-            var count = {};
-            var postdata = {};
-            postdata.count = [];
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
+        var date = req.param('date');
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                        $unwind: "$post"
                     }, {
-                            $match: {
-                                "post.provider": {
-                                    $exists: true
-                                },
-                                $or: [{"post.creationtime": date}]
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": date
+                            }]
 
-                            }
+                        }
                     }, {
-                            $group: {
-                                _id: "$_id",
-                                retweet: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                name: {
-                                    $addToSet: "$name"
-                                },
-                                profilepic: {
-                                    $addToSet: "$profilepic"
-                                }
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
                             }
+                        }
                     },
-                        {
-                            $project: {
-                                _id: 1,
-                                retweet: 1,
-                                favorite: 1,
-                                like: 1,
-                                name: 1,
-                                profilepic: 1,
-                                total: {
-                                    $add: ["$like", "$retweet", "$favorite"]
-                                }
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
+                        }
                         },
-                        {
-                            $unwind: "$name"
+                    {
+                        $unwind: "$name"
                         },
-                        {
-                            $unwind: "$profilepic"
+                    {
+                        $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-                        if (data2 != null) {
-                            console.log(data2);
-                            var dailypost = {};
-                            dailypost.leaderboard = data2;
-                            dailypost.date = date;
-                            DailyPost.save(dailypost, function (response) {
-                                res.json(dailypost);
-                            });
-                        }
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        },
+                    if (err) {
+                        res.json({
+                            value: "false"
+                        });
+                    }
+                    if (data2 != null) {
+                        var dailypost = {};
+                        dailypost.leaderboard = data2;
+                        dailypost.date = date;
+                        dailypost.type = "DailyPost";
+                        DailyPost.save(dailypost, function (response) {
+                            res.json(dailypost);
+                        });
+                    }
+                });
+            }
+        });
+    },
     date3leaderboard: function (req, res) {
-            var date = req.param('date');
-            var count = {};
-            var postdata = {};
-            postdata.count = [];
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
 
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                        $unwind: "$post"
                     }, {
-                            $match: {
-                                "post.provider": {
-                                    $exists: true
-                                },
-                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'}]
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": "17-09-2015"
+                            }, {
+                                "post.creationtime": '18-09-2015'
+                            }, {
+                                "post.creationtime": '19-09-2015'
+                            }]
 
-                            }
+                        }
                     }, {
-                            $group: {
-                                _id: "$_id",
-                                retweet: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                name: {
-                                    $addToSet: "$name"
-                                },
-                                profilepic: {
-                                    $addToSet: "$profilepic"
-                                }
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
                             }
+                        }
                     },
-                        {
-                            $project: {
-                                _id: 1,
-                                retweet: 1,
-                                favorite: 1,
-                                like: 1,
-                                name: 1,
-                                profilepic: 1,
-                                total: {
-                                    $add: ["$like", "$retweet", "$favorite"]
-                                }
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
+                        }
                         },
-                        {
-                            $unwind: "$name"
+                    {
+                        $unwind: "$name"
                         },
-                        {
-                            $unwind: "$profilepic"
+                    {
+                        $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-                        if (data2 != null) {
-                            console.log(data2);
-                            var dailypost = {};
-                            dailypost.leaderboard = data2;
-                            dailypost.date = date;
-                            DailyPost.save(dailypost, function (response) {
-                                res.json(dailypost);
-                            });
-                        }
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        },
-    
+                    if (err) {
+                        res.json({
+                            value: "false"
+                        });
+                    }
+                    if (data2 != null) {
+                        var dailypost = {};
+                        dailypost.leaderboard = data2;
+                        dailypost.type = "ThreeDays";
+                        DailyPost.save(dailypost, function (response) {
+                            res.json(dailypost);
+                        });
+                    }
+                });
+            }
+        });
+    },
+
     date5leaderboard: function (req, res) {
-            var date = req.param('date');
-            var count = {};
-            var postdata = {};
-            postdata.count = [];
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
 
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                        $unwind: "$post"
                     }, {
-                            $match: {
-                                "post.provider": {
-                                    $exists: true
-                                },
-                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'},{"post.creationtime": "20-09-2015"},{"post.creationtime": '21-09-2015'}]
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": "17-09-2015"
+                            }, {
+                                "post.creationtime": '18-09-2015'
+                            }, {
+                                "post.creationtime": '19-09-2015'
+                            }, {
+                                "post.creationtime": "20-09-2015"
+                            }, {
+                                "post.creationtime": '21-09-2015'
+                            }]
 
-                            }
+                        }
                     }, {
-                            $group: {
-                                _id: "$_id",
-                                retweet: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                name: {
-                                    $addToSet: "$name"
-                                },
-                                profilepic: {
-                                    $addToSet: "$profilepic"
-                                }
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
                             }
+                        }
                     },
-                        {
-                            $project: {
-                                _id: 1,
-                                retweet: 1,
-                                favorite: 1,
-                                like: 1,
-                                name: 1,
-                                profilepic: 1,
-                                total: {
-                                    $add: ["$like", "$retweet", "$favorite"]
-                                }
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
+                        }
                         },
-                        {
-                            $unwind: "$name"
+                    {
+                        $unwind: "$name"
                         },
-                        {
-                            $unwind: "$profilepic"
+                    {
+                        $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-                        if (data2 != null) {
-                            console.log(data2);
-                            var dailypost = {};
-                            dailypost.leaderboard = data2;
-                            dailypost.date = date;
-                            DailyPost.save(dailypost, function (response) {
-                                res.json(dailypost);
-                            });
-                        }
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        },
-    
+                    if (err) {
+                        res.json({
+                            value: "false"
+                        });
+                    }
+                    if (data2 != null) {
+                        console.log(data2);
+                        var dailypost = {};
+                        dailypost.leaderboard = data2;
+                        dailypost.type = "FiveDays";
+                        DailyPost.save(dailypost, function (response) {
+                            res.json(dailypost);
+                        });
+                    }
+                });
+            }
+        });
+    },
+
     date10leaderboard: function (req, res) {
-            var date = req.param('date');
-            var count = {};
-            var postdata = {};
-            postdata.count = [];
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
 
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                        $unwind: "$post"
                     }, {
-                            $match: {
-                                "post.provider": {
-                                    $exists: true
-                                },
-                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'},{"post.creationtime": "20-09-2015"},{"post.creationtime": '21-09-2015'},{"post.creationtime": '22-09-2015'},{"post.creationtime": "23-09-2015"},{"post.creationtime": '24-09-2015'},{"post.creationtime": '25-09-2015'},{"post.creationtime": "26-09-2015"}]
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": "17-09-2015"
+                            }, {
+                                "post.creationtime": '18-09-2015'
+                            }, {
+                                "post.creationtime": '19-09-2015'
+                            }, {
+                                "post.creationtime": "20-09-2015"
+                            }, {
+                                "post.creationtime": '21-09-2015'
+                            }, {
+                                "post.creationtime": '22-09-2015'
+                            }, {
+                                "post.creationtime": "23-09-2015"
+                            }, {
+                                "post.creationtime": '24-09-2015'
+                            }, {
+                                "post.creationtime": '25-09-2015'
+                            }, {
+                                "post.creationtime": "26-09-2015"
+                            }]
 
-                            }
+                        }
                     }, {
-                            $group: {
-                                _id: "$_id",
-                                retweet: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                name: {
-                                    $addToSet: "$name"
-                                },
-                                profilepic: {
-                                    $addToSet: "$profilepic"
-                                }
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
                             }
+                        }
                     },
-                        {
-                            $project: {
-                                _id: 1,
-                                retweet: 1,
-                                favorite: 1,
-                                like: 1,
-                                name: 1,
-                                profilepic: 1,
-                                total: {
-                                    $add: ["$like", "$retweet", "$favorite"]
-                                }
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
+                        }
                         },
-                        {
-                            $unwind: "$name"
+                    {
+                        $unwind: "$name"
                         },
-                        {
-                            $unwind: "$profilepic"
+                    {
+                        $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-                        if (data2 != null) {
-                            console.log(data2);
-                            var dailypost = {};
-                            dailypost.leaderboard = data2;
-                            dailypost.date = date;
-                            DailyPost.save(dailypost, function (response) {
-                                res.json(dailypost);
-                            });
-                        }
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        },
-    
-        /////////////////////////////////////
+                    if (err) {
+                        res.json({
+                            value: "false"
+                        });
+                    }
+                    if (data2 != null) {
+                        console.log(data2);
+                        var dailypost = {};
+                        dailypost.leaderboard = data2;
+                        dailypost.type = "TenDays";
+                        DailyPost.save(dailypost, function (response) {
+                            res.json(dailypost);
+                        });
+                    }
+                });
+            }
+        });
+    },
+
+    /////////////////////////////////////
 };

@@ -1,45 +1,77 @@
 module.exports = {
     save: function (data, callback) {
-        if (!data._id) {
-            data._id = sails.ObjectID();
-            sails.query(function (err, db) {
-                db.collection('dailypost').insert(data, function (err, created) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false
-                        });
-                    }
-                    if (created) {
-                        callback({
-                            value: true
-                        });
-                    }
-                });
-            });
+        var updatecase = {};
+        if (data.date) {
+            updatecase.date = data.date;
         } else {
-            sails.query(function (err, db) {
-                var dailypost = data._id;
-                delete data._id;
-                db.collection('dailypost').update({
-                    "_id": sails.ObjectID(dailypost)
-                }, {
-                    $set: data
-                }, function (err, updated) {
+            updatecase.type = data.type;
+        }
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+            }
+            if (db) {
+                db.collection('dailypost').find(updatecase).toArray(function (err, data2) {
                     if (err) {
                         console.log(err);
-                        callback({
-                            value: false
-                        });
                     }
-                    if (updated) {
-                        callback({
-                            value: true
+                    if (data2 && data2[0]) {
+                        db.collection('dailypost').update(updatecase, {
+                            $set: data
+                        }, function (err, updated) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            }
+                            if (updated) {
+                                callback({
+                                    value: true
+                                });
+                            }
                         });
+                    } else {
+                        if (!data._id) {
+                            data._id = sails.ObjectID();
+                            db.collection('dailypost').insert(data, function (err, created) {
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false
+                                    });
+                                }
+                                if (created) {
+                                    callback({
+                                        value: true
+                                    });
+                                }
+                            });
+                        } else {
+                            var dailypost = data._id;
+                            delete data._id;
+                            db.collection('dailypost').update({
+                                "_id": sails.ObjectID(dailypost)
+                            }, {
+                                $set: data
+                            }, function (err, updated) {
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false
+                                    });
+                                }
+                                if (updated) {
+                                    callback({
+                                        value: true
+                                    });
+                                }
+                            });
+                        }
                     }
                 });
-            });
-        }
+            }
+        });
     },
     find: function (data, callback) {
         sails.query(function (err, db) {
