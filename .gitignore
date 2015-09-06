@@ -47,3 +47,5 @@ assets/userimage/
 start.bat
 .tmp
 start.sh
+
+*.log
