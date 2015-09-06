@@ -77,10 +77,15 @@ module.exports = {
     },
     getuserimage: function (req, res) {
         var filename = req.param('file');
-        var path = './assets/userimage/' + filename;
-        var image = sails.fs.readFileSync(path);
-        var mimetype = sails.mime.lookup(path);
-        res.set('Content-Type', mimetype);
-        res.send(image);
+        var isfile = sails.fs.existsSync('./assets/userimage/' + filename);
+        if (isfile) {
+            var path = './assets/userimage/' + filename;
+            var image = sails.fs.readFileSync(path);
+            var mimetype = sails.mime.lookup(path);
+            res.set('Content-Type', mimetype);
+            res.send(image);
+        } else {
+            return res.badRequest();
+        }
     }
 };
