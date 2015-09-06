@@ -166,7 +166,7 @@ module.exports = {
             }
             if (db) {
                 db.collection('dailypost').find({
-                    "user": sails.ObjectID(data.user)
+                    "count.user": sails.ObjectID(data.user)
                 }).each(function (err, data2) {
                     if (data2 != null) {
                         callback(data2);
