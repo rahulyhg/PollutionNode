@@ -24,7 +24,7 @@ module.exports.bootstrap = function (cb) {
         sails.mime = require('mime'),
         sails.moment = require('moment'),
         sails.fs = require('fs'),
-        sails.lwip = require('lwip'),
+        sails.lwip = require('mongodb'),
         sails.myurl = "http://timesbappa.com/",
         // Connection URL
         sails.url = 'mongodb://localhost:27017/pollution';
