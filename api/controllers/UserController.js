@@ -2,6 +2,21 @@ var passport = require('passport'),
     TwitterStrategy = require('passport-twitter').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy;
 
+
+passport.use(new FacebookStrategy({
+        clientID: "1616856265259993",
+        clientSecret: "6e8052bdbe29f02ead4f618549e98cac",
+        callbackURL: sails.myurl + "user/callbackf"
+    },
+    function (accessToken, refreshToken, profile, done) {
+        profile.accessToken = accessToken;
+        profile.refreshToken = refreshToken;
+        profile.provider = "Facebook";
+        console.log(profile);
+        User.findorcreate(profile, done);
+    }
+));
+
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
@@ -88,6 +103,7 @@ module.exports = {
                 if (user && sails.ObjectID.isValid(user)) {
                     profile._id = user;
                 }
+                console.log(profile);
                 User.findorcreate(profile, done);
             }
         ));

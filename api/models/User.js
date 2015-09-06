@@ -183,13 +183,15 @@ module.exports = {
     },
     findorcreate: function (data, callback) {
         var orfunc = {};
-        var insertdata={};
-        var updatedata={};
+        var insertdata = {};
+        var updatedata = {
+            _id: data._id
+        };
         if (data.provider == "Twitter") {
-            updatedata.tweetid=data.id;
-            updatedata.token=data.token;
-            updatedata.tokenSecret=data.tokenSecret;
-            
+            updatedata.tweetid = data.id;
+            updatedata.token = data.token;
+            updatedata.tokenSecret = data.tokenSecret;
+
             insertdata.tweetid = data.id;
             insertdata.provider = data.provider;
             insertdata.username = data.username;
@@ -198,12 +200,12 @@ module.exports = {
             insertdata.token = data.token;
             insertdata.tokenSecret = data.tokenSecret;
             orfunc.tweetid = data.id;
-            dbcall(insertdata,updatedata);
+            dbcall(insertdata, updatedata);
         } else {
-            updatedata.fbid=data.id;
-            updatedata.accessToken=data.accessToken;
-            updatedata.refreshToken=data.refreshToken;
-            
+            updatedata.fbid = data.id;
+            updatedata.accessToken = data.accessToken;
+            updatedata.refreshToken = data.refreshToken;
+
             insertdata.fbid = data.id;
             insertdata.provider = data.provider;
             insertdata.username = data.username;
@@ -213,62 +215,79 @@ module.exports = {
             insertdata.accessToken = data.accessToken;
             insertdata.refreshToken = data.refreshToken;
             orfunc.fbid = data.id;
-            dbcall(insertdata,updatedata);
+            dbcall(insertdata, updatedata);
         }
 
-        function dbcall(data,updatedata) {
+        function dbcall(data, updatedata) {
             sails.query(function (err, db) {
                 if (err) {
-                    return
+                    callback({
+                        value: false
+                    });
                 }
-                if (db) {
-                    if (!data._id) {
-                        data._id = sails.ObjectID();
-                        db.collection('user').find(orfunc).toArray(function (err, found) {
-                            if (err) {
-                                console.log(err);
-                            }
-                            if (found.length != 0 && found[0]) {
-                                console.log(found[0]);
-                                callback(null,found[0]);
-                            } else {
-                                db.collection('user').insert(data, function (err, created) {
-                                    console.log(data);
-                                    if (err) {
-                                        console.log(err);
-                                        callback({
-                                            value: false
-                                        });
-                                    }
-                                    if (created) {
-                                        callback({
-                                            value: true
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    } else {
-                        var user = data._id;
-                        delete data._id;
-                        db.collection('user').update({
-                            "_id": sails.ObjectID(user)
-                        }, {
-                            $set: updatedata
-                        }, function (err, updated) {
-                            if (err) {
-                                console.log(err);
-                                callback({
-                                    value: false
-                                });
-                            }
-                            if (updated) {
-                                updated._id=user;
-                                callback(null,updated);
-                            }
-                        });
-                    }
+                if (!updatedata._id) {
+                    data._id = sails.ObjectID();
+                    db.collection('user').find(orfunc).toArray(function (err, found) {
+                        if (err) {
+                            console.log(err);
+                        }
+                        if (found.length != 0 && found[0]) {
+                            var data = found[0];
+                            delete data.accessToken;
+                            delete data.token;
+                            delete data.fbid;
+                            delete data.tweetid;
+                            delete data.tokenSecret;
+                            callback(null, found[0]);
+                        } else {
+                            db.collection('user').insert(data, function (err, created) {
+                                console.log(data);
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false
+                                    });
+                                }
+                                if (created) {
+                                    data._id = created.ops[0]._id;
+                                    delete data.accessToken;
+                                    delete data.token;
+                                    delete data.fbid;
+                                    delete data.tweetid;
+                                    delete data.tokenSecret;
+                                    callback(null, data);
+                                }
+                            });
+                        }
+                    });
                 }
+                else {
+                    var user = updatedata._id;
+                    delete updatedata._id;
+                    
+                    db.collection('user').update({
+                        "_id": sails.ObjectID(user)
+                    }, {
+                        $set: updatedata
+                    }, function (err, updated) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false
+                            });
+                        }
+                        if (updated) {
+                            updated._id = user;
+                            delete updated.accessToken;
+                            delete updated.token;
+                            delete updated.fbid;
+                            delete updated.tweetid;
+                            delete updated.tokenSecret;
+                            callback(null, updated);
+                        }
+                    });
+                }
+
             });
         }
     },
