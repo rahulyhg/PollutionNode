@@ -75,7 +75,7 @@ module.exports = {
             });
         });
     },
-    getfsimage: function (req, res) {
+    getuserimage: function (req, res) {
         var filename = req.param('file');
         var path = './assets/userimage/' + filename;
         var image = sails.fs.readFileSync(path);
