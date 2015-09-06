@@ -51,10 +51,15 @@ module.exports = {
         User.findone(req.body, print);
     },
     getOneUser: function (req, res) {
-        var print = function (data) {
-            res.json(data);
+        var user = req.param("user");
+        if (user && sails.ObjectID.isValid(user)) {
+            function callback(data) {
+                res.json(data);
+            };
+            User.findone(user, callback);
+        } else {
+            return res.badRequest();
         }
-        User.getOneUser(req.body, print);
     },
     delete: function (req, res) {
         var print = function (data) {
@@ -159,7 +164,7 @@ module.exports = {
         });
     },
     facebookPost: function (req, res) {
-        
+
         var userid = req.param("userid");
         var galleryid = req.param("galleryid");
         var message = req.param("message");
@@ -177,17 +182,22 @@ module.exports = {
         var galleryid = req.param("galleryid");
         var userid = req.param("userid");
         var message = sails.myurl + galleryid;
+        message = req.param("message");
 
-        function showjson(err, data) {
-            if(err)
-            {
-                res.json({value:false});
-            }
-            Post.save(data, function (response) {
-                res.json(response);
-            });
-        };
-        User.twitterpost(userid, message, showjson);
+        if (!userid || userid == "" || !sails.ObjectID.isValid(userid)) {
+            return res.badRequest();
+        } else {
+            function showjson(err, data) {
+                if (err) {
+                    res.json(err);
+                } else {
+                    Post.save(data, function (response) {
+                        res.json(response);
+                    });
+                }
+            };
+            User.twitterpost(userid, message, showjson);
+        }
     },
     twitterPostDetail: function (req, res) {
         var userid = req.param("userid");

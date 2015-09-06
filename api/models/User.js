@@ -29,8 +29,6 @@ module.exports = {
             sails.query(function (err, db) {
                 var user = data._id;
                 delete data._id;
-                var dummy = sails.ObjectID();
-                data.modificationtime = dummy.getTimestamp();
                 db.collection('user').update({
                     "_id": sails.ObjectID(user)
                 }, {
@@ -165,9 +163,8 @@ module.exports = {
                 });
             }
             if (db) {
-                if (sails.ObjectID.isValid(data._id)) {
                     db.collection("user").find({
-                        "_id": sails.ObjectID(data._id)
+                        "_id": sails.ObjectID(data)
                     }, {
                         _id: 1,
                         fbid: 1,
@@ -185,7 +182,6 @@ module.exports = {
                             callback(data[0]);
                         }
                     });
-                }
             }
         });
     },
@@ -265,16 +261,16 @@ module.exports = {
                             console.log(err);
                         }
                         if (found.length != 0 && found[0]) {
-                            var data = found[0];
-                            delete data.accessToken;
-                            delete data.token;
-                            delete data.fbid;
-                            delete data.tweetid;
-                            delete data.tokenSecret;
+                            var data2 = found[0];
+                            delete data2.accessToken;
+                            delete data2.token;
+                            delete data2.fbid;
+                            delete data2.tweetid;
+                            delete data2.tokenSecret;
                             callback(null, found[0]);
                         } else {
+                            console.log(data);
                             db.collection('user').insert(data, function (err, created) {
-                                console.log(data);
                                 if (err) {
                                     console.log(err);
                                     callback({
@@ -282,7 +278,8 @@ module.exports = {
                                     });
                                 }
                                 if (created) {
-                                    data._id = created.ops[0]._id;
+                                    console.log(created);
+                                    data.id = created.ops[0]._id;
                                     delete data.accessToken;
                                     delete data.token;
                                     delete data.fbid;
@@ -327,37 +324,44 @@ module.exports = {
         var usertweetid = "";
         var access_token = "";
         var access_token_secret = "";
+        userid = sails.ObjectID(userid);
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
+                callback(err, null);
             }
             if (db) {
-                db.collection("user").aggregate([{
-                    $unwind: "$post"
-                    }, {
-                    $match: {
-
-                        "post.provider": {
-                            $exists: true
-                        },
-                        "post.provider": "twitter",
-                        "post.creationtime": sails.moment().format('DD-MM-YYYY')
-                    }
-                    }]).toArray(function (err, data2) {
-                    if (data2 && data2) {
-                        callback(err, data2);
+                db.collection("user").find({
+                    _id: userid,
+                    "post.creationtime": sails.moment().format('DD-MM-YYYY'),
+                    "post.provider": "twitter"
+                }).toArray(function (err, data2) {
+                    if (err) {
+                        console.log(err);
+                        callback(err, null);
+                    } else if (data2.length >0) {
+                        callback({
+                            value: false,
+                            comment: "wait"
+                        });
                     } else {
                         db.collection('user').find({
                             "_id": sails.ObjectID(userid)
                         }).toArray(function (err, result) {
-                            if (result[0]) {
+                            console.log(result.length);
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            } 
+                            else if (result.length > 0) {
                                 usertweetid = result[0].tweetid;
                                 access_token = result[0].token;
                                 access_token_secret = result[0].tokenSecret;
                                 callrequest(db);
-                            }
-                            if (err) {
-                                console.log(err);
+                            } else {
+                                callback({value:false,comment:"NO SUCH USER"});
                             }
                         });
                     }
@@ -385,34 +389,43 @@ module.exports = {
     },
     facebookpost: function (userid, message, link, callback) {
         var userfbid = "";
-        sails.query(function (err, db) {
+       sails.query(function (err, db) {
             if (err) {
                 console.log(err);
+                callback(err, null);
             }
             if (db) {
-                db.collection("user").aggregate([{
-                    $unwind: "$post"
-                    }, {
-                    $match: {
-                        "post.provider": {
-                            $exists: true
-                        },
-                        "post.provider": "facebook",
-                        "post.creationtime": sails.moment().format('DD-MM-YYYY')
-                    }
-                }]).toArray(function (err, data2) {
-                    if (data2 && data2) {
-                        callback(err, data2);
+                db.collection("user").find({
+                    _id: userid,
+                    "post.creationtime": sails.moment().format('DD-MM-YYYY'),
+                    "post.provider": "facebook"
+                }).toArray(function (err, data2) {
+                    if (err) {
+                        console.log(err);
+                        callback(err, null);
+                    } else if (data2.length >0) {
+                        callback({
+                            value: false,
+                            comment: "wait"
+                        });
                     } else {
                         db.collection('user').find({
                             "_id": sails.ObjectID(userid)
                         }).toArray(function (err, result) {
-                            if (result[0]) {
-                                userfbid = result[0].fbid;
-                                callrequest(db);
-                            }
+                            console.log(result.length);
                             if (err) {
                                 console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            } 
+                            else if (result.length > 0) {
+                                usertweetid = result[0].tweetid;
+                                access_token = result[0].token;
+                                access_token_secret = result[0].tokenSecret;
+                                callrequest(db);
+                            } else {
+                                callback({value:false,comment:"NO SUCH USER"});
                             }
                         });
                     }

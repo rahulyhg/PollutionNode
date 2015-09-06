@@ -1,6 +1,5 @@
 module.exports = {
     save: function (data, callback) {
-        console.log(data);
         var user = sails.ObjectID(data.user);
         if (!data._id && data._id != '') {
             data._id = sails.ObjectID();
@@ -22,6 +21,7 @@ module.exports = {
                     }, function (err, updated) {
                         if (err) {
                             console.log(err);
+                            callback({value:false});
                         }
                         if (updated) {
                             callback({

@@ -225,14 +225,18 @@ module.exports = {
                     "gallery._id": sails.ObjectID(data)
                 }, {
                     "gallery.$": 1
-                }).each(function (err, data2) {
+                }).toArray(function (err, data2) {
                     if (err) {
                         callback({
                             value: false
                         });
                     }
-                    if (data2 != null) {
-                        callback(data2.gallery[0].imagefinal);
+                    if (data2.length > 0) {
+                        callback(data2[0].gallery[0].imagefinal);
+                    } else {
+                        callback({
+                            value: false
+                        });
                     }
                 });
             }
