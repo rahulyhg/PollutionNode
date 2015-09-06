@@ -85,18 +85,12 @@ module.exports = {
                 if (data.date) {
                     db.collection("dailypost").aggregate([{
                         $match: {
-                            "leaderboard._id": {
-                                $exists: true
-                            },
                             date: data.date
                         }
                     }, {
                         $unwind: "$leaderboard"
         }, {
                         $match: {
-                            "leaderboard._id": {
-                                $exists: true
-                            },
                             date: data.date
                         }
         }, {
@@ -120,18 +114,12 @@ module.exports = {
                 } else {
                     db.collection("dailypost").aggregate([{
                         $match: {
-                            "leaderboard._id": {
-                                $exists: true
-                            },
                             type: data.type
                         }
         }, {
                         $unwind: "$leaderboard"
         }, {
                         $match: {
-                            "leaderboard._id": {
-                                $exists: true
-                            },
                             type: data.type
                         }
         }, {
