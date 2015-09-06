@@ -241,7 +241,7 @@ module.exports = {
             Gallery.findone(galleryid, function (data2, errorcallback) {
                 var data = {
                     title: "Wohlig Technology",
-                    image: sails.myurl + "uploadfile/getuserimage?file=" + data2,
+                    image: sails.myurl + "userimage/" + data2,
                     description: "Wohlig Technology is now a Planet."
                 };
                 res.view("card", data);
