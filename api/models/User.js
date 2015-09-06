@@ -145,9 +145,13 @@ module.exports = {
                             callback({
                                 value: false
                             });
-                        }
-                        if (data != null) {
+                        } else if (data != null) {
                             callback(data);
+                        } else {
+                            console.log(err);
+                            callback({
+                                value: false
+                            });
                         }
                     });
                 }
@@ -284,8 +288,6 @@ module.exports = {
                                     data.id = created.ops[0]._id;
                                     delete data.accessToken;
                                     delete data.token;
-                                    delete data.fbid;
-                                    delete data.tweetid;
                                     delete data.tokenSecret;
                                     callback(null, data);
                                 }
@@ -307,13 +309,11 @@ module.exports = {
                                 value: false
                             });
                         }
-                        if (updated) {
-                            updated._id = user;
-                            delete updated.accessToken;
-                            delete updated.token;
-                            delete updated.fbid;
-                            delete updated.tweetid;
-                            delete updated.tokenSecret;
+                        if (updatedata) {
+                            updatedata._id = user;
+                            delete updatedata.accessToken;
+                            delete updatedata.token;
+                            delete updatedata.tokenSecret;
                             callback(null, updated);
                         }
                     });
