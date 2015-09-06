@@ -400,7 +400,7 @@ module.exports = {
                                 "post.provider": {
                                     $exists: true
                                 },
-                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'}]
+                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'},{"post.creationtime": "20-09-2015"},{"post.creationtime": '21-09-2015'}]
 
                             }
                     }, {
@@ -480,7 +480,7 @@ module.exports = {
                                 "post.provider": {
                                     $exists: true
                                 },
-                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'}]
+                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'},{"post.creationtime": "20-09-2015"},{"post.creationtime": '21-09-2015'},{"post.creationtime": '22-09-2015'},{"post.creationtime": "23-09-2015"},{"post.creationtime": '24-09-2015'},{"post.creationtime": '25-09-2015'},{"post.creationtime": "26-09-2015"}]
 
                             }
                     }, {
