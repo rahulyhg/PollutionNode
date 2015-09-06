@@ -2,32 +2,6 @@ var passport = require('passport'),
     TwitterStrategy = require('passport-twitter').Strategy,
     FacebookStrategy = require('passport-facebook').Strategy;
 
-passport.use(new FacebookStrategy({
-        clientID: "1616856265259993",
-        clientSecret: "6e8052bdbe29f02ead4f618549e98cac",
-        callbackURL: "http://wohlig.biz/user/callbackf"
-    },
-    function (accessToken, refreshToken, profile, done) {
-        profile.accessToken = accessToken;
-        profile.refreshToken = refreshToken;
-        profile.provider = "Facebook";
-        User.findorcreate(profile, done);
-    }
-));
-
-passport.use(new TwitterStrategy({
-        consumerKey: "6gOb3JlMDgqYw27fLN29l5Vmp",
-        consumerSecret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
-        callbackURL: "http://wohlig.biz/user/callbackt"
-    },
-    function (token, tokenSecret, profile, done) {
-        profile.token = token;
-        profile.tokenSecret = tokenSecret;
-        profile.provider = "Twitter";
-        User.findorcreate(profile, done);
-    }
-));
-
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
@@ -76,11 +50,40 @@ module.exports = {
     /////////////////////////////
     //LOGIN FUNCTIONS
     logint: function (req, res) {
+
+        passport.use(new TwitterStrategy({
+                consumerKey: "6gOb3JlMDgqYw27fLN29l5Vmp",
+                consumerSecret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
+                callbackURL: sails.myurl+"user/callbackt"
+            },
+            function (token, tokenSecret, profile, done) {
+                console.log("Twitter Page");
+                profile.token = token;
+                profile.tokenSecret = tokenSecret;
+                profile.provider = "Twitter";
+                User.findorcreate(profile, done);
+            }
+        ));
+
         var loginid = req.param("loginid");
         req.session.loginid = loginid;
         passport.authenticate('twitter')(req, res);
     },
     loginf: function (req, res) {
+
+        passport.use(new FacebookStrategy({
+                clientID: "1616856265259993",
+                clientSecret: "6e8052bdbe29f02ead4f618549e98cac",
+                callbackURL: sails.myurl+"user/callbackf"
+            },
+            function (accessToken, refreshToken, profile, done) {
+                profile.accessToken = accessToken;
+                profile.refreshToken = refreshToken;
+                profile.provider = "Facebook";
+                User.findorcreate(profile, done);
+            }
+        ));
+
         var loginid = req.param("loginid");
         req.session.loginid = loginid;
         passport.authenticate('facebook', {
@@ -140,6 +143,7 @@ module.exports = {
         User.facebookpost(userid, message, link, showjson);
     },
     twitterPost: function (req, res) {
+
         var galleryid = req.param("galleryid");
         var userid = req.param("userid");
         var message = sails.myurl + galleryid;
@@ -221,323 +225,361 @@ module.exports = {
         }
     },
     getdailypost: function (req, res) {
-            var date = req.param('date');
-            var count = {};
-            var postdata = {};
-            postdata.count = [];
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
+        var date = req.param('date');
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
 
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                        $unwind: "$post"
                     }, {
-                            $match: {
-                                "post.provider": {
-                                    $exists: true
-                                },
-                                $or: [{"post.creationtime": date}]
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": date
+                            }]
 
-                            }
+                        }
                     }, {
-                            $group: {
-                                _id: "$_id",
-                                retweet: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                name: {
-                                    $addToSet: "$name"
-                                },
-                                profilepic: {
-                                    $addToSet: "$profilepic"
-                                }
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
                             }
+                        }
                     },
-                        {
-                            $project: {
-                                _id: 1,
-                                retweet: 1,
-                                favorite: 1,
-                                like: 1,
-                                name: 1,
-                                profilepic: 1,
-                                total: {
-                                    $add: ["$like", "$retweet", "$favorite"]
-                                }
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
+                        }
                         },
-                        {
-                            $unwind: "$name"
+                    {
+                        $unwind: "$name"
                         },
-                        {
-                            $unwind: "$profilepic"
+                    {
+                        $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-                        if (data2 != null) {
-                            console.log(data2);
-                            var dailypost = {};
-                            dailypost.leaderboard = data2;
-                            dailypost.date = date;
-                            DailyPost.save(dailypost, function (response) {
-                                res.json(dailypost);
-                            });
-                        }
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        },
+                    if (data2 != null) {
+                        console.log(data2);
+                        var dailypost = {};
+                        dailypost.leaderboard = data2;
+                        dailypost.date = date;
+                        DailyPost.save(dailypost, function (response) {
+                            res.json(dailypost);
+                        });
+                    }
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    },
     date3leaderboard: function (req, res) {
-            var date = req.param('date');
-            var count = {};
-            var postdata = {};
-            postdata.count = [];
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
+        var date = req.param('date');
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
 
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                        $unwind: "$post"
                     }, {
-                            $match: {
-                                "post.provider": {
-                                    $exists: true
-                                },
-                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'}]
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": "17-09-2015"
+                            }, {
+                                "post.creationtime": '18-09-2015'
+                            }, {
+                                "post.creationtime": '19-09-2015'
+                            }]
 
-                            }
+                        }
                     }, {
-                            $group: {
-                                _id: "$_id",
-                                retweet: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                name: {
-                                    $addToSet: "$name"
-                                },
-                                profilepic: {
-                                    $addToSet: "$profilepic"
-                                }
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
                             }
+                        }
                     },
-                        {
-                            $project: {
-                                _id: 1,
-                                retweet: 1,
-                                favorite: 1,
-                                like: 1,
-                                name: 1,
-                                profilepic: 1,
-                                total: {
-                                    $add: ["$like", "$retweet", "$favorite"]
-                                }
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
+                        }
                         },
-                        {
-                            $unwind: "$name"
+                    {
+                        $unwind: "$name"
                         },
-                        {
-                            $unwind: "$profilepic"
+                    {
+                        $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-                        if (data2 != null) {
-                            console.log(data2);
-                            var dailypost = {};
-                            dailypost.leaderboard = data2;
-                            dailypost.date = date;
-                            DailyPost.save(dailypost, function (response) {
-                                res.json(dailypost);
-                            });
-                        }
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        },
-    
+                    if (data2 != null) {
+                        console.log(data2);
+                        var dailypost = {};
+                        dailypost.leaderboard = data2;
+                        dailypost.date = date;
+                        DailyPost.save(dailypost, function (response) {
+                            res.json(dailypost);
+                        });
+                    }
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    },
+
     date5leaderboard: function (req, res) {
-            var date = req.param('date');
-            var count = {};
-            var postdata = {};
-            postdata.count = [];
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
+        var date = req.param('date');
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
 
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                        $unwind: "$post"
                     }, {
-                            $match: {
-                                "post.provider": {
-                                    $exists: true
-                                },
-                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'},{"post.creationtime": "20-09-2015"},{"post.creationtime": '21-09-2015'}]
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": "17-09-2015"
+                            }, {
+                                "post.creationtime": '18-09-2015'
+                            }, {
+                                "post.creationtime": '19-09-2015'
+                            }, {
+                                "post.creationtime": "20-09-2015"
+                            }, {
+                                "post.creationtime": '21-09-2015'
+                            }]
 
-                            }
+                        }
                     }, {
-                            $group: {
-                                _id: "$_id",
-                                retweet: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                name: {
-                                    $addToSet: "$name"
-                                },
-                                profilepic: {
-                                    $addToSet: "$profilepic"
-                                }
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
                             }
+                        }
                     },
-                        {
-                            $project: {
-                                _id: 1,
-                                retweet: 1,
-                                favorite: 1,
-                                like: 1,
-                                name: 1,
-                                profilepic: 1,
-                                total: {
-                                    $add: ["$like", "$retweet", "$favorite"]
-                                }
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
+                        }
                         },
-                        {
-                            $unwind: "$name"
+                    {
+                        $unwind: "$name"
                         },
-                        {
-                            $unwind: "$profilepic"
+                    {
+                        $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-                        if (data2 != null) {
-                            console.log(data2);
-                            var dailypost = {};
-                            dailypost.leaderboard = data2;
-                            dailypost.date = date;
-                            DailyPost.save(dailypost, function (response) {
-                                res.json(dailypost);
-                            });
-                        }
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        },
-    
+                    if (data2 != null) {
+                        console.log(data2);
+                        var dailypost = {};
+                        dailypost.leaderboard = data2;
+                        dailypost.date = date;
+                        DailyPost.save(dailypost, function (response) {
+                            res.json(dailypost);
+                        });
+                    }
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    },
+
     date10leaderboard: function (req, res) {
-            var date = req.param('date');
-            var count = {};
-            var postdata = {};
-            postdata.count = [];
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
+        var date = req.param('date');
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
 
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                        $unwind: "$post"
                     }, {
-                            $match: {
-                                "post.provider": {
-                                    $exists: true
-                                },
-                                $or: [{"post.creationtime": "17-09-2015"},{"post.creationtime": '18-09-2015'},{"post.creationtime": '19-09-2015'},{"post.creationtime": "20-09-2015"},{"post.creationtime": '21-09-2015'},{"post.creationtime": '22-09-2015'},{"post.creationtime": "23-09-2015"},{"post.creationtime": '24-09-2015'},{"post.creationtime": '25-09-2015'},{"post.creationtime": "26-09-2015"}]
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": "17-09-2015"
+                            }, {
+                                "post.creationtime": '18-09-2015'
+                            }, {
+                                "post.creationtime": '19-09-2015'
+                            }, {
+                                "post.creationtime": "20-09-2015"
+                            }, {
+                                "post.creationtime": '21-09-2015'
+                            }, {
+                                "post.creationtime": '22-09-2015'
+                            }, {
+                                "post.creationtime": "23-09-2015"
+                            }, {
+                                "post.creationtime": '24-09-2015'
+                            }, {
+                                "post.creationtime": '25-09-2015'
+                            }, {
+                                "post.creationtime": "26-09-2015"
+                            }]
 
-                            }
+                        }
                     }, {
-                            $group: {
-                                _id: "$_id",
-                                retweet: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                name: {
-                                    $addToSet: "$name"
-                                },
-                                profilepic: {
-                                    $addToSet: "$profilepic"
-                                }
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
                             }
+                        }
                     },
-                        {
-                            $project: {
-                                _id: 1,
-                                retweet: 1,
-                                favorite: 1,
-                                like: 1,
-                                name: 1,
-                                profilepic: 1,
-                                total: {
-                                    $add: ["$like", "$retweet", "$favorite"]
-                                }
+                    {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            name: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
+                        }
                         },
-                        {
-                            $unwind: "$name"
+                    {
+                        $unwind: "$name"
                         },
-                        {
-                            $unwind: "$profilepic"
+                    {
+                        $unwind: "$profilepic"
                         }]).toArray(function (err, data2) {
-                        if (data2 != null) {
-                            console.log(data2);
-                            var dailypost = {};
-                            dailypost.leaderboard = data2;
-                            dailypost.date = date;
-                            DailyPost.save(dailypost, function (response) {
-                                res.json(dailypost);
-                            });
-                        }
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                }
-            });
-        },
-    
-        /////////////////////////////////////
+                    if (data2 != null) {
+                        console.log(data2);
+                        var dailypost = {};
+                        dailypost.leaderboard = data2;
+                        dailypost.date = date;
+                        DailyPost.save(dailypost, function (response) {
+                            res.json(dailypost);
+                        });
+                    }
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            }
+        });
+    },
+
+    /////////////////////////////////////
 };
