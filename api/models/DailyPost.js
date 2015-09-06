@@ -74,12 +74,6 @@ module.exports = {
         });
     },
     find: function (data, callback) {
-        var findcase = {};
-        if (data.date) {
-            findcase.date = data.date;
-        } else {
-            findcase.type = data.type;
-        }
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -88,19 +82,77 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("dailypost").find(findcase).sort({
-                    "count.totalcount": 1
-                }).limit(100).toArray(function (err, data2) {
-                    if (data2 != null) {
-                        callback(data2);
-                    }
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false
+                if (data.date) {
+                    db.collection("dailypost").aggregate([{
+                        $match: {
+                            "leaderboard._id": {
+                                $exists: true
+                            },
+                            date: data.date
+                        }
+                    }, {
+                        $unwind: "$leaderboard"
+        }, {
+                        $match: {
+                            "leaderboard._id": {
+                                $exists: true
+                            },
+                            date: data.date
+                        }
+        }, {
+                        $project: {
+                            leaderboard: 1
+                        }
+        }]).toArray(
+                        function (err, data) {
+                            if (data != null) {
+                                callback(data);
+
+                            }
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+
+                            }
                         });
-                    }
-                });
+                } else {
+                    db.collection("dailypost").aggregate([{
+                        $match: {
+                            "leaderboard._id": {
+                                $exists: true
+                            },
+                            type: data.type
+                        }
+        }, {
+                        $unwind: "$leaderboard"
+        }, {
+                        $match: {
+                            "leaderboard._id": {
+                                $exists: true
+                            },
+                            type: data.type
+                        }
+        }, {
+                        $project: {
+                            leaderboard: 1
+                        }
+        }]).toArray(
+                        function (err, data) {
+                            if (data != null) {
+                                callback(data);
+
+                            }
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+
+                            }
+                        });
+                }
             }
         });
     },
