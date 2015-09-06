@@ -177,9 +177,13 @@ module.exports = {
                         callback({
                             value: false
                         });
-                    }
-                    if (data && data[0]) {
+                    } else if (data && data[0]) {
                         callback(data[0]);
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "NO SUCH USER"
+                        });
                     }
                 });
             }
