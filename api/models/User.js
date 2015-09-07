@@ -174,7 +174,9 @@ module.exports = {
                     fbid: 1,
                     tweetid: 1,
                     name: 1,
-                    profilepic: 1
+                    profilepic: 1,
+                    days:1,
+                    balancedate:1
                 }).toArray(function (err, data) {
                     if (err) {
                         console.log(err);
