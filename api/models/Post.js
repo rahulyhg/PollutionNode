@@ -2,7 +2,6 @@ module.exports = {
     save: function (data, callback) {
         var user = sails.ObjectID(data.user);
         if (!data._id && data._id != '') {
-
             data._id = sails.ObjectID();
             data.creationtime = sails.moment().format('DD-MM-YYYY');
             sails.query(function (err, db) {
@@ -117,87 +116,81 @@ module.exports = {
                         }
                     });
                 } else {
+                    console.log(data);
                     Post.delete(data, callback);
                 }
             }
         }
     },
     delete: function (data, callback) {
-        if (data.user && sails.ObjectID.isValid(data.user)) {
-            var user = sails.ObjectID(data.user);
-            if (data.id && data.id != "") {
-                sails.query(function (err, db) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false
-                        });
-                    }
-                    if (db) {
+        var user = sails.ObjectID(data.user);
+        if (data.id && data.id != "") {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                if (db) {
 
-                        db.collection('user').update({
-                            "_id": user
-                        }, {
-                            $pull: {
-                                "post": {
-                                    "id": data.id
-                                }
+                    db.collection('user').update({
+                        "_id": user
+                    }, {
+                        $pull: {
+                            "post": {
+                                "id": data.id
                             }
-                        }, function (err, updated) {
-                            if (err) {
-                                console.log(err);
-                            } else if (updated) {
-                                callback({
-                                    value: true
-                                });
-                            } else {
-                                callback({
-                                    value: false,
-                                    comment: "No User Found"
-                                });
-                            }
-                        });
-                    }
-                });
-            } else if (data.id_str && data.id_str != "") {
-                sails.query(function (err, db) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false
-                        });
-                    }
-                    if (db) {
+                        }
+                    }, function (err, updated) {
+                        if (err) {
+                            console.log(err);
+                        } else if (updated) {
+                            callback({
+                                value: true
+                            });
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "No User Found"
+                            });
+                        }
+                    });
+                }
+            });
+        } else if (data.id_str && data.id_str != "") {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                }
+                if (db) {
 
-                        db.collection('user').update({
-                            "_id": user
-                        }, {
-                            $pull: {
-                                "post": {
-                                    "id_str": data.id_str
-                                }
+                    db.collection('user').update({
+                        "_id": user
+                    }, {
+                        $pull: {
+                            "post": {
+                                "id_str": data.id_str
                             }
-                        }, function (err, updated) {
-                            if (err) {
-                                console.log(err);
-                            } else if (updated) {
-                                callback({
-                                    value: true
-                                });
-                            } else {
-                                callback({
-                                    value: false,
-                                    comment: "No User Found"
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-        } else {
-            callback({
-                value: false,
-                comment: "Not Valid UserId"
+                        }
+                    }, function (err, updated) {
+                        if (err) {
+                            console.log(err);
+                        } else if (updated) {
+                            callback({
+                                value: true
+                            });
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "No User Found"
+                            });
+                        }
+                    });
+                }
             });
         }
     },
