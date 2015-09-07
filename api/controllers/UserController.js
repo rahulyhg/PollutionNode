@@ -249,10 +249,14 @@ module.exports = {
 
     tracker: function (req, res) {
 
+        var responsenum = 0;
+        var checkres = 0;
+        var completeresponse=[];
         function trackstartsnow(trackarr) {
-            _.each(trackarr, function (n) {
+            _.each(trackarr, function (n, key1) {
                 if (n.post && n.post[0]) {
-                    _.each(n.post, function (m) {
+                    responsenum += n.post.length;
+                    _.each(n.post, function (m, key2) {
                         if (m.provider == "twitter") {
                             User.twitterPostDetail(m.id_str, n._id, n.token, n.tokenSecret, showjson);
                         } else {
@@ -268,9 +272,14 @@ module.exports = {
         });
 
         var showjson = function (err, data) {
+
             Post.save(data, function (response) {
                 if (response) {
-
+                    checkres++;
+                    completeresponse.push(response);
+                    if (checkres == responsenum) {
+                        res.json(completeresponse);
+                    }
                 }
             });
         }
@@ -291,65 +300,61 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").aggregate([{
-                        $unwind: "$post"
-                    }, {
-                        $match: {
-                            "post.provider": {
-                                $exists: true
-                            },
-                            $or: [{
-                                "post.creationtime": date
-                            }]
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.provider": {
+                            $exists: true
+                        },
+                        $or: [{
+                            "post.creationtime": date
+            }]
 
-                        }
-                    }, {
-                        $group: {
-                            _id: "$_id",
-                            retweet: {
-                                $sum: '$post.retweet_count'
-                            },
-                            favorite: {
-                                $sum: '$post.favorite_count'
-                            },
-                            like: {
-                                $sum: '$post.total_likes'
-                            },
-                            name: {
-                                $addToSet: "$name"
-                            },
-                            profilepic: {
-                                $addToSet: "$profilepic"
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 1,
-                            retweet: 1,
-                            favorite: 1,
-                            like: 1,
-                            name: 1,
-                            profilepic: 1,
-                            total: {
-                                $add: ["$like", "$retweet", "$favorite"]
-                            }
-                        }
+                    }
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
                         },
-                    {
-                        $unwind: "$name"
+                        favorite: {
+                            $sum: '$post.favorite_count'
                         },
-                    {
-                        $unwind: "$profilepic"
+                        like: {
+                            $sum: '$post.total_likes'
                         },
-                    {
-                        $sort: {
-                            total: -1,
-                            like: -1,
-                            retweet: -1,
-                            favorite: -1,
-                            name: 1
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
                         }
-                    }]).toArray(function (err, data2) {
+                    }
+        }, {
+                    $project: {
+                        _id: 1,
+                        retweet: 1,
+                        favorite: 1,
+                        like: 1,
+                        name: 1,
+                        profilepic: 1,
+                        total: {
+                            $add: ["$like", "$retweet", "$favorite"]
+                        }
+                    }
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $sort: {
+                        total: -1,
+                        like: -1,
+                        retweet: -1,
+                        favorite: -1,
+                        name: 1
+                    }
+        }]).toArray(function (err, data2) {
 
                     if (err) {
                         res.json({
@@ -386,68 +391,65 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").aggregate([{
-                        $unwind: "$post"
-                    }, {
-                        $match: {
-                            "post.provider": {
-                                $exists: true
-                            },
-                            $or: [{
-                                "post.creationtime": "17-09-2015"
-                            }, {
-                                "post.creationtime": '18-09-2015'
-                            }, {
-                                "post.creationtime": '19-09-2015'
-                            }]
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.provider": {
+                            $exists: true
+                        },
+                        $or: [{
+                            "post.creationtime": "17-09-2015"
+            }, {
+                            "post.creationtime": '18-09-2015'
+            }, {
+                            "post.creationtime": '19-09-2015'
+            }]
 
-                        }
-                    }, {
-                        $group: {
-                            _id: "$_id",
-                            retweet: {
-                                $sum: '$post.retweet_count'
-                            },
-                            favorite: {
-                                $sum: '$post.favorite_count'
-                            },
-                            like: {
-                                $sum: '$post.total_likes'
-                            },
-                            name: {
-                                $addToSet: "$name"
-                            },
-                            profilepic: {
-                                $addToSet: "$profilepic"
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 1,
-                            retweet: 1,
-                            favorite: 1,
-                            like: 1,
-                            name: 1,
-                            profilepic: 1,
-                            total: {
-                                $add: ["$like", "$retweet", "$favorite"]
-                            }
-                        }
+                    }
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
                         },
-                    {
-                        $unwind: "$name"
+                        favorite: {
+                            $sum: '$post.favorite_count'
                         },
-                    {
-                        $unwind: "$profilepic"
-                        }, {
-                        $sort: {
-                            total: -1,
-                            like: -1,
-                            retweet: -1,
-                            favorite: -1,
-                            name: 1
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
                         }
-                    }]).toArray(function (err, data2) {
+                    }
+        }, {
+                    $project: {
+                        _id: 1,
+                        retweet: 1,
+                        favorite: 1,
+                        like: 1,
+                        name: 1,
+                        profilepic: 1,
+                        total: {
+                            $add: ["$like", "$retweet", "$favorite"]
+                        }
+                    }
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $sort: {
+                        total: -1,
+                        like: -1,
+                        retweet: -1,
+                        favorite: -1,
+                        name: 1
+                    }
+        }]).toArray(function (err, data2) {
 
                     if (err) {
                         res.json({
@@ -484,72 +486,69 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").aggregate([{
-                        $unwind: "$post"
-                    }, {
-                        $match: {
-                            "post.provider": {
-                                $exists: true
-                            },
-                            $or: [{
-                                "post.creationtime": "17-09-2015"
-                            }, {
-                                "post.creationtime": '18-09-2015'
-                            }, {
-                                "post.creationtime": '19-09-2015'
-                            }, {
-                                "post.creationtime": "20-09-2015"
-                            }, {
-                                "post.creationtime": '21-09-2015'
-                            }]
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.provider": {
+                            $exists: true
+                        },
+                        $or: [{
+                            "post.creationtime": "17-09-2015"
+            }, {
+                            "post.creationtime": '18-09-2015'
+            }, {
+                            "post.creationtime": '19-09-2015'
+            }, {
+                            "post.creationtime": "20-09-2015"
+            }, {
+                            "post.creationtime": '21-09-2015'
+            }]
 
-                        }
-                    }, {
-                        $group: {
-                            _id: "$_id",
-                            retweet: {
-                                $sum: '$post.retweet_count'
-                            },
-                            favorite: {
-                                $sum: '$post.favorite_count'
-                            },
-                            like: {
-                                $sum: '$post.total_likes'
-                            },
-                            name: {
-                                $addToSet: "$name"
-                            },
-                            profilepic: {
-                                $addToSet: "$profilepic"
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 1,
-                            retweet: 1,
-                            favorite: 1,
-                            like: 1,
-                            name: 1,
-                            profilepic: 1,
-                            total: {
-                                $add: ["$like", "$retweet", "$favorite"]
-                            }
-                        }
+                    }
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
                         },
-                    {
-                        $unwind: "$name"
+                        favorite: {
+                            $sum: '$post.favorite_count'
                         },
-                    {
-                        $unwind: "$profilepic"
-                        }, {
-                        $sort: {
-                            total: -1,
-                            like: -1,
-                            retweet: -1,
-                            favorite: -1,
-                            name: 1
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
                         }
-                    }]).toArray(function (err, data2) {
+                    }
+        }, {
+                    $project: {
+                        _id: 1,
+                        retweet: 1,
+                        favorite: 1,
+                        like: 1,
+                        name: 1,
+                        profilepic: 1,
+                        total: {
+                            $add: ["$like", "$retweet", "$favorite"]
+                        }
+                    }
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $sort: {
+                        total: -1,
+                        like: -1,
+                        retweet: -1,
+                        favorite: -1,
+                        name: 1
+                    }
+        }]).toArray(function (err, data2) {
 
                     if (err) {
                         res.json({
@@ -586,82 +585,79 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").aggregate([{
-                        $unwind: "$post"
-                    }, {
-                        $match: {
-                            "post.provider": {
-                                $exists: true
-                            },
-                            $or: [{
-                                "post.creationtime": "17-09-2015"
-                            }, {
-                                "post.creationtime": '18-09-2015'
-                            }, {
-                                "post.creationtime": '19-09-2015'
-                            }, {
-                                "post.creationtime": "20-09-2015"
-                            }, {
-                                "post.creationtime": '21-09-2015'
-                            }, {
-                                "post.creationtime": '22-09-2015'
-                            }, {
-                                "post.creationtime": "23-09-2015"
-                            }, {
-                                "post.creationtime": '24-09-2015'
-                            }, {
-                                "post.creationtime": '25-09-2015'
-                            }, {
-                                "post.creationtime": "26-09-2015"
-                            }]
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.provider": {
+                            $exists: true
+                        },
+                        $or: [{
+                            "post.creationtime": "17-09-2015"
+            }, {
+                            "post.creationtime": '18-09-2015'
+            }, {
+                            "post.creationtime": '19-09-2015'
+            }, {
+                            "post.creationtime": "20-09-2015"
+            }, {
+                            "post.creationtime": '21-09-2015'
+            }, {
+                            "post.creationtime": '22-09-2015'
+            }, {
+                            "post.creationtime": "23-09-2015"
+            }, {
+                            "post.creationtime": '24-09-2015'
+            }, {
+                            "post.creationtime": '25-09-2015'
+            }, {
+                            "post.creationtime": "26-09-2015"
+            }]
 
-                        }
-                    }, {
-                        $group: {
-                            _id: "$_id",
-                            retweet: {
-                                $sum: '$post.retweet_count'
-                            },
-                            favorite: {
-                                $sum: '$post.favorite_count'
-                            },
-                            like: {
-                                $sum: '$post.total_likes'
-                            },
-                            name: {
-                                $addToSet: "$name"
-                            },
-                            profilepic: {
-                                $addToSet: "$profilepic"
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 1,
-                            retweet: 1,
-                            favorite: 1,
-                            like: 1,
-                            name: 1,
-                            profilepic: 1,
-                            total: {
-                                $add: ["$like", "$retweet", "$favorite"]
-                            }
-                        }
+                    }
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
                         },
-                    {
-                        $unwind: "$name"
+                        favorite: {
+                            $sum: '$post.favorite_count'
                         },
-                    {
-                        $unwind: "$profilepic"
-                        }, {
-                        $sort: {
-                            total: -1,
-                            like: -1,
-                            retweet: -1,
-                            favorite: -1,
-                            name: 1
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
                         }
-                    }]).toArray(function (err, data2) {
+                    }
+        }, {
+                    $project: {
+                        _id: 1,
+                        retweet: 1,
+                        favorite: 1,
+                        like: 1,
+                        name: 1,
+                        profilepic: 1,
+                        total: {
+                            $add: ["$like", "$retweet", "$favorite"]
+                        }
+                    }
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $sort: {
+                        total: -1,
+                        like: -1,
+                        retweet: -1,
+                        favorite: -1,
+                        name: 1
+                    }
+        }]).toArray(function (err, data2) {
 
                     if (err) {
                         res.json({

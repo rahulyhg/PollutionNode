@@ -116,7 +116,6 @@ module.exports = {
                         }
                     });
                 } else {
-                    console.log(data);
                     Post.delete(data, callback);
                 }
             }
