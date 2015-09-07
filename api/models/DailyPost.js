@@ -24,10 +24,14 @@ module.exports = {
                                 callback({
                                     value: false
                                 });
-                            }
-                            if (updated) {
+                            } else if (updated) {
                                 callback({
                                     value: true
+                                });
+                            } else {
+                                callback({
+                                    value: false,
+                                    comment: "Not Updated.Some Error"
                                 });
                             }
                         });
@@ -40,10 +44,14 @@ module.exports = {
                                     callback({
                                         value: false
                                     });
-                                }
-                                if (created) {
+                                } else if (created) {
                                     callback({
                                         value: true
+                                    });
+                                } else {
+                                    callback({
+                                        value: false,
+                                        comment: "Not Created.Some Error"
                                     });
                                 }
                             });
@@ -60,10 +68,14 @@ module.exports = {
                                     callback({
                                         value: false
                                     });
-                                }
-                                if (updated) {
+                                } else if (updated) {
                                     callback({
                                         value: true
+                                    });
+                                } else {
+                                    callback({
+                                        value: false,
+                                        comment: "Not Updated.User"
                                     });
                                 }
                             });
@@ -74,9 +86,6 @@ module.exports = {
         });
     },
     find: function (data, callback) {
-        var sortnum = parseInt(data.sort);
-        var sort = {};
-        sort['total'] = 1;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -94,11 +103,14 @@ module.exports = {
                         }
                     }).toArray(
                         function (err, data2) {
-                            if (data2 != null) {
+                            if (data2 && data2[0]) {
                                 callback(data2[0].leaderboard);
-                            }
-                            if (err) {
+                            } else if (err) {
                                 console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            } else {
                                 callback({
                                     value: false
                                 });
@@ -113,11 +125,14 @@ module.exports = {
                         }
                     }).toArray(
                         function (err, data2) {
-                            if (data2 != null) {
+                            if (data2 && data2[0]) {
                                 callback(data2[0].leaderboard);
-                            }
-                            if (err) {
+                            } else if (err) {
                                 console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            } else {
                                 callback({
                                     value: false
                                 });

@@ -1,9 +1,88 @@
 module.exports = {
     save: function (data, callback) {
-        var user = sails.ObjectID(data.user);
-        delete data.user;
-        if (!data._id) {
-            data._id = sails.ObjectID();
+        if (data.user && sails.ObjectID.isValid(data.user)) {
+            var user = sails.ObjectID(data.user);
+            delete data.user;
+            if (!data._id) {
+                data._id = sails.ObjectID();
+                sails.query(function (err, db) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    }
+                    if (db) {
+                        db.collection('user').update({
+                            _id: user
+                        }, {
+                            $push: {
+                                gallery: data
+                            }
+                        }, function (err, updated) {
+                            if (err) {
+                                console.log(err);
+                            } else if (updated) {
+                                callback({
+                                    value: true,
+                                    id: data._id
+                                });
+                            } else {
+                                callback({
+                                    value: false,
+                                    comment: "No User Found"
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                data._id = sails.ObjectID(data._id);
+                var tobechanged = {};
+                var attribute = "gallery.$.";
+                _.forIn(data, function (value, key) {
+                    tobechanged[attribute + key] = value;
+                });
+                sails.query(function (err, db) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    }
+                    if (db) {
+                        db.collection('user').update({
+                            "_id": user,
+                            "gallery._id": data._id
+                        }, {
+                            $set: tobechanged
+                        }, function (err, updated) {
+                            if (err) {
+                                console.log(err);
+                            } else if (updated) {
+                                callback({
+                                    value: true
+                                });
+                            } else {
+                                callback({
+                                    value: false,
+                                    comment: "No User Found"
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        } else {
+            callback({
+                value: false,
+                comment: "Not Valid UserId"
+            });
+        }
+    },
+    delete: function (data, callback) {
+        if (data.user && sails.ObjectID.isValid(data.user)) {
+            var user = sails.ObjectID(data.user);
             sails.query(function (err, db) {
                 if (err) {
                     console.log(err);
@@ -12,90 +91,37 @@ module.exports = {
                     });
                 }
                 if (db) {
+
                     db.collection('user').update({
-                        _id: user
+                        "_id": user
                     }, {
-                        $push: {
-                            gallery: data
+                        $pull: {
+                            "gallery": {
+                                "_id": sails.ObjectID(data._id)
+                            }
                         }
                     }, function (err, updated) {
                         if (err) {
                             console.log(err);
-                        }
-                        if (updated) {
+                        } else if (updated) {
                             callback({
-                                value: true,
-                                id: data._id
+                                value: true
+                            });
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "No User Found"
                             });
                         }
                     });
                 }
             });
         } else {
-            data._id = sails.ObjectID(data._id);
-            var tobechanged = {};
-            var attribute = "gallery.$.";
-            _.forIn(data, function (value, key) {
-                tobechanged[attribute + key] = value;
-            });
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                }
-                if (db) {
-                    db.collection('user').update({
-                        "_id": user,
-                        "gallery._id": data._id
-                    }, {
-                        $set: tobechanged
-                    }, function (err, updated) {
-                        if (err) {
-                            console.log(err);
-                        }
-                        if (updated) {
-                            callback({
-                                value: true
-                            });
-                        }
-                    });
-                }
+            callback({
+                value: false,
+                comment: "Not Valid UserId"
             });
         }
-    },
-    delete: function (data, callback) {
-        var user = sails.ObjectID(data.user);
-        sails.query(function (err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false
-                });
-            }
-            if (db) {
-
-                db.collection('user').update({
-                    "_id": user
-                }, {
-                    $pull: {
-                        "gallery": {
-                            "_id": sails.ObjectID(data._id)
-                        }
-                    }
-                }, function (err, updated) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    if (updated) {
-                        callback({
-                            value: true
-                        });
-                    }
-                });
-            }
-        });
     },
     //Findlimited
     findlimited: function (data, callback) {
@@ -230,8 +256,7 @@ module.exports = {
                         callback({
                             value: false
                         });
-                    }
-                    if (data2.length > 0) {
+                    } else if (data2.length > 0) {
                         callback(data2[0].gallery[0].imagefinal);
                     } else {
                         callback({
@@ -261,9 +286,12 @@ module.exports = {
                 }).toArray(function (err, data2) {
                     if (err) {
                         callback(err);
-                    }
-                    if (data2 && data2[0]) {
+                    } else if (data2 && data2[0].gallery) {
                         callback(data2[0].gallery);
+                    } else {
+                        callback({
+                            value: false
+                        });
                     }
                 });
             }

@@ -150,16 +150,6 @@ module.exports = {
                                     console.log(err);
                                 }
                                 if (imagefile) {
-
-                                    //                                    imagefile.rotate(n.rotate, {
-                                    //                                        r: 0,
-                                    //                                        g: 0,
-                                    //                                        b: 0,
-                                    //                                        a: 0
-                                    //                                    }, function (err, rotateimage) {
-                                    //                                        if (err) {
-                                    //                                            console.log(err);
-                                    //                                        }
                                     imagefile.resize(n.width, n.height, function (err, resizedimage) {
                                         if (err) {
                                             console.log(err);
@@ -206,7 +196,6 @@ module.exports = {
                                                         recimage(num);
                                                     }
                                                 }
-                                                //                                                });
                                             });
                                         });
                                     });

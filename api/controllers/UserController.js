@@ -12,7 +12,6 @@ passport.use(new FacebookStrategy({
         profile.accessToken = accessToken;
         profile.refreshToken = refreshToken;
         profile.provider = "Facebook";
-        console.log(profile);
         User.findorcreate(profile, done);
     }
 ));
@@ -114,7 +113,6 @@ module.exports = {
                 if (user && sails.ObjectID.isValid(user)) {
                     profile._id = user;
                 }
-                console.log(profile);
                 User.findorcreate(profile, done);
             }
         ));
@@ -359,7 +357,7 @@ module.exports = {
                             value: "false"
                         });
                     }
-                    if (data2 != null) {
+                    else if (data2 && data2[0]) {
                         var dailypost = {};
                         dailypost.leaderboard = data2;
                         dailypost.date = date;
@@ -561,7 +559,6 @@ module.exports = {
                         });
                     }
                     if (data2 != null) {
-                        console.log(data2);
                         var dailypost = {};
                         dailypost.leaderboard = data2;
 

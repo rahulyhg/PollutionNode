@@ -233,7 +233,9 @@ module.exports = {
             insertdata.provider = data.provider;
             insertdata.username = data.username;
             insertdata.name = data.displayName;
-            insertdata.profilepic = data.photos[0].value;
+            if (data.photos[0]) {
+                insertdata.profilepic = data.photos[0].value;
+            }
             insertdata.token = data.token;
             insertdata.tokenSecret = data.tokenSecret;
             orfunc.tweetid = data.id;
@@ -247,7 +249,9 @@ module.exports = {
             insertdata.provider = data.provider;
             insertdata.username = data.username;
             insertdata.name = data.displayName;
-            insertdata.profilepic = data.photos[0].value;
+            if (data.photos[0]) {
+                insertdata.profilepic = data.photos[0].value;
+            }
             insertdata.email = data.emails[0].value;
             insertdata.accessToken = data.accessToken;
             insertdata.refreshToken = data.refreshToken;
@@ -270,12 +274,13 @@ module.exports = {
                         }
                         if (found.length != 0 && found[0]) {
                             var data2 = found[0];
+                            data2.id = found[0]._id;
                             delete data2.accessToken;
                             delete data2.token;
-                            delete data2.fbid;
-                            delete data2.tweetid;
                             delete data2.tokenSecret;
-                            callback(null, found[0]);
+                            delete data2.gallery;
+                            delete data2.post;
+                            callback(null, data2);
                         } else {
                             db.collection('user').insert(data, function (err, created) {
                                 if (err) {
