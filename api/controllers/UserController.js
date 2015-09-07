@@ -167,7 +167,6 @@ module.exports = {
         var galleryid = req.param("galleryid");
         var message = req.param("message");
         var link = sails.myurl + galleryid;
-
         if (!userid || userid == "" || !sails.ObjectID.isValid(userid)) {
             return res.badRequest();
         } else {
@@ -356,8 +355,7 @@ module.exports = {
                         res.json({
                             value: "false"
                         });
-                    }
-                    else if (data2 && data2[0]) {
+                    } else if (data2 && data2[0]) {
                         var dailypost = {};
                         dailypost.leaderboard = data2;
                         dailypost.date = date;
