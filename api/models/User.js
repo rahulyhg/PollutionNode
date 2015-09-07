@@ -175,8 +175,8 @@ module.exports = {
                     tweetid: 1,
                     name: 1,
                     profilepic: 1,
-                    days:1,
-                    balancedate:1
+                    days: 1,
+                    balancedate: 1
                 }).toArray(function (err, data) {
                     if (err) {
                         console.log(err);
@@ -390,10 +390,14 @@ module.exports = {
             Twitter.post('statuses/update', {
                 status: message
             }, function (err, data, response) {
-                data.user = userid;
-                data.provider = "twitter";
-                db.close();
-                callback(err, data);
+                if (data.error) {
+                    callback(err, data);
+                } else {
+                    data.user = userid;
+                    data.provider = "twitter";
+                    db.close();
+                    callback(err, data);
+                }
             });
         }
     },
