@@ -227,6 +227,10 @@ module.exports = {
         }
         User.facebookPostDetail(fbpostid, userid, showjson);
     },
+    
+    redirect: function(req,res) {
+        res.redirect(307, 'http://www.timesbappa.com');
+    },
 
     card: function (req, res) {
         var galleryid = req.param("galleryid");
