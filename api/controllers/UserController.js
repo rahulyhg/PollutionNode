@@ -230,6 +230,7 @@ module.exports = {
 
     card: function (req, res) {
         var galleryid = req.param("galleryid");
+        console.log(galleryid);
         if (!galleryid || galleryid == "" || !sails.ObjectID.isValid(galleryid)) {
             res.json({
                 value: false
