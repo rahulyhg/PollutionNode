@@ -312,6 +312,10 @@ module.exports = {
                     _id: 0,
                     "gallery._id": 1,
                     "gallery.imagefinal": 1
+                }, {
+                    $sort: {
+                        "gallery._id": -1
+                    }
                 }).toArray(function (err, data2) {
                     if (err) {
                         callback(err);
