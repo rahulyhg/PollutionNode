@@ -125,8 +125,18 @@ module.exports = {
     },
     createimage: function (data, callback) {
         returns = data;
+        retruns.uploadedon = sails.moment(new Date()).format('DD-MM-YYYY');
         sails.lwip.create(canvaswidth, canvasheight, 'white', function (err, canvas) {
             canvasdata = canvas;
+            sails.query(function (err, db) {
+                if (err) {
+                    callback(err);
+                    console.log(err);
+                }
+                if(db) {
+                    recimage(0);
+                }
+            });
 
             function recimage(num) {
                 n = data.image[num];
@@ -143,7 +153,8 @@ module.exports = {
                 n.height = parseFloat(n.height);
                 n.top = parseFloat(n.top);
                 n.left = parseFloat(n.left);
-                imagecreate();
+
+                //                imagecreate();
 
                 function imagecreate() {
                     if (filepath != '' && newfilepath != '') {
@@ -214,8 +225,6 @@ module.exports = {
                     }
                 }
             }
-            recimage(0);
-
         });
     }
 };
