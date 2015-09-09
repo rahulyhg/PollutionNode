@@ -61,7 +61,8 @@ module.exports = {
                                 console.log(err);
                             } else if (updated) {
                                 callback({
-                                    value: true
+                                    value: true,
+                                    id: data._id
                                 });
                             } else {
                                 callback({
