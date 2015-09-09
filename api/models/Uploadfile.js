@@ -192,7 +192,7 @@ module.exports = {
                                                         var cropdata = newimage
                                                         newimage.toBuffer('jpg', function (err, buffer) {
                                                             sails.fs.writeFileSync(newfilepath, buffer);
-                                                            cropdata.crop(parseInt(cropLeft), parseInt(cropsquare), parseInt(cropRight), parseInt(cropsquare), function (err, cropimage) {
+                                                            cropdata.crop(0, parseInt(cropsquare), 0, parseInt(cropsquare+canvaswidth), function (err, cropimage) {
                                                                 cropimage.toBuffer('jpg', function (err, cropbuffer) {
                                                                     sails.fs.writeFileSync(cropfilepath, cropbuffer);
                                                                 });
