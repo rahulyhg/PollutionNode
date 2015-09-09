@@ -390,7 +390,7 @@ module.exports = {
             })
 
             Twitter.post('statuses/update', {
-                status: message
+                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: "+message
             }, function (err, data, response) {
                 if (data.error) {
                     callback(err, data);
@@ -454,7 +454,7 @@ module.exports = {
                 url: 'https://graph.facebook.com/v2.4/' + userfbid + '/feed',
                 form: {
                     access_token: "1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
-                    message: message,
+                    message: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: " + link,
                     link: link
                 }
             }, function (err, httpResponse, body) {

@@ -237,9 +237,9 @@ module.exports = {
         } else {
             Gallery.findone(galleryid, function (data2, errorcallback) {
                 var data = {
-                    title: "Wohlig Technology",
+                    title: "Times Bappa - Ganpati Bappa Morya!",
                     image: sails.myurl + "uploadfile/getuserimage?file=" + data2,
-                    description: "Wohlig Technology is now a Planet."
+                    description: "Ganpati Bappa Morya! I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: <link to app>"
                 };
                 res.view("card", data);
             });
