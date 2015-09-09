@@ -285,7 +285,7 @@ module.exports = {
                             value: false
                         });
                     } else if (data2.length > 0) {
-                        callback(data2[0].gallery[0]);
+                        callback(data2[0].gallery[0].image);
                     } else {
                         callback({
                             value: false
