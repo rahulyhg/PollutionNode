@@ -38,5 +38,16 @@ module.exports = {
         } else {
             return res.badRequest();
         }
+    },
+    findonegallery: function (req, res) {
+        var gallery = req.param("gallery");
+        if (gallery && sails.ObjectID.isValid(gallery)) {
+            function callback(data) {
+                res.json(data);
+            };
+            Gallery.findonegallery(gallery, callback);
+        } else {
+            return res.badRequest();
+        }
     }
 };

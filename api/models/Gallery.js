@@ -267,6 +267,35 @@ module.exports = {
             }
         });
     },
+    findonegallery: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                callback({
+                    value: false
+                });
+            }
+            if (db) {
+                db.collection('user').find({
+                    "gallery._id": sails.ObjectID(data)
+                }, {
+                    "gallery.$": 1
+                }).toArray(function (err, data2) {
+                    if (err) {
+                        callback({
+                            value: false
+                        });
+                    } else if (data2.length > 0) {
+                        console(data2[0].gallery[0].image);
+                        //callback(data2[0].gallery[0].image);
+                    } else {
+                        callback({
+                            value: false
+                        });
+                    }
+                });
+            }
+        });
+    },
     find: function (data, callback) {
         var user = sails.ObjectID(data);
         sails.query(function (err, db) {
