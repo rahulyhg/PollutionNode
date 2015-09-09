@@ -128,14 +128,7 @@ module.exports = {
         retruns.uploadedon = sails.moment(new Date()).format('DD-MM-YYYY');
         sails.lwip.create(canvaswidth, canvasheight, 'white', function (err, canvas) {
             canvasdata = canvas;
-            sails.query(function (err, db) {
-                if (err) {
-                    callback(err);
-                    console.log(err);
-                }
-                if(db) {
-                    recimage(0);
-                }
+            
             });
 
             function recimage(num) {
@@ -224,7 +217,7 @@ module.exports = {
                         }
                     }
                 }
-            }
+            }recimage(0);
         });
     }
 };
