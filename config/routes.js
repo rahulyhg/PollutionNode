@@ -33,9 +33,7 @@ module.exports.routes = {
      ***************************************************************************/
 
     '/:galleryid': 'UserController.card',
-//    '/': 'UserController.redirect',
-    '/:unknownRoute': 'UserController.redirect',
-
+    '/': 'UserController.redirect',
     /***************************************************************************
      *                                                                          *
      * Custom routes here...                                                    *
