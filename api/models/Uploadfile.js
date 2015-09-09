@@ -125,10 +125,61 @@ module.exports = {
     },
     createimage: function (data, callback) {
         returns = data;
-        retruns.uploadedon = sails.moment(new Date()).format('DD-MM-YYYY');
+        returns.uploadedon = sails.moment(new Date()).format('DD-MM-YYYY');
         sails.lwip.create(canvaswidth, canvasheight, 'white', function (err, canvas) {
             canvasdata = canvas;
-            
+            sails.query(function (err, db) {
+                if (err) {
+                    callback(err);
+                    console.log(err);
+                }
+                if (db) {
+                    var user = sails.ObjectID(data.user);
+                    db.collection('user').aggregate({
+                        $unwind: "$gallery"
+                    }, {
+                        $match: {
+                            "_id": user,
+                            "gallery._id": {
+                                $exists: true
+                            },
+                            "gallery.uploadedon": sails.moment(new Date()).format('DD-MM-YYYY')
+                        }
+                    }, {
+                        $project: {
+                            "_id": 0,
+                            "gallery._id": 1,
+                            "gallery.imagefinal": 1
+                        }
+                    }).toArray(function (err, data2) {
+                        if (err) {
+                            console.log(err);
+                            db.close();
+                        } else if (data2 && data2[0]) {
+                            console.log(data2[0].gallery);
+                            returns._id = data2[0].gallery._id;
+                            var delimage = data2[0].gallery.imagefinal;
+                            var deletepath = './assets/userimage/' + delimage;
+                            var splitpath = delimage.split('.');
+                            var deletecroppath = './assets/userimage/' + splitpath[0] + '_square.jpg';
+                            sails.fs.unlink(deletepath, function (err) {
+                                if (err) {
+                                    console.log(err);
+                                }
+                                sails.fs.unlink(deletecroppath, function (err) {
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                });
+                            });
+                            recimage(0);
+                            db.close();
+                        } else {
+                            recimage(0);
+                            db.close();
+                        }
+                    });
+                }
             });
 
             function recimage(num) {
@@ -146,8 +197,7 @@ module.exports = {
                 n.height = parseFloat(n.height);
                 n.top = parseFloat(n.top);
                 n.left = parseFloat(n.left);
-
-                //                imagecreate();
+                imagecreate();
 
                 function imagecreate() {
                     if (filepath != '' && newfilepath != '') {
@@ -217,7 +267,7 @@ module.exports = {
                         }
                     }
                 }
-            }recimage(0);
+            }
         });
     }
 };
