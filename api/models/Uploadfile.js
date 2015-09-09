@@ -162,14 +162,14 @@ module.exports = {
                                             cropRight = canvaswidth - n.left - 1;
                                         } else {
                                             cropLeft = (-1 * n.left) + 1;
-                                            cropRight = canvaswidth - 1;
+                                            cropRight = canvaswidth -n.left- 1;
                                             n.left = 0;
                                         }
                                         if (n.top >= 0) {
                                             cropBottom = canvasheight - n.top - 1;
                                         } else {
                                             cropTop = (-1 * n.top) + 1;
-                                            cropBottom = canvasheight - 1;
+                                            cropBottom = canvasheight - n.top - 1;
                                             n.top = 0;
                                         }
 
