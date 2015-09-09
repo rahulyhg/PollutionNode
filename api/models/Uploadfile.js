@@ -156,7 +156,6 @@ module.exports = {
                             console.log(err);
                             db.close();
                         } else if (data2 && data2[0]) {
-                            console.log(data2[0].gallery);
                             returns._id = data2[0].gallery._id;
                             var delimage = data2[0].gallery.imagefinal;
                             var deletepath = './assets/userimage/' + delimage;
