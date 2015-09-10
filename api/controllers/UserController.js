@@ -132,7 +132,6 @@ module.exports = {
         failureRedirect: '/user/fail'
     }),
     success: function (req, res, data) {
-        console.log("LOGIN DONE");
         if (req.session.passport) {
             sails.sockets.blast("login", {
                 loginid: req.session.loginid,
@@ -140,14 +139,14 @@ module.exports = {
                 user: req.session.passport.user
             });
         }
-        res.send("Login Successful");
+        res.view("success");
     },
     fail: function (req, res) {
         sails.sockets.blast("login", {
             loginid: req.session.loginid,
             status: "fail"
         });
-        res.send("Login Failed");
+        res.view("fail");
     },
     profile: function (req, res) {
         if (req.session.passport) {
