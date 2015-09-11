@@ -39,6 +39,7 @@ module.exports = {
             });
         } else {
             if (data.provider == "facebook") {
+                console.log(data);
                 if (data.summary && data.summary != "") {
                     if (data.shares && data.shares.count) {
                         data.total_shares = data.shares.count;
