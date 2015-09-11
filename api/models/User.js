@@ -288,8 +288,9 @@ module.exports = {
                         } else {
 
                             request.get({
-                                url: "https: //graph.facebook.com/oauth/access_token?client_id=1616856265259993&client_secret=6e8052bdbe29f02ead4f618549e98cac&grant_type = fb_exchange_token&fb_exchange_token="+data.accessToken
+                                url: "https://graph.facebook.com/oauth/access_token?client_id=1616856265259993&client_secret=6e8052bdbe29f02ead4f618549e98cac&grant_type=fb_exchange_token&fb_exchange_token="+data.accessToken
                             }, function (err, httpResponse, body) {
+                                console.log(body);
                                 var accesstoken = body.split("&");
                                 accesstoken = accesstoken[0].split("=");
                                 data.accessToken=accesstoken;
