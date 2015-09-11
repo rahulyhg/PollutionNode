@@ -319,7 +319,7 @@ module.exports = {
                 }).toArray(function (err, data2) {
                     if (err) {
                         callback(err);
-                    } else if (data2 && data2[0].gallery) {
+                    } else if (data2[0] && data2[0].gallery) {
                         callback(data2[0].gallery);
                     } else {
                         callback({
