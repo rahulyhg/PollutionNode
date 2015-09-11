@@ -23,7 +23,7 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (id, done) {
     done(null, id);
 });
-
+var request = require('request');
 module.exports = {
     save: function (req, res) {
         var print = function (data) {
@@ -226,8 +226,8 @@ module.exports = {
         }
         User.facebookPostDetail(fbpostid, userid, showjson);
     },
-    
-    redirect: function(req,res) {
+
+    redirect: function (req, res) {
         res.redirect(307, 'http://www.timesbappa.com');
     },
 
@@ -254,7 +254,8 @@ module.exports = {
 
         var responsenum = 0;
         var checkres = 0;
-        var completeresponse=[];
+        var completeresponse = [];
+
         function trackstartsnow(trackarr) {
             _.each(trackarr, function (n, key1) {
                 if (n.post && n.post[0]) {
@@ -668,7 +669,6 @@ module.exports = {
                         });
                     }
                     if (data2 != null) {
-                        console.log(data2);
                         var dailypost = {};
                         dailypost.leaderboard = data2;
                         dailypost.type = "TenDays";
@@ -681,6 +681,54 @@ module.exports = {
             }
         });
     },
+    readyLeaderboard: function (req, res) {
 
-    /////////////////////////////////////
+            var response = [];
+
+            function rescallback() {
+                if (response.length == 4) {
+                    res.json(response);
+                }
+            }
+
+            request.get({
+                url: sails.myurl + "user/tracker"
+            }, function (err, httpResponse, body) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    response.push(body);
+                    request.get({
+                        url: sails.myurl + "user/getdailypost?date=" + sails.moment().format('DD-MM-YYYY')
+                    }, function (err, httpResponse, body) {
+                        console.log(err);
+                        response.push(body);
+                        rescallback();
+                    });
+                    request.get({
+                        url: sails.myurl + "user/date3leaderboard"
+                    }, function (err, httpResponse, body) {
+                        console.log(err);
+                        response.push(body);
+                        rescallback();
+                    });
+                    request.get({
+                        url: sails.myurl + "user/date5leaderboard"
+                    }, function (err, httpResponse, body) {
+                        console.log(err);
+                        response.push(body);
+                        rescallback();
+                    });
+                    request.get({
+                        url: sails.myurl + "user/date10leaderboard"
+                    }, function (err, httpResponse, body) {
+                        console.log(err);
+                        response.push(body);
+                        rescallback();
+                    });
+
+                }
+            });
+        }
+        /////////////////////////////////////
 };
