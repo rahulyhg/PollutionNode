@@ -264,7 +264,7 @@ module.exports = {
                         if (m.provider == "twitter") {
                             User.twitterPostDetail(m.id_str, n._id, n.token, n.tokenSecret, showjson);
                         } else {
-                            User.facebookPostDetail(m.id, n._id, showjson);
+                            User.facebookPostDetail(m.id, n._id,n.accessToken,showjson);
                         }
                     });
                 }
