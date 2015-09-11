@@ -327,6 +327,9 @@ module.exports = {
                         like: {
                             $sum: '$post.total_likes'
                         },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
                         name: {
                             $addToSet: "$name"
                         },
@@ -340,10 +343,11 @@ module.exports = {
                         retweet: 1,
                         favorite: 1,
                         like: 1,
+                        share: 1,
                         name: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite"]
+                            $add: ["$like", "$retweet", "$favorite","$share"]
                         }
                     }
         }, {
@@ -422,6 +426,9 @@ module.exports = {
                         like: {
                             $sum: '$post.total_likes'
                         },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
                         name: {
                             $addToSet: "$name"
                         },
@@ -435,10 +442,11 @@ module.exports = {
                         retweet: 1,
                         favorite: 1,
                         like: 1,
+                        share: 1,
                         name: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite"]
+                            $add: ["$like", "$retweet", "$favorite","$share"]
                         }
                     }
         }, {
@@ -521,6 +529,9 @@ module.exports = {
                         like: {
                             $sum: '$post.total_likes'
                         },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
                         name: {
                             $addToSet: "$name"
                         },
@@ -534,10 +545,11 @@ module.exports = {
                         retweet: 1,
                         favorite: 1,
                         like: 1,
+                        share:1,
                         name: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite"]
+                            $add: ["$like", "$retweet", "$favorite","$share"]
                         }
                     }
         }, {
@@ -630,6 +642,9 @@ module.exports = {
                         like: {
                             $sum: '$post.total_likes'
                         },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
                         name: {
                             $addToSet: "$name"
                         },
@@ -643,10 +658,11 @@ module.exports = {
                         retweet: 1,
                         favorite: 1,
                         like: 1,
+                        share: 1,
                         name: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite"]
+                            $add: ["$like", "$retweet", "$favorite","$share"]
                         }
                     }
         }, {
