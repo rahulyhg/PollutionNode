@@ -245,8 +245,8 @@ module.exports = {
                                                         newimage.toBuffer('jpg', function (err, buffer) {
                                                             sails.fs.writeFileSync(newfilepath, buffer);
                                                             sails.lwip.open('./images/background/twitter_bg.jpg', function (err, backimage) {
-                                                                cropdata.resize(158, 281, function (err, resimage) {
-                                                                    backimage.paste(0, 0, resimage, function (err, pastedimage) {
+                                                                cropdata.resize(147, 261, function (err, resimage) {
+                                                                    backimage.paste(99, 10, resimage, function (err, pastedimage) {
                                                                         pastedimage.toBuffer('jpg', function (err, buffer1) {
                                                                             sails.fs.writeFileSync(cropfilepath, buffer1);
                                                                         });
