@@ -501,6 +501,7 @@ module.exports = {
         });
     },
     facebookPostDetail: function (fbpostid, userid,accessToken, callback) {
+        console.log(accessToken);
         request.get({
             url: 'https://graph.facebook.com/v2.4/' + fbpostid + "/likes?summary=true&access_token="+accessToken,
         }, function (err, httpResponse, body) {
