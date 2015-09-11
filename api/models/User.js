@@ -251,10 +251,10 @@ module.exports = {
             insertdata.provider = data.provider;
             insertdata.username = data.username;
             insertdata.name = data.displayName;
-            if (data.photos[0]) {
+            if (data.photos && data.photos[0]) {
                 insertdata.profilepic = data.photos[0].value;
             }
-            if (data.emails[0]) {
+            if (data.emails && data.emails[0]) {
                 insertdata.email = data.emails[0].value;
             }
             insertdata.accessToken = data.accessToken;
