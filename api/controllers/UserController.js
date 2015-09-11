@@ -686,7 +686,7 @@ module.exports = {
             var response = [];
 
             function rescallback() {
-                if (response.length == 4) {
+                if (response.length == 5) {
                     res.json(response);
                 }
             }
@@ -697,33 +697,33 @@ module.exports = {
                 if (err) {
                     console.log(err);
                 } else {
-                    response.push(body);
+                    response.push({tracker:JSON.parse(body)});
                     request.get({
                         url: sails.myurl + "user/getdailypost?date=" + sails.moment().format('DD-MM-YYYY')
                     }, function (err, httpResponse, body) {
                         console.log(err);
-                        response.push(body);
+                        response.push({dailyleader:JSON.parse(body)});
                         rescallback();
                     });
                     request.get({
                         url: sails.myurl + "user/date3leaderboard"
                     }, function (err, httpResponse, body) {
                         console.log(err);
-                        response.push(body);
+                        response.push({threeleader:JSON.parse(body)});
                         rescallback();
                     });
                     request.get({
                         url: sails.myurl + "user/date5leaderboard"
                     }, function (err, httpResponse, body) {
                         console.log(err);
-                        response.push(body);
+                        response.push({fiveleader:JSON.parse(body)});
                         rescallback();
                     });
                     request.get({
                         url: sails.myurl + "user/date10leaderboard"
                     }, function (err, httpResponse, body) {
                         console.log(err);
-                        response.push(body);
+                        response.push({tenleader:JSON.parse(body)});
                         rescallback();
                     });
 
