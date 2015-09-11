@@ -39,12 +39,7 @@ module.exports = {
             });
         } else {
             if (data.provider == "facebook") {
-<<<<<<< Updated upstream
-                console.log(data);
-                if (data.summary && data.summary != "") {
-=======
                 if (data.likes && data.likes.summary && data.likes.summary != "") {
->>>>>>> Stashed changes
                     if (data.shares && data.shares.count) {
                         data.total_shares = data.shares.count;
                     }
