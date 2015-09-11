@@ -242,7 +242,7 @@ module.exports = {
                 var data = {
                     title: "Times Bappa - Ganpati Bappa Morya!",
                     image: sails.myurl + "uploadfile/getuserimage?file=" + data2,
-                    description: "Ganpati Bappa Morya! I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: <link to app>"
+                    description: "Ganpati Bappa Morya! I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: http://www.timesbappa.com"
                 };
                 res.view("card", data);
             });
@@ -264,7 +264,7 @@ module.exports = {
                         if (m.provider == "twitter") {
                             User.twitterPostDetail(m.id_str, n._id, n.token, n.tokenSecret, showjson);
                         } else {
-                            User.facebookPostDetail(m.id, n._id,n.accessToken,showjson);
+                            User.facebookPostDetail(m.id, n._id, showjson);
                         }
                     });
                 }
