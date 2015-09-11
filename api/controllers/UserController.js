@@ -684,6 +684,8 @@ module.exports = {
     readyLeaderboard: function (req, res) {
 
             var response = [];
+            res.connection.setTimeout(200000);
+            req.connection.setTimeout(200000);
 
             function rescallback() {
                 if (response.length == 5) {
@@ -697,33 +699,43 @@ module.exports = {
                 if (err) {
                     console.log(err);
                 } else {
-                    response.push({tracker:JSON.parse(body)});
+                    response.push({
+                        tracker: JSON.parse(body)
+                    });
                     request.get({
                         url: sails.myurl + "user/getdailypost?date=" + sails.moment().format('DD-MM-YYYY')
                     }, function (err, httpResponse, body) {
                         console.log(err);
-                        response.push({dailyleader:JSON.parse(body)});
+                        response.push({
+                            dailyleader: JSON.parse(body)
+                        });
                         rescallback();
                     });
                     request.get({
                         url: sails.myurl + "user/date3leaderboard"
                     }, function (err, httpResponse, body) {
                         console.log(err);
-                        response.push({threeleader:JSON.parse(body)});
+                        response.push({
+                            threeleader: JSON.parse(body)
+                        });
                         rescallback();
                     });
                     request.get({
                         url: sails.myurl + "user/date5leaderboard"
                     }, function (err, httpResponse, body) {
                         console.log(err);
-                        response.push({fiveleader:JSON.parse(body)});
+                        response.push({
+                            fiveleader: JSON.parse(body)
+                        });
                         rescallback();
                     });
                     request.get({
                         url: sails.myurl + "user/date10leaderboard"
                     }, function (err, httpResponse, body) {
                         console.log(err);
-                        response.push({tenleader:JSON.parse(body)});
+                        response.push({
+                            tenleader: JSON.parse(body)
+                        });
                         rescallback();
                     });
 
