@@ -254,7 +254,7 @@ module.exports = {
             if (data.photos[0]) {
                 insertdata.profilepic = data.photos[0].value;
             }
-            if (data.photos[0]) {
+            if (data.emails[0]) {
                 insertdata.email = data.emails[0].value;
             }
             insertdata.accessToken = data.accessToken;
