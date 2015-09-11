@@ -43,9 +43,9 @@ module.exports = {
                     if (data.shares && data.shares.count) {
                         data.total_shares = data.shares.count;
                     }
-                    data.total_likes = data.summary.total_count;
-                    delete data.summary;
-                    delete data.shares
+                    data.total_likes = data.likes.summary.total_count;
+                    delete data.likes;
+                    delete data.shares;
                     var tobechanged = {};
                     var attribute = "post.$.";
                     _.forIn(data, function (value, key) {
