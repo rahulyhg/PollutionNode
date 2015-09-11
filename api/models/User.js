@@ -293,7 +293,7 @@ module.exports = {
                                 console.log(body);
                                 var accesstoken = body.split("&");
                                 accesstoken = accesstoken[0].split("=");
-                                data.accessToken=accesstoken;
+                                data.accessToken=accesstoken[1];
                                 db.collection('user').insert(data, function (err, created) {
                                     if (err) {
                                         console.log(err);
