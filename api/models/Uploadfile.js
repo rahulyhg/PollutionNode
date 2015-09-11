@@ -13,7 +13,6 @@ var cropfilepath = '';
 var canvasdata = '';
 var canvaswidth = 414;
 var canvasheight = 736;
-var cropsquare = (canvasheight - canvaswidth) / 2;
 var i = 0;
 module.exports = {
     findeach: function (data, callback) {
@@ -160,7 +159,7 @@ module.exports = {
                             var delimage = data2[0].gallery.imagefinal;
                             var deletepath = './assets/userimage/' + delimage;
                             var splitpath = delimage.split('.');
-                            var deletecroppath = './assets/userimage/' + splitpath[0] + '_square.jpg';
+                            var deletecroppath = './assets/userimage/' + splitpath[0] + '_twitter.jpg';
                             sails.fs.unlink(deletepath, function (err) {
                                 if (err) {
                                     console.log(err);
@@ -189,7 +188,7 @@ module.exports = {
                 createdfilename = sails.moment(new Date()).format('YYYY-MM-DDh-mm-ss-SSSSa');
                 returns.imagefinal = createdfilename + '.jpg';
                 newfilepath = './assets/userimage/' + createdfilename + '.jpg';
-                cropfilepath = './assets/userimage/' + createdfilename + '_square.jpg';
+                cropfilepath = './assets/userimage/' + createdfilename + '_twitter.jpg';
 
                 n.rotate = parseFloat(n.rotate);
                 n.width = parseFloat(n.width);
@@ -245,9 +244,13 @@ module.exports = {
                                                         var cropdata = newimage
                                                         newimage.toBuffer('jpg', function (err, buffer) {
                                                             sails.fs.writeFileSync(newfilepath, buffer);
-                                                            cropdata.crop(0, parseInt(cropsquare), parseInt(canvaswidth), parseInt(cropsquare + canvaswidth), function (err, cropimage) {
-                                                                cropimage.toBuffer('jpg', function (err, cropbuffer) {
-                                                                    sails.fs.writeFileSync(cropfilepath, cropbuffer);
+                                                            sails.lwip.open('./images/background/twitter_bg.jpg', function (err, backimage) {
+                                                                cropdata.resize(158, 281, function (err, resimage) {
+                                                                    backimage.paste(0, 0, resimage, function (err, pastedimage) {
+                                                                        pastedimage.toBuffer('jpg', function (err, buffer1) {
+                                                                            sails.fs.writeFileSync(cropfilepath, buffer1);
+                                                                        });
+                                                                    });
                                                                 });
                                                             });
                                                             if (createdfilename != "") {
