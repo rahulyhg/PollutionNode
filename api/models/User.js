@@ -501,10 +501,10 @@ module.exports = {
         });
     },
     facebookPostDetail: function (fbpostid, userid,accessToken, callback) {
-        console.log(accessToken);
         request.get({
-            url: 'https://graph.facebook.com/v2.4/' + fbpostid + "/likes?summary=true&access_token="+accessToken,
+            url: 'https://graph.facebook.com/v2.4/' + fbpostid + "?fields=likes.summary(true),comments.summary(true),shares&access_token="+accessToken,
         }, function (err, httpResponse, body) {
+            console.log(body);
             body = JSON.parse(body);
             body.user = userid;
             body.provider = "facebook";
