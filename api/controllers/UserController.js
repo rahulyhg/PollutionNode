@@ -827,6 +827,9 @@ module.exports = {
 
                 }
             });
-        }
+    },
+    currentTime:function(req,res){
+        res.json(sails.moment().format('YYYY-MM-DDh-mm-ss-SSSSa'));
+    }
         /////////////////////////////////////
 };
