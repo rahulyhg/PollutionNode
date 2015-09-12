@@ -225,6 +225,9 @@ module.exports = {
                             like: {
                                 $sum: '$post.total_likes'
                             },
+                            share: {
+                                $sum: '$post.total_shares'
+                            },
 
                         }
                     },
@@ -234,8 +237,9 @@ module.exports = {
                             retweet: 1,
                             favorite: 1,
                             like: 1,
+                            share:1,
                             total: {
-                                $add: ["$like", "$retweet", "$favorite"]
+                                $add: ["$like", "$retweet", "$favorite","$share"]
                             }
                         }
                         },
@@ -248,6 +252,7 @@ module.exports = {
                             "retweet": 0,
                             "favorite": 0,
                             "like": 0,
+                            "share": 0,
                             "total": 0
                         });
                     }
@@ -258,6 +263,7 @@ module.exports = {
                             "retweet": 0,
                             "favorite": 0,
                             "like": 0,
+                            "share": 0,
                             "total": 0
                         });
                     }

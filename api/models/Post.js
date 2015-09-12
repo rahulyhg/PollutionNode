@@ -39,9 +39,13 @@ module.exports = {
             });
         } else {
             if (data.provider == "facebook") {
-                if (data.summary && data.summary != "") {
-                    data.total_likes = data.summary.total_count;
-                    delete data.summary;
+                if (data.likes && data.likes.summary && data.likes.summary != "") {
+                    if (data.shares && data.shares.count) {
+                        data.total_shares = data.shares.count;
+                    }
+                    data.total_likes = data.likes.summary.total_count;
+                    delete data.likes;
+                    delete data.shares;
                     var tobechanged = {};
                     var attribute = "post.$.";
                     _.forIn(data, function (value, key) {
@@ -77,7 +81,13 @@ module.exports = {
                         }
                     });
                 } else {
-                    Post.delete(data, callback);
+
+                    callback({
+                        value: false,
+                        comment: "Should Delete"
+                    });
+
+                    // Post.delete(data, callback);
                 }
             } else if (data.provider == "twitter") {
                 if (data.retweet_count || data.retweet_count == 0) {
@@ -210,45 +220,39 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("user").aggregate([
-                    {
-                        $match: {
-                            _id: user,
-                            "post.postid": {
-                                $exists: true
-                            },
-                            "post.postid": {
-                                $regex: check
-                            }
-                        }
-                    },
-                    {
-                        $unwind: "$post"
-                    },
-                    {
-                        $match: {
-                            "post.postid": {
-                                $exists: true
-                            },
-                            "post.postid": {
-                                $regex: check
-                            }
-                        }
-                    },
-                    {
-                        $group: {
-                            _id: user,
-                            count: {
-                                $sum: 1
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            count: 1
+                db.collection("user").aggregate([{
+                    $match: {
+                        _id: user,
+                        "post.postid": {
+                            $exists: true
+                        },
+                        "post.postid": {
+                            $regex: check
                         }
                     }
-                ]).toArray(function (err, result) {
+        }, {
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.postid": {
+                            $exists: true
+                        },
+                        "post.postid": {
+                            $regex: check
+                        }
+                    }
+        }, {
+                    $group: {
+                        _id: user,
+                        count: {
+                            $sum: 1
+                        }
+                    }
+        }, {
+                    $project: {
+                        count: 1
+                    }
+        }]).toArray(function (err, result) {
                     if (result[0]) {
                         newreturns.total = result[0].count;
                         newreturns.totalpages = Math.ceil(result[0].count / data.pagesize);
@@ -261,37 +265,32 @@ module.exports = {
                         });
                     }
                 });
-                db.collection("user").aggregate([
-                    {
-                        $match: {
-                            _id: user,
-                            "post.postid": {
-                                $exists: true
-                            },
-                            "post.postid": {
-                                $regex: check
-                            }
-                        }
-                    },
-                    {
-                        $unwind: "$post"
-                    },
-                    {
-                        $match: {
-                            "post.postid": {
-                                $exists: true
-                            },
-                            "post.postid": {
-                                $regex: check
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            post: 1
+                db.collection("user").aggregate([{
+                    $match: {
+                        _id: user,
+                        "post.postid": {
+                            $exists: true
+                        },
+                        "post.postid": {
+                            $regex: check
                         }
                     }
-                ]).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(
+        }, {
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.postid": {
+                            $exists: true
+                        },
+                        "post.postid": {
+                            $regex: check
+                        }
+                    }
+        }, {
+                    $project: {
+                        post: 1
+                    }
+        }]).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(
                     function (err, found) {
                         if (data != null) {
                             newreturns.data.push(found);

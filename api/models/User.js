@@ -286,21 +286,33 @@ module.exports = {
                             delete data2.post;
                             callback(null, data2);
                         } else {
-                            db.collection('user').insert(data, function (err, created) {
-                                if (err) {
-                                    console.log(err);
-                                    callback({
-                                        value: false
-                                    });
-                                }
-                                if (created) {
-                                    data.id = created.ops[0]._id;
-                                    delete data.accessToken;
-                                    delete data.token;
-                                    delete data.tokenSecret;
-                                    callback(null, data);
-                                }
+
+                            request.get({
+                                url: "https://graph.facebook.com/oauth/access_token?client_id=1616856265259993&client_secret=6e8052bdbe29f02ead4f618549e98cac&grant_type=fb_exchange_token&fb_exchange_token="+data.accessToken
+                            }, function (err, httpResponse, body) {
+                                console.log(body);
+                                var accesstoken = body.split("&");
+                                accesstoken = accesstoken[0].split("=");
+                                data.accessToken=accesstoken[1];
+                                db.collection('user').insert(data, function (err, created) {
+                                    if (err) {
+                                        console.log(err);
+                                        callback({
+                                            value: false
+                                        });
+                                    }
+                                    if (created) {
+                                        data.id = created.ops[0]._id;
+                                        delete data.accessToken;
+                                        delete data.token;
+                                        delete data.tokenSecret;
+                                        callback(null, data);
+                                    }
+                                });
+
                             });
+
+
                         }
                     });
                 } else {
@@ -390,7 +402,7 @@ module.exports = {
             })
 
             Twitter.post('statuses/update', {
-                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: "+message
+                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: " + message
             }, function (err, data, response) {
                 if (data.error) {
                     callback(err, data);
@@ -488,10 +500,11 @@ module.exports = {
             callback(err, data);
         });
     },
-    facebookPostDetail: function (fbpostid, userid, callback) {
+    facebookPostDetail: function (fbpostid, userid,accessToken, callback) {
         request.get({
-            url: 'https://graph.facebook.com/v2.4/' + fbpostid + "/likes?summary=true&access_token=1616856265259993|HjeOYsxGLpafWdZ89YGQwu9L0Xs",
+            url: 'https://graph.facebook.com/v2.4/' + fbpostid + "?fields=likes.summary(true),shares&access_token="+accessToken,
         }, function (err, httpResponse, body) {
+            console.log(body);
             body = JSON.parse(body);
             body.user = userid;
             body.provider = "facebook";
