@@ -204,7 +204,8 @@ module.exports = {
                     name: 1,
                     profilepic: 1,
                     days: 1,
-                    balancedate: 1
+                    balancedate: 1,
+                    viserjan:1
                 }).toArray(function (err, data) {
                     if (err) {
                         console.log(err);
