@@ -577,7 +577,7 @@ module.exports = {
                             value: "false"
                         });
                     }
-                    if (data2 != null) {
+                    else if (data2 != null) {
                         var dailypost = {};
                         dailypost.leaderboard = data2;
 
@@ -697,6 +697,66 @@ module.exports = {
 
                         DailyPost.save(dailypost, function (response) {
                             res.json(dailypost);
+                        });
+                    }
+                });
+            }
+        });
+    },
+    counter: function (req, res) {
+        var count = {};
+        var postdata = {};
+        postdata.count = [];
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+
+                res.json({
+                    value: "false"
+                });
+
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                    $unwind: "$post"
+            },{
+                    $group: {
+                        _id: null,
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        favorite: {
+                            $sum: '$post.favorite_count'
+                        },
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        }
+                    }
+            }, {
+                    $project: {
+                        _id: 0,
+                        retweet: 1,
+                        favorite: 1,
+                        like: 1,
+                        share: 1
+                    }
+        }]).toArray(function (err, data2) {
+
+                    if (err) {
+                        res.json({
+                            value: "false"
+                        });
+                    }else  if (data2 && data2[0]) {
+                        res.json(data2[0]);
+                    }else {
+                        res.json({
+                            "retweet": 0,
+                            "favorite": 0,
+                            "like": 0,
+                            "share": 0
                         });
                     }
                 });
