@@ -126,7 +126,7 @@ module.exports = {
         var loginid = req.param("loginid");
         req.session.loginid = loginid;
         passport.authenticate('facebook', {
-            scope: 'email,public_profile,user_posts,publish_actions'
+            scope: 'email,public_profile,publish_actions'
         })(req, res);
     },
     callbackt: passport.authenticate('twitter', {
