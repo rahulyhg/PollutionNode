@@ -577,7 +577,7 @@ module.exports = {
                             value: "false"
                         });
                     }
-                    else if (data2 != null) {
+                    if (data2 != null) {
                         var dailypost = {};
                         dailypost.leaderboard = data2;
 
@@ -741,7 +741,10 @@ module.exports = {
                         retweet: 1,
                         favorite: 1,
                         like: 1,
-                        share: 1
+                        share: 1,
+                        total: {
+                            $add: ["$like", "$retweet", "$favorite", "$share"]
+                        }
                     }
         }]).toArray(function (err, data2) {
 
@@ -756,7 +759,8 @@ module.exports = {
                             "retweet": 0,
                             "favorite": 0,
                             "like": 0,
-                            "share": 0
+                            "share": 0,
+                            "total": 0
                         });
                     }
                 });
