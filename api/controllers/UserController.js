@@ -37,6 +37,12 @@ module.exports = {
         }
         User.find(req.body, print);
     },
+    countusers: function (req, res) {
+        var print = function (data) {
+            res.json(data);
+        }
+        User.countusers(req.body, print);
+    },
     findlimited: function (req, res) {
         var print = function (data) {
             res.json(data);
@@ -264,7 +270,7 @@ module.exports = {
                         if (m.provider == "twitter") {
                             User.twitterPostDetail(m.id_str, n._id, n.token, n.tokenSecret, showjson);
                         } else {
-                            User.facebookPostDetail(m.id, n._id,n.accessToken, showjson);
+                            User.facebookPostDetail(m.id, n._id, n.accessToken, showjson);
                         }
                     });
                 }
@@ -347,7 +353,7 @@ module.exports = {
                         name: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite","$share"]
+                            $add: ["$like", "$retweet", "$favorite", "$share"]
                         }
                     }
         }, {
@@ -446,7 +452,7 @@ module.exports = {
                         name: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite","$share"]
+                            $add: ["$like", "$retweet", "$favorite", "$share"]
                         }
                     }
         }, {
@@ -545,11 +551,11 @@ module.exports = {
                         retweet: 1,
                         favorite: 1,
                         like: 1,
-                        share:1,
+                        share: 1,
                         name: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite","$share"]
+                            $add: ["$like", "$retweet", "$favorite", "$share"]
                         }
                     }
         }, {
@@ -662,7 +668,7 @@ module.exports = {
                         name: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite","$share"]
+                            $add: ["$like", "$retweet", "$favorite", "$share"]
                         }
                     }
         }, {

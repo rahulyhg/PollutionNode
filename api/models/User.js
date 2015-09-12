@@ -48,6 +48,34 @@ module.exports = {
                 });
             });
         }
+    },countusers: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            }
+            if (db) {
+                db.collection("user").count({}, function (err, number) {
+                    if (number != null) {
+                        callback(number);
+                        db.close();
+                    } else if (err) {
+                        callback({
+                            value: false
+                        });
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No user found."
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
     },
     find: function (data, callback) {
         var returns = [];
