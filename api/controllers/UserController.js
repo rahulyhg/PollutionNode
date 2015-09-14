@@ -25,6 +25,7 @@ passport.deserializeUser(function (id, done) {
 });
 var request = require('request');
 var geoip = require('geoip-lite');
+var cities = require('cities');
 module.exports = {
     save: function (req, res) {
         var print = function (data) {
@@ -50,6 +51,8 @@ module.exports = {
         console.log(ip);
         var geo = geoip.lookup(ip);
         console.log(geo);
+        var city=cities.gps_lookup(geo.ll[0],geo.ll[1]);
+        console.log(city);
         var print = function (data) {
             res.json(data);
         }
