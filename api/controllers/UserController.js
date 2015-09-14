@@ -166,7 +166,7 @@ module.exports = {
             url: "http://api.db-ip.com/addrinfo?addr=" + ip + "&api_key=a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
         }, function (err, httpResponse, body) {
             var userobj = {};
-            userobj._id = req.session.loginid;
+            userobj._id = req.session.passport.user.id;
             body=JSON.parse(body);
             var splitcity = body.city.split(" ");
             userobj.city = splitcity[0];
