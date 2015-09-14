@@ -298,8 +298,6 @@ module.exports = {
     },
     find: function (data, callback) {
         var user = sails.ObjectID(data);
-        var sort = {};
-        sort["gallery.uploadedon"] = -1;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -314,13 +312,11 @@ module.exports = {
                     _id: 0,
                     "gallery._id": 1,
                     "gallery.imagefinal": 1
-                }, {
-                    $sort: sort
                 }).toArray(function (err, data2) {
                     if (err) {
                         callback(err);
                     } else if (data2[0] && data2[0].gallery) {
-                        callback(data2[0].gallery);
+                        callback(_.sortByOrder(data2[0].gallery, ['uploadedon'], ['desc']));
                     } else {
                         callback({
                             value: false
