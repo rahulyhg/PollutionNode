@@ -432,9 +432,9 @@ module.exports = {
                 access_token: access_token,
                 access_token_secret: access_token_secret
             })
-
+            var d=new Date();
             Twitter.post('statuses/update', {
-                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: " + message
+                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: " + message+"?date="+d;
             }, function (err, data, response) {
                 if (data.error) {
                     callback(err, data);
