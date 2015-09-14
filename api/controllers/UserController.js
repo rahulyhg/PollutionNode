@@ -24,6 +24,7 @@ passport.deserializeUser(function (id, done) {
     done(null, id);
 });
 var request = require('request');
+var geoip = require('geoip-lite');
 module.exports = {
     save: function (req, res) {
         var print = function (data) {
@@ -44,7 +45,11 @@ module.exports = {
         User.countusers(req.body, print);
     },
     findlimited: function (req, res) {
-        console.log(req.connection.remoteAddress);
+        
+        var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
+        console.log(ip);
+        var geo = geoip.lookup(ip);
+        console.log(geo);
         var print = function (data) {
             res.json(data);
         }
