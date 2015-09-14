@@ -516,7 +516,7 @@ module.exports = {
                     if (err) {
                         console.log(err);
                         callback(err, null);
-                    } else if (data2 && data2.length > 0 && data2[0].post && data2[0].post.length > 0 ) {
+                    } else if (data2 && data2.length > 0 && data2[0].post && data2[0].post.length > 0) {
                         callback({
                             value: false,
                             comment: "wait"
@@ -525,6 +525,7 @@ module.exports = {
                         db.collection('user').find({
                             "_id": sails.ObjectID(userid)
                         }).toArray(function (err, result) {
+                            console.log(result);
                             if (err) {
                                 console.log(err);
                                 callback({
