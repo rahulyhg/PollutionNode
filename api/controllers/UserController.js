@@ -149,21 +149,32 @@ module.exports = {
         failureRedirect: '/user/fail'
     }),
     success: function (req, res, data) {
-        console.log(req.connection.remoteAddress);
-//        var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
-//        request.get({
-//            url: "http://api.db-ip.com/addrinfo?addr=" + ip + "&api_key=a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
-//        }, function (err, httpResponse, body) {
-//            res.json(JSON.parse(body));
-//        });
-        if (req.session.passport) {
-            sails.sockets.blast("login", {
-                loginid: req.session.loginid,
-                status: "success",
-                user: req.session.passport.user
-            });
+
+        function ipsavecallback() {
+            if (req.session.passport) {
+                sails.sockets.blast("login", {
+                    loginid: req.session.loginid,
+                    status: "success",
+                    user: req.session.passport.user
+                });
+            }
+            res.view("success");
         }
-        res.view("success");
+
+        var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
+        request.get({
+            url: "http://api.db-ip.com/addrinfo?addr=" + ip + "&api_key=a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
+        }, function (err, httpResponse, body) {
+            var userobj = {};
+            userobj._id = req.session.loginid;
+            var splitcity = body.city.split(" ");
+            userobj.city = splitcity[0];
+            userEdit(userobj);
+
+            function userEdit(userobj) {
+                User.save(userobj, ipsavecallback);
+            }
+        });
     },
     fail: function (req, res) {
         sails.sockets.blast("login", {
