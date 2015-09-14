@@ -525,7 +525,6 @@ module.exports = {
                         db.collection('user').find({
                             "_id": sails.ObjectID(userid)
                         }).toArray(function (err, result) {
-                            console.log(result);
                             if (err) {
                                 console.log(err);
                                 callback({

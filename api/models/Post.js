@@ -68,6 +68,7 @@ module.exports = {
                                 if (err) {
                                     console.log(err);
                                 } else if (updated) {
+                                    console.log(updated);
                                     callback({
                                         value: true
                                     });
