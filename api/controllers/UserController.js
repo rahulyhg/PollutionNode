@@ -167,6 +167,7 @@ module.exports = {
         }, function (err, httpResponse, body) {
             var userobj = {};
             userobj._id = req.session.loginid;
+            body=JSON.parse(body);
             var splitcity = body.city.split(" ");
             userobj.city = splitcity[0];
             userEdit(userobj);
