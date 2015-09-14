@@ -134,10 +134,8 @@ module.exports = {
                     name: {
                         '$regex': check
                     }
-                }, {
-                    $orderby: {
-                        _id: -1
-                    }
+                }).sort({
+                    _id: -1
                 }).skip(pagesize * (pagenumber - 1)).limit(pagesize).each(function (err, found) {
                     if (err) {
                         callback({
