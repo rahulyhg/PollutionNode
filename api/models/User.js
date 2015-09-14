@@ -48,7 +48,8 @@ module.exports = {
                 });
             });
         }
-    },countusers: function (data, callback) {
+    },
+    countusers: function (data, callback) {
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -108,6 +109,8 @@ module.exports = {
         var check = new RegExp(data.search, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
+        var sort = {};
+        sort["_id"] = -1;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -133,6 +136,8 @@ module.exports = {
                     name: {
                         '$regex': check
                     }
+                }, {
+                    $sort: sort
                 }).skip(pagesize * (pagenumber - 1)).limit(pagesize).each(function (err, found) {
                     if (err) {
                         callback({
@@ -205,7 +210,7 @@ module.exports = {
                     profilepic: 1,
                     days: 1,
                     balancedate: 1,
-                    viserjan:1
+                    viserjan: 1
                 }).toArray(function (err, data) {
                     if (err) {
                         console.log(err);
@@ -317,12 +322,12 @@ module.exports = {
                         } else {
 
                             request.get({
-                                url: "https://graph.facebook.com/oauth/access_token?client_id=1616856265259993&client_secret=6e8052bdbe29f02ead4f618549e98cac&grant_type=fb_exchange_token&fb_exchange_token="+data.accessToken
+                                url: "https://graph.facebook.com/oauth/access_token?client_id=1616856265259993&client_secret=6e8052bdbe29f02ead4f618549e98cac&grant_type=fb_exchange_token&fb_exchange_token=" + data.accessToken
                             }, function (err, httpResponse, body) {
                                 console.log(body);
                                 var accesstoken = body.split("&");
                                 accesstoken = accesstoken[0].split("=");
-                                data.accessToken=accesstoken[1];
+                                data.accessToken = accesstoken[1];
                                 db.collection('user').insert(data, function (err, created) {
                                     if (err) {
                                         console.log(err);
@@ -529,9 +534,9 @@ module.exports = {
             callback(err, data);
         });
     },
-    facebookPostDetail: function (fbpostid, userid,accessToken, callback) {
+    facebookPostDetail: function (fbpostid, userid, accessToken, callback) {
         request.get({
-            url: 'https://graph.facebook.com/v2.4/' + fbpostid + "?fields=likes.summary(true),shares&access_token="+accessToken,
+            url: 'https://graph.facebook.com/v2.4/' + fbpostid + "?fields=likes.summary(true),shares&access_token=" + accessToken,
         }, function (err, httpResponse, body) {
             console.log(body);
             body = JSON.parse(body);

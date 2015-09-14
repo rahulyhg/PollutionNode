@@ -103,7 +103,7 @@ module.exports = {
                         }
                     }).toArray(
                         function (err, data2) {
-                            if (data2 && data2[0]) {
+                            if (data2 && data2[0].leaderboard[0]) {
                                 callback(data2[0].leaderboard);
                             } else if (err) {
                                 console.log(err);
@@ -125,7 +125,7 @@ module.exports = {
                         }
                     }).toArray(
                         function (err, data2) {
-                            if (data2 && data2[0]) {
+                            if (data2 && data2[0].leaderboard[0]) {
                                 callback(data2[0].leaderboard);
                             } else if (err) {
                                 console.log(err);
