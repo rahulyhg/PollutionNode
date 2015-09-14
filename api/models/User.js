@@ -433,14 +433,19 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").find({
-                    _id: userid,
-                    "post.creationtime": sails.moment().format('DD-MM-YYYY'),
-                    "post.provider": "twitter"
+                    _id: userid
+                }, {
+                    post: {
+                        $elemMatch: {
+                            creationtime: sails.moment().format('DD-MM-YYYY'),
+                            provider: "twitter"
+                        }
+                    }
                 }).toArray(function (err, data2) {
                     if (err) {
                         console.log(err);
                         callback(err, null);
-                    } else if (data2.length && data2.length > 0) {
+                    } else if (data2.length && data2.length > 0 && data2[0].post && data2[0].post.length > 0) {
                         callback({
                             value: false,
                             comment: "wait"
