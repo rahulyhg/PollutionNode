@@ -503,14 +503,14 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").find({
-                    $and: [{
-                        _id: userid,
-                        }, {
-                        "post": {
+                    _id: userid
+                }, {
+                    post: {
+                        $elemMatch: {
                             creationtime: sails.moment().format('DD-MM-YYYY'),
                             provider: "facebook"
                         }
-                    }]
+                    }
                 }).toArray(function (err, data2) {
                     console.log(data2);
                     if (err) {
