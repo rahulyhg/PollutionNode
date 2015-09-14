@@ -1,6 +1,6 @@
 var insertdata = {};
 var request = require('request');
-var Twit = require('twit')
+var Twit = require('twit');
 
 module.exports = {
     save: function (data, callback) {
@@ -53,7 +53,48 @@ module.exports = {
             });
         }
     },
-    
+    edit: function (data, callback) {
+        sails.query(function (err, db) {
+            var user = sails.ObjectID(data._id);
+            delete data._id;
+            db.collection('user').find({
+                _id: user
+            }).toArray(function (err, data2) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                } else if (data2[0] && data2[0].city) {
+                    callback({
+                        value: true
+                    });
+                } else {
+                    db.collection('user').update({
+                        _id: user,
+                    }, {
+                        $set: data
+                    }, function (err, updated) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false
+                            });
+                        } else if (updated) {
+                            callback({
+                                value: true
+                            });
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "No such user"
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    },
     countusers: function (data, callback) {
         sails.query(function (err, db) {
             if (err) {
@@ -368,7 +409,7 @@ module.exports = {
                             });
                         }
                         if (updatedata) {
-                            updatedata._id = user;
+                            updatedata.id = user;
                             delete updatedata.accessToken;
                             delete updatedata.token;
                             delete updatedata.tokenSecret;
@@ -399,7 +440,7 @@ module.exports = {
                     if (err) {
                         console.log(err);
                         callback(err, null);
-                    } else if (data2.length > 0) {
+                    } else if (data2.length && data2.length > 0) {
                         callback({
                             value: false,
                             comment: "wait"
@@ -439,7 +480,7 @@ module.exports = {
             })
             var d = new Date();
             Twitter.post('statuses/update', {
-                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: " + message + "?date=" + d
+                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: " + message + "?date=" + d.getDate()
             }, function (err, data, response) {
                 if (data.error) {
                     callback(err, data);
@@ -469,7 +510,7 @@ module.exports = {
                     if (err) {
                         console.log(err);
                         callback(err, null);
-                    } else if (data2.length > 0) {
+                    } else if (data2 && data2.length > 0) {
                         callback({
                             value: false,
                             comment: "wait"

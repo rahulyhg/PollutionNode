@@ -3,6 +3,20 @@ var passport = require('passport'),
     FacebookStrategy = require('passport-facebook').Strategy;
 
 
+passport.use(new TwitterStrategy({
+        consumerKey: "6gOb3JlMDgqYw27fLN29l5Vmp",
+        consumerSecret: "kEF99DQQssEZGJnJXvIBVTjuAs2vt1R8wji2OQ9nOc0fhlcVKM",
+        callbackURL: sails.myurl + "user/callbackt"
+    },
+    function (token, tokenSecret, profile, done) {
+        console.log("Twitter Page");
+        profile.token = token;
+        profile.tokenSecret = tokenSecret;
+        profile.provider = "Twitter";
+        User.findorcreate(profile, done);
+    }
+));
+
 passport.use(new FacebookStrategy({
         clientID: "1616856265259993",
         clientSecret: "6e8052bdbe29f02ead4f618549e98cac",
@@ -160,25 +174,22 @@ module.exports = {
             }
             res.view("success");
         }
-        ipsavecallback();
 
-//        var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
-//        request.get({
-//            url: "http://api.db-ip.com/addrinfo?addr=" + ip + "&api_key=a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
-//        }, function (err, httpResponse, body) {
-//            var userobj = {};
-//            userobj._id = req.session.passport.user.id;
-//            body=JSON.parse(body);
-//            var splitcity = body.city.split(" ");
-//            userobj.city = splitcity[0];
-//            userEdit(userobj);
+        var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
+        request.get({
+            url: "http://api.db-ip.com/addrinfo?addr=" + ip + "&api_key=a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
+        }, function (err, httpResponse, body) {
+            var userobj = {};
+            userobj._id = req.session.passport.user.id;
+            body = JSON.parse(body);
+            var splitcity = body.city.split(" ");
+            userobj.city = splitcity[0];
+            userEdit(userobj);
 
-//            function userEdit(userobj) {
-                
-//                console.log(userobj);
-//                User.edit(userobj, ipsavecallback);
-//            }
-//        });
+            function userEdit(userobj) {
+                User.edit(userobj, ipsavecallback);
+            }
+        });
     },
     fail: function (req, res) {
         sails.sockets.blast("login", {
