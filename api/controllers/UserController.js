@@ -149,6 +149,13 @@ module.exports = {
         failureRedirect: '/user/fail'
     }),
     success: function (req, res, data) {
+        console.log(req.connection.remoteAddress);
+//        var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
+//        request.get({
+//            url: "http://api.db-ip.com/addrinfo?addr=" + ip + "&api_key=a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
+//        }, function (err, httpResponse, body) {
+//            res.json(JSON.parse(body));
+//        });
         if (req.session.passport) {
             sails.sockets.blast("login", {
                 loginid: req.session.loginid,
