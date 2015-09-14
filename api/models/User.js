@@ -39,16 +39,21 @@ module.exports = {
                         callback({
                             value: false
                         });
-                    }
-                    if (updated) {
+                    } else if (updated) {
                         callback({
                             value: true
+                        });
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No such user"
                         });
                     }
                 });
             });
         }
     },
+    
     countusers: function (data, callback) {
         sails.query(function (err, db) {
             if (err) {
@@ -432,9 +437,9 @@ module.exports = {
                 access_token: access_token,
                 access_token_secret: access_token_secret
             })
-            var d=new Date();
+            var d = new Date();
             Twitter.post('statuses/update', {
-                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: " + message+"?date="+d;
+                status: "I’ve created a lovely Ganesh idol using Times BAPPA app. Offer likes to my Bappa and create your own here: " + message + "?date=" + d
             }, function (err, data, response) {
                 if (data.error) {
                     callback(err, data);
