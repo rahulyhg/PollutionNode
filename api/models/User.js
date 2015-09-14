@@ -506,9 +506,10 @@ module.exports = {
                     $and: [{
                         _id: userid,
                         }, {
-                        "post.creationtime": sails.moment().format('DD-MM-YYYY')
-                        }, {
-                        "post.provider": "facebook"
+                        "post": {
+                            creationtime: sails.moment().format('DD-MM-YYYY'),
+                            provider: "facebook"
+                        }
                     }]
                 }).toArray(function (err, data2) {
                     console.log(data2);
