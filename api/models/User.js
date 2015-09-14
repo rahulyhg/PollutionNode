@@ -503,16 +503,15 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").find({
-                    _id: userid,
-                    "post.creationtime": sails.moment().format('DD-MM-YYYY'),
-                    "post.provider": "facebook"
+                    $and: [{
+                        _id: userid,
+                        }, {
+                        "post.creationtime": sails.moment().format('DD-MM-YYYY')
+                        }, {
+                        "post.provider": "facebook"
+                    }]
                 }).toArray(function (err, data2) {
                     console.log(data2);
-                    console.log({
-                    _id: userid,
-                    "post.creationtime": sails.moment().format('DD-MM-YYYY'),
-                    "post.provider": "facebook"
-                });
                     if (err) {
                         console.log(err);
                         callback(err, null);
