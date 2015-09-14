@@ -53,7 +53,41 @@ module.exports = {
             });
         }
     },
-    edit: function (data, callback) {
+    updatecity: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            }
+            if (db) {
+                db.collection('user').update({
+                    city: {
+                        $exists: false
+                    }
+                }, {
+                    $set: {
+                        city: "Mumbai"
+                    }
+                }, {
+                    multi: true
+                }, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    } else if (result) {
+                        callback({
+                            value: true
+                        });
+                    }
+                });
+            }
+        });
+    },
+    editcity: function (data, callback) {
         sails.query(function (err, db) {
             var user = sails.ObjectID(data._id);
             delete data._id;
