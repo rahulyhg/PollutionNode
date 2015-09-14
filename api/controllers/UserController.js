@@ -172,6 +172,7 @@ module.exports = {
             userEdit(userobj);
 
             function userEdit(userobj) {
+                console.log(userobj);
                 User.save(userobj, ipsavecallback);
             }
         });
