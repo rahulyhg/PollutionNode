@@ -50,8 +50,7 @@ module.exports = {
         var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
         console.log(ip);
         var geo = geoip.lookup(ip);
-        console.log(geo);
-        var city=cities.gps_lookup(geo.ll[0],geo.ll[1]);
+        var city=cities.gps_lookup(19.01,72.84);
         console.log(city);
         var print = function (data) {
             res.json(data);
