@@ -44,7 +44,7 @@ module.exports = {
         User.countusers(req.body, print);
     },
     findlimited: function (req, res) {
-        console.log(req.ip);
+        console.log(req.connection.remoteAddress);
         var print = function (data) {
             res.json(data);
         }
