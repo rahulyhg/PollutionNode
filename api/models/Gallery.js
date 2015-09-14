@@ -316,7 +316,7 @@ module.exports = {
                     if (err) {
                         callback(err);
                     } else if (data2[0] && data2[0].gallery) {
-                        callback(_.sortByOrder(data2[0].gallery, ['uploadedon'], ['desc']));
+                        callback(data2[0].gallery.reverse());
                     } else {
                         callback({
                             value: false
