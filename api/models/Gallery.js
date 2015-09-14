@@ -308,12 +308,10 @@ module.exports = {
             if (db) {
                 db.collection("user").find({
                     "_id": user
-                }, {
+                }, [['gallery.uploadedon', 1]], {
                     _id: 0,
                     "gallery._id": 1,
                     "gallery.imagefinal": 1
-                }).sort({
-                    "gallery.uploadedon": -1
                 }).toArray(function (err, data2) {
                     if (err) {
                         callback(err);
