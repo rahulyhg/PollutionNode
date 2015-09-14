@@ -45,20 +45,20 @@ module.exports = {
         User.countusers(req.body, print);
     },
     findlimited: function (req, res) {
-
+        
+        var print = function (data) {
+            res.json(data);
+        }
+        User.findlimited(req.body, print);
+    },
+    ip: function (req, res) {
+        
         var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
-        console.log(ip);
-        var geo = geoip.lookup(ip);
-        console.log(geo);
         request.get({
             url: "http://api.db-ip.com/addrinfo?addr=" + ip + "api_key= a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
         }, function (err, httpResponse, body) {
             res.json(JSON.parse(body));
         });
-        var print = function (data) {
-            res.json(data);
-        }
-        User.findlimited(req.body, print);
     },
     findone: function (req, res) {
         var print = function (data) {
