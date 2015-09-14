@@ -109,8 +109,6 @@ module.exports = {
         var check = new RegExp(data.search, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
-        var sort = {};
-        sort["_id"] = -1;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -137,7 +135,9 @@ module.exports = {
                         '$regex': check
                     }
                 }, {
-                    $sort: sort
+                    $orderby: {
+                        _id: -1
+                    }
                 }).skip(pagesize * (pagenumber - 1)).limit(pagesize).each(function (err, found) {
                     if (err) {
                         callback({
