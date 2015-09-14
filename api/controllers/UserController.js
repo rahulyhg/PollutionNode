@@ -44,6 +44,7 @@ module.exports = {
         User.countusers(req.body, print);
     },
     findlimited: function (req, res) {
+        console.log(req.ip);
         var print = function (data) {
             res.json(data);
         }
@@ -719,7 +720,7 @@ module.exports = {
             if (db) {
                 db.collection("user").aggregate([{
                     $unwind: "$post"
-            },{
+            }, {
                     $group: {
                         _id: null,
                         retweet: {
@@ -752,9 +753,9 @@ module.exports = {
                         res.json({
                             value: "false"
                         });
-                    }else  if (data2 && data2[0]) {
+                    } else if (data2 && data2[0]) {
                         res.json(data2[0]);
-                    }else {
+                    } else {
                         res.json({
                             "retweet": 0,
                             "favorite": 0,
@@ -769,67 +770,67 @@ module.exports = {
     },
     readyLeaderboard: function (req, res) {
 
-            var response = [];
-            res.connection.setTimeout(200000);
-            req.connection.setTimeout(200000);
+        var response = [];
+        res.connection.setTimeout(200000);
+        req.connection.setTimeout(200000);
 
-            function rescallback() {
-                if (response.length == 5) {
-                    res.json(response);
-                }
+        function rescallback() {
+            if (response.length == 5) {
+                res.json(response);
             }
+        }
 
-            request.get({
-                url: sails.myurl + "user/tracker"
-            }, function (err, httpResponse, body) {
-                if (err) {
+        request.get({
+            url: sails.myurl + "user/tracker"
+        }, function (err, httpResponse, body) {
+            if (err) {
+                console.log(err);
+            } else {
+                response.push({
+                    tracker: JSON.parse(body)
+                });
+                request.get({
+                    url: sails.myurl + "user/getdailypost?date=" + sails.moment().format('DD-MM-YYYY')
+                }, function (err, httpResponse, body) {
                     console.log(err);
-                } else {
                     response.push({
-                        tracker: JSON.parse(body)
+                        dailyleader: JSON.parse(body)
                     });
-                    request.get({
-                        url: sails.myurl + "user/getdailypost?date=" + sails.moment().format('DD-MM-YYYY')
-                    }, function (err, httpResponse, body) {
-                        console.log(err);
-                        response.push({
-                            dailyleader: JSON.parse(body)
-                        });
-                        rescallback();
+                    rescallback();
+                });
+                request.get({
+                    url: sails.myurl + "user/date3leaderboard"
+                }, function (err, httpResponse, body) {
+                    console.log(err);
+                    response.push({
+                        threeleader: JSON.parse(body)
                     });
-                    request.get({
-                        url: sails.myurl + "user/date3leaderboard"
-                    }, function (err, httpResponse, body) {
-                        console.log(err);
-                        response.push({
-                            threeleader: JSON.parse(body)
-                        });
-                        rescallback();
+                    rescallback();
+                });
+                request.get({
+                    url: sails.myurl + "user/date5leaderboard"
+                }, function (err, httpResponse, body) {
+                    console.log(err);
+                    response.push({
+                        fiveleader: JSON.parse(body)
                     });
-                    request.get({
-                        url: sails.myurl + "user/date5leaderboard"
-                    }, function (err, httpResponse, body) {
-                        console.log(err);
-                        response.push({
-                            fiveleader: JSON.parse(body)
-                        });
-                        rescallback();
+                    rescallback();
+                });
+                request.get({
+                    url: sails.myurl + "user/date10leaderboard"
+                }, function (err, httpResponse, body) {
+                    console.log(err);
+                    response.push({
+                        tenleader: JSON.parse(body)
                     });
-                    request.get({
-                        url: sails.myurl + "user/date10leaderboard"
-                    }, function (err, httpResponse, body) {
-                        console.log(err);
-                        response.push({
-                            tenleader: JSON.parse(body)
-                        });
-                        rescallback();
-                    });
+                    rescallback();
+                });
 
-                }
-            });
+            }
+        });
     },
-    currentTime:function(req,res){
-        res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
-    }
+    currentTime: function (req, res) {
+            res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
+        }
         /////////////////////////////////////
 };
