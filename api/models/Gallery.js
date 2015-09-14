@@ -298,6 +298,8 @@ module.exports = {
     },
     find: function (data, callback) {
         var user = sails.ObjectID(data);
+        var sort = {};
+        sort["gallery.uploadedon"] = -1;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -308,10 +310,12 @@ module.exports = {
             if (db) {
                 db.collection("user").find({
                     "_id": user
-                }, [['gallery.uploadedon', 1]], {
+                }, {
                     _id: 0,
                     "gallery._id": 1,
                     "gallery.imagefinal": 1
+                }, {
+                    $sort: sort
                 }).toArray(function (err, data2) {
                     if (err) {
                         callback(err);
