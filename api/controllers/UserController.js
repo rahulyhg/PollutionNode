@@ -25,7 +25,6 @@ passport.deserializeUser(function (id, done) {
 });
 var request = require('request');
 var geoip = require('geoip-lite');
-var cities = require('cities');
 module.exports = {
     save: function (req, res) {
         var print = function (data) {
@@ -46,12 +45,16 @@ module.exports = {
         User.countusers(req.body, print);
     },
     findlimited: function (req, res) {
-        
+
         var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
         console.log(ip);
         var geo = geoip.lookup(ip);
-        var city=cities.gps_lookup(19.01,72.84);
-        console.log(city);
+        console.log(geo);
+        request.get({
+            url: "http://api.db-ip.com/addrinfo?addr=" + ip + "api_key= a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
+        }, function (err, httpResponse, body) {
+            res.json(JSON.parse(body));
+        });
         var print = function (data) {
             res.json(data);
         }
