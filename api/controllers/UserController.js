@@ -55,7 +55,7 @@ module.exports = {
 
         var ip = req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(":") + 1);
         request.get({
-            url: "http://api.db-ip.com/addrinfo?addr=" + ip + "api_key=a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
+            url: "http://api.db-ip.com/addrinfo?addr=" + ip + "&api_key=a5a4e8f10fb5783e10f790a5de7f5f892bf15188"
         }, function (err, httpResponse, body) {
             res.json(JSON.parse(body));
         });
