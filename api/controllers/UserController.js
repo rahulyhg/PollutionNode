@@ -80,12 +80,6 @@ module.exports = {
         }
         User.findone(req.body, print);
     },
-    updatecity: function (req, res) {
-        var print = function (data) {
-            res.json(data);
-        }
-        User.updatecity(req.body, print);
-    },
     getOneUser: function (req, res) {
         var user = req.param("user");
         if (user && sails.ObjectID.isValid(user)) {
@@ -188,12 +182,12 @@ module.exports = {
             var userobj = {};
             userobj._id = req.session.passport.user.id;
             body = JSON.parse(body);
-            var splitcity = body.city.split("(");
+            var splitcity = body.city.split(" ");
             userobj.city = splitcity[0];
             userEdit(userobj);
 
             function userEdit(userobj) {
-                User.editcity(userobj, ipsavecallback);
+                User.edit(userobj, ipsavecallback);
             }
         });
     },
@@ -391,9 +385,6 @@ module.exports = {
                         },
                         profilepic: {
                             $addToSet: "$profilepic"
-                        },
-                        city: {
-                            $addToSet: "$city"
                         }
                     }
         }, {
@@ -404,7 +395,6 @@ module.exports = {
                         like: 1,
                         share: 1,
                         name: 1,
-                        city: 1,
                         profilepic: 1,
                         total: {
                             $add: ["$like", "$retweet", "$favorite", "$share"]
@@ -414,8 +404,6 @@ module.exports = {
                     $unwind: "$name"
         }, {
                     $unwind: "$profilepic"
-        }, {
-                    $unwind: "$city"
         }, {
                     $sort: {
                         total: -1,
@@ -496,9 +484,6 @@ module.exports = {
                         },
                         profilepic: {
                             $addToSet: "$profilepic"
-                        },
-                        city: {
-                            $addToSet: "$city"
                         }
                     }
         }, {
@@ -509,7 +494,6 @@ module.exports = {
                         like: 1,
                         share: 1,
                         name: 1,
-                        city: 1,
                         profilepic: 1,
                         total: {
                             $add: ["$like", "$retweet", "$favorite", "$share"]
@@ -519,8 +503,6 @@ module.exports = {
                     $unwind: "$name"
         }, {
                     $unwind: "$profilepic"
-        }, {
-                    $unwind: "$city"
         }, {
                     $sort: {
                         total: -1,
@@ -605,9 +587,6 @@ module.exports = {
                         },
                         profilepic: {
                             $addToSet: "$profilepic"
-                        },
-                        city: {
-                            $addToSet: "$city"
                         }
                     }
         }, {
@@ -618,7 +597,6 @@ module.exports = {
                         like: 1,
                         share: 1,
                         name: 1,
-                        city: 1,
                         profilepic: 1,
                         total: {
                             $add: ["$like", "$retweet", "$favorite", "$share"]
@@ -628,8 +606,6 @@ module.exports = {
                     $unwind: "$name"
         }, {
                     $unwind: "$profilepic"
-        }, {
-                    $unwind: "$city"
         }, {
                     $sort: {
                         total: -1,
@@ -724,9 +700,6 @@ module.exports = {
                         },
                         profilepic: {
                             $addToSet: "$profilepic"
-                        },
-                        city: {
-                            $addToSet: "$city"
                         }
                     }
         }, {
@@ -737,7 +710,6 @@ module.exports = {
                         like: 1,
                         share: 1,
                         name: 1,
-                        city: 1,
                         profilepic: 1,
                         total: {
                             $add: ["$like", "$retweet", "$favorite", "$share"]
@@ -747,8 +719,6 @@ module.exports = {
                     $unwind: "$name"
         }, {
                     $unwind: "$profilepic"
-        }, {
-                    $unwind: "$city"
         }, {
                     $sort: {
                         total: -1,

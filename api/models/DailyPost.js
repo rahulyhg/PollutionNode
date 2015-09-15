@@ -94,47 +94,39 @@ module.exports = {
                 });
             }
             if (db) {
-
                 if (data.date) {
-                    db.collection("dailypost").aggregate([{
-                        $match: {
-                            date: data.date,
-                        }
+                    db.collection("dailypost").find({
+                        date: data.date
                     }, {
-                        $unwind: "$leaderboard"
-                    }, {
-                        $match: {
-                            "leaderboard.city": data.city
+                        leaderboard: {
+                            $slice: 100
                         }
-                    }]).toArray(function (err, data2) {
-                        if (data2 && data2[0] && data2[0].leaderboard) {
-                            callback(data2);
-                        } else if (err) {
-                            console.log(err);
-                            callback({
-                                value: false
-                            });
-                        } else {
-                            callback({
-                                value: false
-                            });
-                        }
-                    });
-                } else {
-                    db.collection("dailypost").aggregate([{
-                        $match: {
-                            date: data.date,
-                        }
-                    }, {
-                        $unwind: "$leaderboard"
-                    }, {
-                        $match: {
-                            "leaderboard.city": data.city
-                        }
-                    }]).toArray(
+                    }).toArray(
                         function (err, data2) {
-                            if (data2 && data2[0].leaderboard) {
-                                callback(data2);
+                            if (data2 && data2[0].leaderboard[0]) {
+                                callback(data2[0].leaderboard);
+                            } else if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            } else {
+                                callback({
+                                    value: false
+                                });
+                            }
+                        });
+                } else {
+                    db.collection("dailypost").find({
+                        type: data.type
+                    }, {
+                        leaderboard: {
+                            $slice: 100
+                        }
+                    }).toArray(
+                        function (err, data2) {
+                            if (data2 && data2[0].leaderboard[0]) {
+                                callback(data2[0].leaderboard);
                             } else if (err) {
                                 console.log(err);
                                 callback({
@@ -245,9 +237,9 @@ module.exports = {
                             retweet: 1,
                             favorite: 1,
                             like: 1,
-                            share: 1,
+                            share:1,
                             total: {
-                                $add: ["$like", "$retweet", "$favorite", "$share"]
+                                $add: ["$like", "$retweet", "$favorite","$share"]
                             }
                         }
                         },
