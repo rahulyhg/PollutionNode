@@ -189,7 +189,7 @@ module.exports = {
             userobj._id = req.session.passport.user.id;
             body = JSON.parse(body);
             var splitcity = body.city.split("(");
-            userobj.city = splitcity[0];
+            userobj.city = splitcity[0].trim();
             userEdit(userobj);
 
             function userEdit(userobj) {
