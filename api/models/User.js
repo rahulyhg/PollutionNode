@@ -200,6 +200,35 @@ module.exports = {
             }
         });
     },
+    distinctcity: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            }
+            if (db) {
+                db.collection("user").distinct("city", function (err, unique) {
+                    if (unique && unique[0]) {
+                        callback(unique);
+                        db.close();
+                    } else if (err) {
+                        callback({
+                            value: false
+                        });
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found."
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
     find: function (data, callback) {
         var returns = [];
         sails.query(function (err, db) {

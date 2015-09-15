@@ -92,6 +92,12 @@ module.exports = {
         }
         User.trimcity(req.body, print);
     },
+    distinctcity: function (req, res) {
+        var print = function (data) {
+            res.json(data);
+        }
+        User.distinctcity(req.body, print);
+    },
     getOneUser: function (req, res) {
         var user = req.param("user");
         if (user && sails.ObjectID.isValid(user)) {
