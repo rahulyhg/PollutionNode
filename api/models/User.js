@@ -87,6 +87,62 @@ module.exports = {
             }
         });
     },
+    trimcity: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            }
+            if (db) {
+                db.collection('user').find({
+                    city: {
+                        $exists: true
+                    }
+                }).toArray(function (err, result) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                    } else if (result && result[0]) {
+                        _.each(result, function (n) {
+                            var city = n.city.trim();
+                            var update = {};
+                            update.city = city;
+                            db.collection('user').update({
+                                "_id": sails.ObjectID(n._id)
+                            }, {
+                                $set: update
+                            }, function (err, updated) {
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false
+                                    });
+                                } else if (updated) {
+                                    callback({
+                                        value: true
+                                    });
+                                } else {
+                                    callback({
+                                        value: false,
+                                        comment: "No such user"
+                                    });
+                                }
+                            });
+                        });
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No City found"
+                        });
+                    }
+                });
+            }
+        });
+    },
     editcity: function (data, callback) {
         sails.query(function (err, db) {
             var user = sails.ObjectID(data._id);
