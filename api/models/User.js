@@ -116,10 +116,7 @@ module.exports = {
                             }, {
                                 $set: update
                             }, function (err, updated) {
-                                if (err) {
-                                } else if (updated) {
-                                } else {
-                                }
+                                if (err) {} else if (updated) {} else {}
                             });
                         });
                     } else {
@@ -329,21 +326,21 @@ module.exports = {
                     _id: 1,
                     fbid: 1,
                     tweetid: 1,
-                    provider:1,
-                    username:1,
+                    provider: 1,
+                    username: 1,
                     name: 1,
                     profilepic: 1,
                     days: 1,
                     balancedate: 1,
                     viserjan: 1
-                }).toArray(function (err, data) {
+                }).toArray(function (err, data2) {
                     if (err) {
                         console.log(err);
                         callback({
                             value: false
                         });
-                    } else if (data && data[0]) {
-                        callback(data[0]);
+                    } else if (data2 && data2[0]) {
+                        callback(data2[0]);
                     } else {
                         callback({
                             value: false,
