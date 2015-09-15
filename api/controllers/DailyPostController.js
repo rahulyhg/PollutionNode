@@ -24,6 +24,12 @@ module.exports = {
         }
         DailyPost.findlimited(req.body, print);
     },
+    leaderboard: function (req, res) {
+        var print = function (data) {
+            res.json(data);
+        }
+        DailyPost.leaderboard(req.body, print);
+    },
     findone: function (req, res) {
         var print = function (data) {
             res.json(data);

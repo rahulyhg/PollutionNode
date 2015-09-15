@@ -237,9 +237,9 @@ module.exports = {
                             retweet: 1,
                             favorite: 1,
                             like: 1,
-                            share:1,
+                            share: 1,
                             total: {
-                                $add: ["$like", "$retweet", "$favorite","$share"]
+                                $add: ["$like", "$retweet", "$favorite", "$share"]
                             }
                         }
                         },
@@ -296,6 +296,73 @@ module.exports = {
                     });
                 }
             });
+        });
+    },
+    leaderboard: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            }
+            if (db) {
+                if (db) {
+
+                    if (data.date) {
+                        db.collection("dailypost").aggregate([{
+                            $match: {
+                                date: data.date,
+                            }
+                    }, {
+                            $unwind: "$leaderboard"
+                    }, {
+                            $match: {
+                                "leaderboard.city": data.city
+                            }
+                    }]).toArray(function (err, data2) {
+                            if (data2 && data2[0] && data2[0].leaderboard) {
+                                callback(data2);
+                            } else if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false
+                                });
+                            } else {
+                                callback({
+                                    value: false
+                                });
+                            }
+                        });
+                    } else {
+                        db.collection("dailypost").aggregate([{
+                            $match: {
+                                date: data.date,
+                            }
+                    }, {
+                            $unwind: "$leaderboard"
+                    }, {
+                            $match: {
+                                "leaderboard.city": data.city
+                            }
+                    }]).toArray(
+                            function (err, data2) {
+                                if (data2 && data2[0].leaderboard) {
+                                    callback(data2);
+                                } else if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false
+                                    });
+                                } else {
+                                    callback({
+                                        value: false
+                                    });
+                                }
+                            });
+                    }
+                }
+            }
         });
     }
 };
