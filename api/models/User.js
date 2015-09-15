@@ -117,14 +117,8 @@ module.exports = {
                                 $set: update
                             }, function (err, updated) {
                                 if (err) {
-                                    console.log(err);
                                 } else if (updated) {
-                                    console.log("true");
                                 } else {
-                                    console.log({
-                                        value: false,
-                                        comment: "No such user"
-                                    });
                                 }
                             });
                         });
@@ -335,6 +329,8 @@ module.exports = {
                     _id: 1,
                     fbid: 1,
                     tweetid: 1,
+                    provider:1,
+                    username:1,
                     name: 1,
                     profilepic: 1,
                     days: 1,
