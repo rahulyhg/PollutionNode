@@ -118,15 +118,10 @@ module.exports = {
                             }, function (err, updated) {
                                 if (err) {
                                     console.log(err);
-                                    callback({
-                                        value: false
-                                    });
                                 } else if (updated) {
-                                    callback({
-                                        value: true
-                                    });
+                                    console.log("true");
                                 } else {
-                                    callback({
+                                    console.log({
                                         value: false,
                                         comment: "No such user"
                                     });
