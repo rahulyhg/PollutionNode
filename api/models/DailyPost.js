@@ -337,7 +337,7 @@ module.exports = {
                     } else {
                         db.collection("dailypost").aggregate([{
                             $match: {
-                                date: data.date,
+                                type: data.type,
                             }
                     }, {
                             $unwind: "$leaderboard"
