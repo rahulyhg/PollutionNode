@@ -347,7 +347,6 @@ module.exports = {
                             }
                     }]).toArray(
                             function (err, data2) {
-                                console.log(data2);
                                 if (data2 && data2.length > 0 && data2[0] && data2[0].leaderboard) {
                                     callback(data2);
                                 } else if (err) {
