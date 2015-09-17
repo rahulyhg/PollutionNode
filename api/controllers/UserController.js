@@ -698,9 +698,9 @@ module.exports = {
                 db.collection("user").aggregate([{
                     $match: {
                         $or: [{
-                            date: 10
+                            days: 10
                         }, {
-                            date: 1
+                            days: 1
                         }]
                     }
                 }, {
