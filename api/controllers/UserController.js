@@ -473,74 +473,79 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").aggregate([{
-                    $unwind: "$post"
+                        $match: {
+                            "days": 3
+                        }
+                },
+                    {
+                        $unwind: "$post"
         }, {
-                    $match: {
-                        "post.provider": {
-                            $exists: true
-                        },
-                        $or: [{
-                            "post.creationtime": "17-09-2015"
+                        $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
+                            $or: [{
+                                "post.creationtime": "17-09-2015"
             }, {
-                            "post.creationtime": '18-09-2015'
+                                "post.creationtime": '18-09-2015'
             }, {
-                            "post.creationtime": '19-09-2015'
+                                "post.creationtime": '19-09-2015'
             }]
 
-                    }
-        }, {
-                    $group: {
-                        _id: "$_id",
-                        retweet: {
-                            $sum: '$post.retweet_count'
-                        },
-                        favorite: {
-                            $sum: '$post.favorite_count'
-                        },
-                        like: {
-                            $sum: '$post.total_likes'
-                        },
-                        share: {
-                            $sum: '$post.total_shares'
-                        },
-                        name: {
-                            $addToSet: "$name"
-                        },
-                        profilepic: {
-                            $addToSet: "$profilepic"
-                        },
-                        city: {
-                            $addToSet: "$city"
                         }
-                    }
         }, {
-                    $project: {
-                        _id: 1,
-                        retweet: 1,
-                        favorite: 1,
-                        like: 1,
-                        share: 1,
-                        name: 1,
-                        city: 1,
-                        profilepic: 1,
-                        total: {
-                            $add: ["$like", "$retweet", "$favorite", "$share"]
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            share: {
+                                $sum: '$post.total_shares'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
+                            },
+                            city: {
+                                $addToSet: "$city"
+                            }
                         }
-                    }
         }, {
-                    $unwind: "$name"
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            share: 1,
+                            name: 1,
+                            city: 1,
+                            profilepic: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite", "$share"]
+                            }
+                        }
         }, {
-                    $unwind: "$profilepic"
+                        $unwind: "$name"
         }, {
-                    $unwind: "$city"
+                        $unwind: "$profilepic"
         }, {
-                    $sort: {
-                        total: -1,
-                        like: -1,
-                        retweet: -1,
-                        favorite: -1,
-                        name: 1
-                    }
+                        $unwind: "$city"
+        }, {
+                        $sort: {
+                            total: -1,
+                            like: -1,
+                            retweet: -1,
+                            favorite: -1,
+                            name: 1
+                        }
         }]).toArray(function (err, data2) {
 
                     if (err) {
@@ -578,6 +583,10 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").aggregate([{
+                    $match: {
+                        "days": 5
+                    }
+                }, {
                     $unwind: "$post"
         }, {
                     $match: {
@@ -687,6 +696,10 @@ module.exports = {
             }
             if (db) {
                 db.collection("user").aggregate([{
+                    $match: {
+                        "days": 10
+                    }
+                }, {
                     $unwind: "$post"
         }, {
                     $match: {
