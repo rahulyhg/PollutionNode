@@ -697,7 +697,11 @@ module.exports = {
             if (db) {
                 db.collection("user").aggregate([{
                     $match: {
-                        "days": 10
+                        $or: [{
+                            date: 10
+                        }, {
+                            date: 1
+                        }]
                     }
                 }, {
                     $unwind: "$post"
