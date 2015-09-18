@@ -1068,6 +1068,10 @@ module.exports = {
                                     $add: ["$favorite", "$like"]
                                 }
                             }
+                        }, {
+                            $sort: {
+                                sum: -1
+                            }
                         }]).toArray(function (err, data2) {
                         console.log(err);
                         res.json(data2);
