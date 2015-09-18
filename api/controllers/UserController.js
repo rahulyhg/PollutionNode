@@ -1078,6 +1078,56 @@ module.exports = {
                     });
                 }
             });
+        },
+    shares: function (req, res) {
+            var date = req.param("date");
+            sails.query(function (err, db) {
+
+                if (err) {
+                    console.log(err);
+                    res.json({
+                        value: "false"
+                    });
+                }
+                if (db) {
+                    db.collection("user").aggregate([{
+                            $unwind: "$post"
+                        }, {
+                            $match: {
+                                "post.creationtime": date
+                            }
+                        },
+                        {
+                            $group: {
+                                "_id": "$_id",
+                                favorite: {
+                                    $sum: '$post.retweet_count'
+                                },
+                                like: {
+                                    $sum: '$post.total_shares'
+                                },
+                                city: {
+                                    $addToSet: "$city"
+                                }
+                            }
+                    }, {
+                            $project: {
+                                _id: 1,
+                                city: 1,
+                                sum: {
+                                    $add: ["$favorite", "$like"]
+                                }
+                            }
+                        }, {
+                            $sort: {
+                                sum: -1
+                            }
+                        }]).toArray(function (err, data2) {
+                        console.log(err);
+                        res.json(data2);
+                    });
+                }
+            });
         }
         /////////////////////////////////////
 };
