@@ -419,7 +419,7 @@ module.exports = {
                         city: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite", "$share"]
+                            $add: ["$like", "$retweet", "$favorite"]
                         }
                     }
         }, {
@@ -529,7 +529,7 @@ module.exports = {
                             city: 1,
                             profilepic: 1,
                             total: {
-                                $add: ["$like", "$retweet", "$favorite", "$share"]
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
                         }
         }, {
@@ -642,7 +642,7 @@ module.exports = {
                         city: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite", "$share"]
+                            $add: ["$like", "$retweet", "$favorite"]
                         }
                     }
         }, {
@@ -769,7 +769,7 @@ module.exports = {
                         city: 1,
                         profilepic: 1,
                         total: {
-                            $add: ["$like", "$retweet", "$favorite", "$share"]
+                            $add: ["$like", "$retweet", "$favorite"]
                         }
                     }
         }, {
@@ -932,7 +932,7 @@ module.exports = {
         });
     },
     currentTime: function (req, res) {
-            res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
-        }
+        res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
+    }
         /////////////////////////////////////
 };
