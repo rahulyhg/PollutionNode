@@ -944,6 +944,9 @@ module.exports = {
                 }
                 if (db) {
                     db.collection("user").aggregate([{
+
+                        $unwind: "$post"
+        }, {
                         $group: {
                             _id: "$_id",
                             retweet: {
@@ -960,6 +963,12 @@ module.exports = {
                             },
                             name: {
                                 $addToSet: "$name"
+                            },
+                            username: {
+                                $addToSet: "$username"
+                            },
+                            email: {
+                                $addToSet: "$email"
                             },
                             profilepic: {
                                 $addToSet: "$profilepic"
@@ -981,7 +990,10 @@ module.exports = {
                             favorite: 1,
                             like: 1,
                             share: 1,
+                            username: 1,
+                            gallery: 1,
                             name: 1,
+                            email: 1,
                             city: 1,
                             profilepic: 1,
                             days: 1,
@@ -991,7 +1003,11 @@ module.exports = {
                             }
                         }
         }, {
+                        $unwind: "$username"
+        }, {
                         $unwind: "$name"
+        }, {
+                        $unwind: "$email"
         }, {
                         $unwind: "$profilepic"
         }, {
@@ -1000,6 +1016,14 @@ module.exports = {
                         $unwind: "$provider"
         }, {
                         $unwind: "$days"
+        }, {
+                        $sort: {
+                            total: -1,
+                            like: -1,
+                            retweet: -1,
+                            favorite: -1,
+                            name: 1
+                        }
         }]).toArray(function (err, data2) {
                         if (err) {
                             console.log(err);
@@ -1008,6 +1032,9 @@ module.exports = {
                             });
                         } else if (data2 && data2[0]) {
                             res.json(data2);
+                            _.each(data, function (n) {
+
+                            });
                         } else {
                             res.json({
                                 value: "false",
