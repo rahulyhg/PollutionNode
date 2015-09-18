@@ -358,6 +358,7 @@ module.exports = {
     },
 
     getdailypost: function (req, res) {
+        console.log("In daily");
         var date = req.param('date');
         var count = {};
         var postdata = {};
