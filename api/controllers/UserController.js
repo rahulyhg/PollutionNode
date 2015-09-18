@@ -944,11 +944,13 @@ module.exports = {
                 }
                 if (db) {
                     db.collection("user").aggregate([{
-
                         $unwind: "$post"
         }, {
                         $group: {
                             _id: "$_id",
+                            postid: {
+                                "$post.id"
+                            },
                             retweet: {
                                 $sum: '$post.retweet_count'
                             },
