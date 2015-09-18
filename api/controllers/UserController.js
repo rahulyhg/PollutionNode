@@ -964,9 +964,6 @@ module.exports = {
                             name: {
                                 $addToSet: "$name"
                             },
-                            username: {
-                                $addToSet: "$username"
-                            },
                             profilepic: {
                                 $addToSet: "$profilepic"
                             },
@@ -987,7 +984,6 @@ module.exports = {
                             favorite: 1,
                             like: 1,
                             share: 1,
-                            username: 1,
                             gallery: 1,
                             name: 1,
                             city: 1,
@@ -998,8 +994,6 @@ module.exports = {
                                 $add: ["$like", "$retweet", "$favorite"]
                             }
                         }
-        }, {
-                        $unwind: "$username"
         }, {
                         $unwind: "$name"
         }, {
