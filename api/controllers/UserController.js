@@ -1040,7 +1040,7 @@ module.exports = {
                 }
                 if (db) {
                     db.collection("user").aggregate([{
-                            $unwind: post
+                            $unwind: "$post"
                         }, {
                             $match: {
                                 "post.creationtime": date
