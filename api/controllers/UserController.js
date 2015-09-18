@@ -358,7 +358,6 @@ module.exports = {
     },
 
     getdailypost: function (req, res) {
-        console.log("In daily");
         var date = req.param('date');
         var count = {};
         var postdata = {};
@@ -446,7 +445,6 @@ module.exports = {
                     } else if (data2 && data2[0]) {
                         var dailypost = {};
                         dailypost.leaderboard = data2;
-                        console.log(dailypost.leaderboard);
                         dailypost.date = date;
                         dailypost.type = "DailyPost";
                         DailyPost.save(dailypost, function (response) {
