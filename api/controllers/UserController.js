@@ -932,7 +932,91 @@ module.exports = {
         });
     },
     currentTime: function (req, res) {
-            res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
+        res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
+    },
+    jsontoexcel: function (req, res) {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    res.json({
+                        value: "false"
+                    });
+                }
+                if (db) {
+                    db.collection("user").aggregate([{
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            share: {
+                                $sum: '$post.total_shares'
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
+                            },
+                            city: {
+                                $addToSet: "$city"
+                            },
+                            provider: {
+                                $addToSet: "$provider"
+                            },
+                            days: {
+                                $addToSet: "$days"
+                            }
+                        }
+        }, {
+                        $project: {
+                            _id: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            share: 1,
+                            name: 1,
+                            city: 1,
+                            profilepic: 1,
+                            days: 1,
+                            provider: 1,
+                            total: {
+                                $add: ["$like", "$retweet", "$favorite"]
+                            }
+                        }
+        }, {
+                        $unwind: "$name"
+        }, {
+                        $unwind: "$profilepic"
+        }, {
+                        $unwind: "$city"
+        }, {
+                        $unwind: "$provider"
+        }, {
+                        $unwind: "$days"
+        }]).toArray(function (err, data2) {
+                        if (err) {
+                            console.log(err);
+                            res.json({
+                                value: "false"
+                            });
+                        } else if (data2 && data2[0]) {
+                            res.json(data2);
+                        } else {
+                            res.json({
+                                value: "false",
+                                comment: "No such data."
+                            });
+                        }
+                    });
+                }
+            });
         }
         /////////////////////////////////////
 };
