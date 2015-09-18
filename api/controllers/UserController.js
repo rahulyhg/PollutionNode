@@ -934,197 +934,179 @@ module.exports = {
     currentTime: function (req, res) {
         res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
     },
-    jsontoexcel: function (req, res) {
+    mumLeader: function (req, res) {
+        var date = req.param("date");
+        var i = 0;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 res.json({
                     value: "false"
                 });
-            }
-            if (db) {
+            } else if (db) {
                 db.collection("user").aggregate([{
+                    $match: {
+                        $or: [{
+                            city: "Andheri"
+                            }, {
+                            city: "Mira Bhayandar"
+                            }, {
+                            city: "Bhiwandi"
+                            }, {
+                            city: "Dombivli"
+                            }, {
+                            city: "Kalyan-Dombivili"
+                            }, {
+                            city: "Mumbai"
+                            }, {
+                            city: "Navi Mumbai"
+                            }, {
+                            city: "Thane"
+                            }, {
+                            city: "Vasai Virar"
+                            }, {
+                            city: "Vikhroli West"
+                            }]
+                    }
+                }, {
                     $unwind: "$post"
-        }, {
-                    $unwind: "$gallery"
-        }, {
+                }, {
+                    $match: {
+                        "post.creationtime": date
+                    }
+                }, {
                     $group: {
                         _id: "$_id",
-                        retweet: {
-                            $sum: '$post.retweet_count'
-                        },
                         favorite: {
                             $sum: '$post.favorite_count'
                         },
                         like: {
                             $sum: '$post.total_likes'
                         },
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
                         share: {
                             $sum: '$post.total_shares'
                         },
-                        name: {
-                            $addToSet: "$name"
-                        },
-                        profilepic: {
-                            $addToSet: "$profilepic"
-                        },
-                        city: {
-                            $addToSet: "$city"
-                        },
-                        days: {
-                            $addToSet: "$days"
-                        },
-                        galleryimage: {
-                            $last: "gallery.imagefinal"
-                        }
                     }
-        }, {
+                }, {
                     $project: {
                         _id: 1,
-                        retweet: 1,
-                        favorite: 1,
-                        like: 1,
-                        share: 1,
-                        galleryimage: 1,
-                        name: 1,
                         city: 1,
-                        profilepic: 1,
-                        days: 1,
-                        total: {
-                            $add: ["$like", "$retweet", "$favorite"]
+                        addedfavorite: {
+                            $add: ["$favorite", "$like"]
                         },
-                        retweetshare: {
+                        addedshare: {
                             $add: ["$retweet", "$share"]
-                        },
-                        favoritelike: {
-                            $add: ["$like", "$favorite"]
                         }
                     }
-        }, {
-                    $unwind: "$name"
-        }, {
-                    $unwind: "$profilepic"
-        }, {
-                    $unwind: "$city"
-        }, {
-                    $unwind: "$days"
-        }]).toArray(function (err, data2) {
+                }, {
+                    $sort: {
+                        sum: -1
+                    }
+                }]).toArray(function (err, data2) {
                     if (err) {
                         console.log(err);
-                        res.json({
-                            value: "false"
-                        });
+                        db.close();
                     } else if (data2 && data2[0]) {
-                        res.json(data2);
-                        var xls = sails.json2xls(data2);
-                        sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
-                    } else {
-                        res.json({
-                            value: "false",
-                            comment: "No such data."
+                        _.each(data2, function (n) {
+                            db.collection('user').find({
+                                _id: n._id,
+                                "gallery.uploadedon": date
+                            }).toArray(function (err, galdata) {
+                                if (err) {
+                                    console.log(err);
+                                } else if (galdata) {
+                                    n.galimage = galdata[0].imagefinal;
+                                    i++;
+                                    if (i == data2.length) {
+                                        res.json(data2);
+                                    }
+                                }
+                            });
                         });
                     }
                 });
             }
         });
     },
-    likes: function (req, res) {
+    puneLeader: function (req, res) {
             var date = req.param("date");
-            console.log(date);
             sails.query(function (err, db) {
-
                 if (err) {
                     console.log(err);
                     res.json({
                         value: "false"
                     });
-                }
-                if (db) {
+                } else if (db) {
                     db.collection("user").aggregate([{
-                            $unwind: "$post"
-                        }, {
-                            $match: {
-                                "post.creationtime": date
+                        $match: {
+                            $or: [{
+                                city: "Pune"
+                            }, {
+                                city: "Pimpri-Chinchwad"
+                            }]
+                        }
+                }, {
+                        $unwind: "$post"
+                }, {
+                        $match: {
+                            "post.creationtime": date
+                        }
+                }, {
+                        $group: {
+                            _id: "$_id",
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            share: {
+                                $sum: '$post.total_shares'
+                            },
+                        }
+                }, {
+                        $project: {
+                            _id: 1,
+                            city: 1,
+                            addedfavorite: {
+                                $add: ["$favorite", "$like"]
+                            },
+                            addedshare: {
+                                $add: ["$retweet", "$share"]
                             }
-                        },
-                        {
-                            $group: {
-                                "_id": "$_id",
-                                favorite: {
-                                    $sum: '$post.favorite_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_likes'
-                                },
-                                city: {
-                                    $addToSet: "$city"
-                                }
-                            }
-                    }, {
-                            $project: {
-                                _id: 1,
-                                city: 1,
-                                sum: {
-                                    $add: ["$favorite", "$like"]
-                                }
-                            }
-                        }, {
-                            $sort: {
-                                sum: -1
-                            }
-                        }]).toArray(function (err, data2) {
-                        console.log(err);
-                        res.json(data2);
-                    });
-                }
-            });
-        },
-    shares: function (req, res) {
-            var date = req.param("date");
-            sails.query(function (err, db) {
-
-                if (err) {
-                    console.log(err);
-                    res.json({
-                        value: "false"
-                    });
-                }
-                if (db) {
-                    db.collection("user").aggregate([{
-                            $unwind: "$post"
-                        }, {
-                            $match: {
-                                "post.creationtime": date
-                            }
-                        },
-                        {
-                            $group: {
-                                "_id": "$_id",
-                                favorite: {
-                                    $sum: '$post.retweet_count'
-                                },
-                                like: {
-                                    $sum: '$post.total_shares'
-                                },
-                                city: {
-                                    $addToSet: "$city"
-                                }
-                            }
-                    }, {
-                            $project: {
-                                _id: 1,
-                                city: 1,
-                                sum: {
-                                    $add: ["$favorite", "$like"]
-                                }
-                            }
-                        }, {
-                            $sort: {
-                                sum: -1
-                            }
-                        }]).toArray(function (err, data2) {
-                        console.log(err);
-                        res.json(data2);
+                        }
+                }, {
+                        $sort: {
+                            sum: -1
+                        }
+                }]).toArray(function (err, data2) {
+                        if (err) {
+                            console.log(err);
+                            db.close();
+                        } else if (data2 && data2[0]) {
+                            _.each(data2, function (n) {
+                                db.collection('user').find({
+                                    _id: n._id,
+                                    "gallery.uploadedon": date
+                                }).toArray(function (err, galdata) {
+                                    if (err) {
+                                        console.log(err);
+                                    } else if (galdata) {
+                                        n.galimage = galdata[0].imagefinal;
+                                        i++;
+                                        if (i == data2.length) {
+                                            res.json(data2);
+                                        }
+                                    }
+                                });
+                            });
+                        }
                     });
                 }
             });
