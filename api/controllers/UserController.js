@@ -1030,6 +1030,7 @@ module.exports = {
     },
     likes: function (req, res) {
             var date = req.param("date");
+            console.log(date);
             sails.query(function (err, db) {
 
                 if (err) {
@@ -1052,11 +1053,18 @@ module.exports = {
                                 sum: {
                                     $sum: ["$post.total_likes", "$post.favorite_count"]
                                 },
-                                city:{
-                                    $addToSet:"$city"
+                                city: {
+                                    $addToSet: "$city"
                                 }
                             }
-                    }]).toArray(function (err,data2){
+                    }, {
+                            $project: {
+                                _id: 1,
+                                city: 1,
+                                sum: 1
+                            }
+                        }]).toArray(function (err, data2) {
+                        console.log(err);
                         res.json(data2);
                     });
                 }
