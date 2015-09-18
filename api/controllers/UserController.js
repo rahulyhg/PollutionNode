@@ -1018,6 +1018,7 @@ module.exports = {
                                 if (err) {
                                     console.log(err);
                                 } else if (galdata) {
+                                    console.log(galdata);
                                     n.galimage = galdata[0].imagefinal;
                                     i++;
                                     if (i == data2.length) {
