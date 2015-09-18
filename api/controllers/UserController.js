@@ -1050,8 +1050,11 @@ module.exports = {
                         {
                             $group: {
                                 "_id": "$_id",
-                                sum: {
-                                    $sum: ["$post.total_likes", "$post.favorite_count"]
+                                favorite: {
+                                    $sum: '$post.favorite_count'
+                                },
+                                like: {
+                                    $sum: '$post.total_likes'
                                 },
                                 city: {
                                     $addToSet: "$city"
@@ -1061,7 +1064,9 @@ module.exports = {
                             $project: {
                                 _id: 1,
                                 city: 1,
-                                sum: 1
+                                sum: {
+                                    $add: ["$favorite", "$like"]
+                                }
                             }
                         }]).toArray(function (err, data2) {
                         console.log(err);
