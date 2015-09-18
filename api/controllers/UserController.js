@@ -445,6 +445,7 @@ module.exports = {
                     } else if (data2 && data2[0]) {
                         var dailypost = {};
                         dailypost.leaderboard = data2;
+                        console.log(dailypost.leaderboard);
                         dailypost.date = date;
                         dailypost.type = "DailyPost";
                         DailyPost.save(dailypost, function (response) {
@@ -932,7 +933,7 @@ module.exports = {
         });
     },
     currentTime: function (req, res) {
-        res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
-    }
+            res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
+        }
         /////////////////////////////////////
 };
