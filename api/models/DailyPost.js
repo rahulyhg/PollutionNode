@@ -239,7 +239,7 @@ module.exports = {
                             like: 1,
                             share: 1,
                             total: {
-                                $add: ["$like", "$retweet", "$favorite", "$share"]
+                                $add: ["$like", "$retweet", "$favorite"]
                             }
                         }
                         },
