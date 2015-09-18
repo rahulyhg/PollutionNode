@@ -949,7 +949,7 @@ module.exports = {
                         $group: {
                             _id: "$_id",
                             postid: {
-                                "$post.id"
+                                $addToSet: "$post.id"
                             },
                             retweet: {
                                 $sum: '$post.retweet_count'
@@ -985,6 +985,7 @@ module.exports = {
                             retweet: 1,
                             favorite: 1,
                             like: 1,
+                            postid: 1,
                             share: 1,
                             gallery: 1,
                             name: 1,
