@@ -967,9 +967,6 @@ module.exports = {
                             username: {
                                 $addToSet: "$username"
                             },
-                            email: {
-                                $addToSet: "$email"
-                            },
                             profilepic: {
                                 $addToSet: "$profilepic"
                             },
@@ -993,7 +990,6 @@ module.exports = {
                             username: 1,
                             gallery: 1,
                             name: 1,
-                            email: 1,
                             city: 1,
                             profilepic: 1,
                             days: 1,
@@ -1006,8 +1002,6 @@ module.exports = {
                         $unwind: "$username"
         }, {
                         $unwind: "$name"
-        }, {
-                        $unwind: "$email"
         }, {
                         $unwind: "$profilepic"
         }, {
