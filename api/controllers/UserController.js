@@ -1026,7 +1026,7 @@ module.exports = {
                             });
                         } else if (data2 && data2[0]) {
                             res.json(data2);
-                            _.each(data, function (n) {
+                            _.each(data2, function (n) {
 
                             });
                         } else {
