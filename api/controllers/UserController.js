@@ -1136,6 +1136,7 @@ module.exports = {
                         console.log(err);
                         db.close();
                     } else if (data2 && data2[0]) {
+                        console.log(data2);
                         _.each(data2, function (n) {
                             db.collection('user').find({
                                 _id: n._id,
