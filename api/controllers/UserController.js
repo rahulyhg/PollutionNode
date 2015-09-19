@@ -1246,34 +1246,140 @@ module.exports = {
         });
     },
     puneShare: function (req, res) {
-            var date = req.param("date");
+        var date = req.param("date");
+        var i = 0;
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
+            } else if (db) {
+                db.collection("user").aggregate([{
+                    $match: {
+                        $or: [{
+                            city: "Pune"
+                            }, {
+                            city: "Pimpri-Chinchwad"
+                            }]
+                    }
+                }, {
+                    $unwind: "$post"
+                }, {
+                    $match: {
+                        "post.creationtime": date
+                    }
+                }, {
+                    $group: {
+                        _id: "$_id",
+                        city: {
+                            $addToSet: "$city"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
+                    }
+                }, {
+                    $project: {
+                        _id: 1,
+                        city: 1,
+                        name: 1,
+                        profilepic: 1,
+                        addedshare: {
+                            $add: ["$retweet", "$share"]
+                        }
+                    }
+                }, {
+                    $unwind: "$city"
+                }, {
+                    $unwind: "$name"
+                }, {
+                    $unwind: "$profilepic"
+                }, {
+                    $sort: {
+                        addedshare: -1
+                    }
+                }]).toArray(function (err, data2) {
+                    if (err) {
+                        console.log(err);
+                        db.close();
+                    } else if (data2 && data2[0]) {
+                        _.each(data2, function (n) {
+                            db.collection('user').find({
+                                _id: n._id
+                            }, {
+                                "gallery": 1
+                            }).toArray(function (err, galdata) {
+                                if (err) {
+                                    i++;
+                                    console.log(err);
+                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[galdata[0].gallery.length - 1]) {
+                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length - 1].imagefinal;
+                                    i++;
+                                    if (i == data2.length) {
+                                        res.json(data2);
+                                    }
+                                } else {
+                                    i++;
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    },
+    jsonToExcel: function (req, res) {
             var i = 0;
+            var date = req.param("date");
             sails.query(function (err, db) {
                 if (err) {
                     console.log(err);
                     res.json({
                         value: "false"
                     });
-                } else if (db) {
+                }
+                if (db) {
                     db.collection("user").aggregate([{
-                        $match: {
-                            $or: [{
-                                city: "Pune"
-                            }, {
-                                city: "Pimpri-Chinchwad"
-                            }]
-                        }
-                }, {
                         $unwind: "$post"
-                }, {
+        }, {
                         $match: {
+                            "post.provider": {
+                                $exists: true
+                            },
                             "post.creationtime": date
                         }
-                }, {
+        }, {
+                        $unwind: "$gallery"
+        }, {
                         $group: {
                             _id: "$_id",
-                            city: {
-                                $addToSet: "$city"
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            share: {
+                                $sum: '$post.total_shares'
+                            },
+                            fbid: {
+                                $push: "$fbid"
+                            },
+                            tweetid: {
+                                $push: "$tweetid"
                             },
                             name: {
                                 $addToSet: "$name"
@@ -1281,58 +1387,55 @@ module.exports = {
                             profilepic: {
                                 $addToSet: "$profilepic"
                             },
-                            retweet: {
-                                $sum: '$post.retweet_count'
+                            city: {
+                                $addToSet: "$city"
                             },
-                            share: {
-                                $sum: '$post.total_shares'
-                            },
+                            ganpatiImage: {
+                                $last: "$gallery.imagefinal"
+                            }
                         }
-                }, {
+        }, {
                         $project: {
                             _id: 1,
-                            city: 1,
+                            retweet: 1,
+                            favorite: 1,
+                            like: 1,
+                            share: 1,
                             name: 1,
+                            fbid: 1,
+                            tweetid: 1,
+                            city: 1,
                             profilepic: 1,
-                            addedshare: {
+                            ganpatiImage: 1,
+                            favoriteandlike: {
+                                $add: ["$like", "$favorite"]
+                            },
+                            shareandretweet: {
                                 $add: ["$retweet", "$share"]
                             }
                         }
-                }, {
-                        $unwind: "$city"
-                }, {
+        }, {
                         $unwind: "$name"
-                }, {
+        }, {
                         $unwind: "$profilepic"
-                }, {
-                        $sort: {
-                            addedshare: -1
-                        }
-                }]).toArray(function (err, data2) {
+        }, {
+                        $unwind: "$city"
+        }]).toArray(function (err, data2) {
                         if (err) {
-                            console.log(err);
-                            db.close();
-                        } else if (data2 && data2[0]) {
-                            _.each(data2, function (n) {
-                                db.collection('user').find({
-                                    _id: n._id
-                                }, {
-                                    "gallery": 1
-                                }).toArray(function (err, galdata) {
-                                    if (err) {
-                                        i++;
-                                        console.log(err);
-                                    } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[galdata[0].gallery.length - 1]) {
-                                        n.galimage = galdata[0].gallery[galdata[0].gallery.length - 1].imagefinal;
-                                        i++;
-                                        if (i == data2.length) {
-                                            res.json(data2);
-                                        }
-                                    } else {
-                                        i++;
-                                    }
-                                });
+                            res.json({
+                                value: "false"
                             });
+                        } else if (data2 && data2[0]) {
+                            createExcel(data2);
+
+                            function createExcel(json) {
+                                var xls = sails.json2xls(json);
+                                sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                                var excel = sails.fs.readFileSync('./data.xlsx');
+                                var mimetype = sails.mime.lookup('./data.xlsx');
+                                res.set('Content-Type', mimetype);
+                                res.send(excel);
+                            }
                         }
                     });
                 }
