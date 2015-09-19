@@ -1010,6 +1010,12 @@ module.exports = {
                         }
                     }
                 }, {
+                    $unwind: "$city"
+                }, {
+                    $unwind: "$name"
+                }, {
+                    $unwind: "$profilepic"
+                }, {
                     $sort: {
                         addedfavorite: -1
                     }
@@ -1033,6 +1039,11 @@ module.exports = {
                                     if (i == data2.length) {
                                         res.json(data2);
                                     }
+                                } else {
+                                    res.json({
+                                        value: false,
+                                        comment: "No data found."
+                                    });
                                 }
                             });
                         });
@@ -1104,10 +1115,18 @@ module.exports = {
                     $project: {
                         _id: 1,
                         city: 1,
+                        name: 1,
+                        profilepic: 1,
                         addedshare: {
                             $add: ["$retweet", "$share"]
                         }
                     }
+                }, {
+                    $unwind: "$city"
+                }, {
+                    $unwind: "$name"
+                }, {
+                    $unwind: "$profilepic"
                 }, {
                     $sort: {
                         addedshare: -1
@@ -1132,6 +1151,11 @@ module.exports = {
                                     if (i == data2.length) {
                                         res.json(data2);
                                     }
+                                } else {
+                                    res.json({
+                                        value: false,
+                                        comment: "No data found."
+                                    });
                                 }
                             });
                         });
@@ -1200,6 +1224,12 @@ module.exports = {
                         }
                     }
                 }, {
+                    $unwind: "$city"
+                }, {
+                    $unwind: "$name"
+                }, {
+                    $unwind: "$profilepic"
+                }, {
                     $sort: {
                         addedfavorite: -1
                     }
@@ -1223,6 +1253,11 @@ module.exports = {
                                     if (i == data2.length) {
                                         res.json(data2);
                                     }
+                                } else {
+                                    res.json({
+                                        value: false,
+                                        comment: "No data found."
+                                    });
                                 }
                             });
                         });
@@ -1283,6 +1318,12 @@ module.exports = {
                             }
                         }
                 }, {
+                        $unwind: "$city"
+                }, {
+                        $unwind: "$name"
+                }, {
+                        $unwind: "$profilepic"
+                }, {
                         $sort: {
                             addedshare: -1
                         }
@@ -1306,6 +1347,11 @@ module.exports = {
                                         if (i == data2.length) {
                                             res.json(data2);
                                         }
+                                    } else {
+                                        res.json({
+                                            value: false,
+                                            comment: "No data found."
+                                        });
                                     }
                                 });
                             });
