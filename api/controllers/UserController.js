@@ -1020,7 +1020,7 @@ module.exports = {
                             }).toArray(function (err, galdata) {
                                 if (err) {
                                     console.log(err);
-                                } else if (galdata && galdata[0] && galdata.gallery && galdata.gallery[0]) {
+                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
                                     n.galimage = galdata[0].gallery[0].imagefinal;
                                     i++;
                                     if (i == data2.length) {
@@ -1102,7 +1102,7 @@ module.exports = {
                             }).toArray(function (err, galdata) {
                                 if (err) {
                                     console.log(err);
-                                } else if (galdata && galdata[0] && galdata.gallery && galdata.gallery[0]) {
+                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
                                     n.galimage = galdata[0].gallery[0].imagefinal;
                                     i++;
                                     if (i == data2.length) {
