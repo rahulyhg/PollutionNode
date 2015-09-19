@@ -1026,8 +1026,7 @@ module.exports = {
                     } else if (data2 && data2[0]) {
                         _.each(data2, function (n) {
                             db.collection('user').find({
-                                _id: n._id,
-                                "gallery.uploadedon": date
+                                _id: n._id
                             }, {
                                 "gallery.$": 1
                             }).toArray(function (err, galdata) {
@@ -1236,8 +1235,7 @@ module.exports = {
                     } else if (data2 && data2[0]) {
                         _.each(data2, function (n) {
                             db.collection('user').find({
-                                _id: n._id,
-                                "gallery.uploadedon": date
+                                _id: n._id
                             }, {
                                 "gallery.$": 1
                             }).toArray(function (err, galdata) {
@@ -1331,7 +1329,6 @@ module.exports = {
                             _.each(data2, function (n) {
                                 db.collection('user').find({
                                     _id: n._id,
-                                    "gallery.uploadedon": date
                                 }, {
                                     "gallery.$": 1
                                 }).toArray(function (err, galdata) {
