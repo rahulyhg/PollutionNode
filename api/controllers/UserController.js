@@ -1034,13 +1034,16 @@ module.exports = {
                                 if (err) {
                                     console.log(err);
                                 } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
-                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length-1].imagefinal;
+                                    n.galimage = galdata[0].gallery[0].imagefinal;
                                     i++;
                                     if (i == data2.length) {
                                         res.json(data2);
                                     }
                                 } else {
-                                    i++;
+                                    res.json({
+                                        value: false,
+                                        comment: "No data found."
+                                    });
                                 }
                             });
                         });
@@ -1143,13 +1146,16 @@ module.exports = {
                                 if (err) {
                                     console.log(err);
                                 } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
-                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length-1].imagefinal;
+                                    n.galimage = galdata[0].gallery[0].imagefinal;
                                     i++;
                                     if (i == data2.length) {
                                         res.json(data2);
                                     }
                                 } else {
-                                    i++;
+                                    res.json({
+                                        value: false,
+                                        comment: "No data found."
+                                    });
                                 }
                             });
                         });
