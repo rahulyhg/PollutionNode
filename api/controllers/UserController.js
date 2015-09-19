@@ -991,13 +991,7 @@ module.exports = {
                         },
                         like: {
                             $sum: '$post.total_likes'
-                        },
-                        retweet: {
-                            $sum: '$post.retweet_count'
-                        },
-                        share: {
-                            $sum: '$post.total_shares'
-                        },
+                        }
                     }
                 }, {
                     $project: {
@@ -1199,13 +1193,7 @@ module.exports = {
                         },
                         like: {
                             $sum: '$post.total_likes'
-                        },
-                        retweet: {
-                            $sum: '$post.retweet_count'
-                        },
-                        share: {
-                            $sum: '$post.total_shares'
-                        },
+                        }
                     }
                 }, {
                     $project: {
