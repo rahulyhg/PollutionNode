@@ -1065,25 +1065,9 @@ module.exports = {
                 db.collection("user").aggregate([{
                     $match: {
                         $or: [{
-                            city: "Andheri"
+                            city: "Pune"
                             }, {
-                            city: "Mira Bhayandar"
-                            }, {
-                            city: "Bhiwandi"
-                            }, {
-                            city: "Dombivli"
-                            }, {
-                            city: "Kalyan-Dombivili"
-                            }, {
-                            city: "Mumbai"
-                            }, {
-                            city: "Navi Mumbai"
-                            }, {
-                            city: "Thane"
-                            }, {
-                            city: "Vasai Virar"
-                            }, {
-                            city: "Vikhroli West"
+                            city: "Pimpri-Chinchwad"
                             }]
                     }
                 }, {
@@ -1177,9 +1161,25 @@ module.exports = {
                 db.collection("user").aggregate([{
                     $match: {
                         $or: [{
-                            city: "Pune"
+                            city: "Andheri"
                             }, {
-                            city: "Pimpri-Chinchwad"
+                            city: "Mira Bhayandar"
+                            }, {
+                            city: "Bhiwandi"
+                            }, {
+                            city: "Dombivli"
+                            }, {
+                            city: "Kalyan-Dombivili"
+                            }, {
+                            city: "Mumbai"
+                            }, {
+                            city: "Navi Mumbai"
+                            }, {
+                            city: "Thane"
+                            }, {
+                            city: "Vasai Virar"
+                            }, {
+                            city: "Vikhroli West"
                             }]
                     }
                 }, {
@@ -1313,6 +1313,8 @@ module.exports = {
                         $project: {
                             _id: 1,
                             city: 1,
+                            name: 1,
+                            profilepic: 1,
                             addedshare: {
                                 $add: ["$retweet", "$share"]
                             }
