@@ -1065,9 +1065,25 @@ module.exports = {
                 db.collection("user").aggregate([{
                     $match: {
                         $or: [{
-                            city: "Pune"
+                            city: "Andheri"
                             }, {
-                            city: "Pimpri-Chinchwad"
+                            city: "Mira Bhayandar"
+                            }, {
+                            city: "Bhiwandi"
+                            }, {
+                            city: "Dombivli"
+                            }, {
+                            city: "Kalyan-Dombivili"
+                            }, {
+                            city: "Mumbai"
+                            }, {
+                            city: "Navi Mumbai"
+                            }, {
+                            city: "Thane"
+                            }, {
+                            city: "Vasai Virar"
+                            }, {
+                            city: "Vikhroli West"
                             }]
                     }
                 }, {
@@ -1161,25 +1177,9 @@ module.exports = {
                 db.collection("user").aggregate([{
                     $match: {
                         $or: [{
-                            city: "Andheri"
+                            city: "Pune"
                             }, {
-                            city: "Mira Bhayandar"
-                            }, {
-                            city: "Bhiwandi"
-                            }, {
-                            city: "Dombivli"
-                            }, {
-                            city: "Kalyan-Dombivili"
-                            }, {
-                            city: "Mumbai"
-                            }, {
-                            city: "Navi Mumbai"
-                            }, {
-                            city: "Thane"
-                            }, {
-                            city: "Vasai Virar"
-                            }, {
-                            city: "Vikhroli West"
+                            city: "Pimpri-Chinchwad"
                             }]
                     }
                 }, {
