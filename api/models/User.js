@@ -700,7 +700,6 @@ module.exports = {
         request.get({
             url: 'https://graph.facebook.com/v2.4/' + fbpostid + "?fields=likes.summary(true),shares&access_token=" + accessToken,
         }, function (err, httpResponse, body) {
-            console.log(body);
             body = JSON.parse(body);
             body.user = userid;
             body.provider = "facebook";
