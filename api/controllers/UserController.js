@@ -1014,13 +1014,17 @@ module.exports = {
                             db.collection('user').find({
                                 _id: n._id,
                                 "gallery.uploadedon": date
+                            }, {
+                                "gallery.$": 1
                             }).toArray(function (err, galdata) {
                                 if (err) {
                                     console.log(err);
-                                } else if (galdata) {
-                                    console.log(galdata);
-                                    n.galimage = galdata[0].imagefinal;
+                                } else if (galdata && galdata[0]) {
+                                    console.log(galdata[0].gallery[0].imagefinal);
+                                    n.galimage = galdata[0].gallery[0].imagefinal;
                                     i++;
+                                    console.log(i);
+                                    console.log(data2.length);
                                     if (i == data2.length) {
                                         res.json(data2);
                                     }
