@@ -81,13 +81,7 @@ module.exports = {
                         }
                     });
                 } else {
-
-                    callback({
-                        value: false,
-                        comment: "Should Delete"
-                    });
-
-                    // Post.delete(data, callback);
+                    Post.delete(data, callback);
                 }
             } else if (data.provider == "twitter") {
                 if (data.retweet_count || data.retweet_count == 0) {
