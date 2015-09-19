@@ -1003,7 +1003,8 @@ module.exports = {
                     }
                 }, {
                     $sort: {
-                        sum: -1
+                        addedfavorite: -1,
+                        addedshare: -1
                     }
                 }]).toArray(function (err, data2) {
                     if (err) {
@@ -1019,12 +1020,9 @@ module.exports = {
                             }).toArray(function (err, galdata) {
                                 if (err) {
                                     console.log(err);
-                                } else if (galdata && galdata[0]) {
-                                    console.log(galdata[0].gallery[0].imagefinal);
+                                } else if (galdata && galdata[0] && galdata.gallery && galdata.gallery[0]) {
                                     n.galimage = galdata[0].gallery[0].imagefinal;
                                     i++;
-                                    console.log(i);
-                                    console.log(data2.length);
                                     if (i == data2.length) {
                                         res.json(data2);
                                     }
@@ -1091,28 +1089,30 @@ module.exports = {
                             sum: -1
                         }
                 }]).toArray(function (err, data2) {
-                        if (err) {
-                            console.log(err);
-                            db.close();
-                        } else if (data2 && data2[0]) {
-                            _.each(data2, function (n) {
-                                db.collection('user').find({
-                                    _id: n._id,
-                                    "gallery.uploadedon": date
-                                }).toArray(function (err, galdata) {
-                                    if (err) {
-                                        console.log(err);
-                                    } else if (galdata) {
-                                        n.galimage = galdata[0].imagefinal;
-                                        i++;
-                                        if (i == data2.length) {
-                                            res.json(data2);
-                                        }
+                    if (err) {
+                        console.log(err);
+                        db.close();
+                    } else if (data2 && data2[0]) {
+                        _.each(data2, function (n) {
+                            db.collection('user').find({
+                                _id: n._id,
+                                "gallery.uploadedon": date
+                            }, {
+                                "gallery.$": 1
+                            }).toArray(function (err, galdata) {
+                                if (err) {
+                                    console.log(err);
+                                } else if (galdata && galdata[0] && galdata.gallery && galdata.gallery[0]) {
+                                    n.galimage = galdata[0].gallery[0].imagefinal;
+                                    i++;
+                                    if (i == data2.length) {
+                                        res.json(data2);
                                     }
-                                });
+                                }
                             });
-                        }
-                    });
+                        });
+                    }
+                });
                 }
             });
         }
