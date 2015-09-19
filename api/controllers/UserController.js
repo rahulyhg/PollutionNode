@@ -934,7 +934,7 @@ module.exports = {
     currentTime: function (req, res) {
         res.json(sails.moment().format('DD-MM-YYYY h-mm-ss-SSSSa'));
     },
-    mumLeader: function (req, res) {
+    mumFavorite: function (req, res) {
         var date = req.param("date");
         var i = 0;
         sails.query(function (err, db) {
@@ -977,6 +977,15 @@ module.exports = {
                 }, {
                     $group: {
                         _id: "$_id",
+                        city: {
+                            $addToSet: "$city"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
                         favorite: {
                             $sum: '$post.favorite_count'
                         },
@@ -994,16 +1003,113 @@ module.exports = {
                     $project: {
                         _id: 1,
                         city: 1,
+                        name: 1,
+                        profilepic: 1,
                         addedfavorite: {
                             $add: ["$favorite", "$like"]
+                        }
+                    }
+                }, {
+                    $sort: {
+                        addedfavorite: -1
+                    }
+                }]).toArray(function (err, data2) {
+                    if (err) {
+                        console.log(err);
+                        db.close();
+                    } else if (data2 && data2[0]) {
+                        _.each(data2, function (n) {
+                            db.collection('user').find({
+                                _id: n._id,
+                                "gallery.uploadedon": date
+                            }, {
+                                "gallery.$": 1
+                            }).toArray(function (err, galdata) {
+                                if (err) {
+                                    console.log(err);
+                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
+                                    n.galimage = galdata[0].gallery[0].imagefinal;
+                                    i++;
+                                    if (i == data2.length) {
+                                        res.json(data2);
+                                    }
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
+    },
+    mumShare: function (req, res) {
+        var date = req.param("date");
+        var i = 0;
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
+            } else if (db) {
+                db.collection("user").aggregate([{
+                    $match: {
+                        $or: [{
+                            city: "Andheri"
+                            }, {
+                            city: "Mira Bhayandar"
+                            }, {
+                            city: "Bhiwandi"
+                            }, {
+                            city: "Dombivli"
+                            }, {
+                            city: "Kalyan-Dombivili"
+                            }, {
+                            city: "Mumbai"
+                            }, {
+                            city: "Navi Mumbai"
+                            }, {
+                            city: "Thane"
+                            }, {
+                            city: "Vasai Virar"
+                            }, {
+                            city: "Vikhroli West"
+                            }]
+                    }
+                }, {
+                    $unwind: "$post"
+                }, {
+                    $match: {
+                        "post.creationtime": date
+                    }
+                }, {
+                    $group: {
+                        _id: "$_id",
+                        city: {
+                            $addToSet: "$city"
                         },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
+                    }
+                }, {
+                    $project: {
+                        _id: 1,
+                        city: 1,
                         addedshare: {
                             $add: ["$retweet", "$share"]
                         }
                     }
                 }, {
                     $sort: {
-                        addedfavorite: -1,
                         addedshare: -1
                     }
                 }]).toArray(function (err, data2) {
@@ -1034,60 +1140,69 @@ module.exports = {
             }
         });
     },
-    puneLeader: function (req, res) {
-            var date = req.param("date");
-            sails.query(function (err, db) {
-                if (err) {
-                    console.log(err);
-                    res.json({
-                        value: "false"
-                    });
-                } else if (db) {
-                    db.collection("user").aggregate([{
-                        $match: {
-                            $or: [{
-                                city: "Pune"
+    puneFavorite: function (req, res) {
+        var date = req.param("date");
+        var i = 0;
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
+            } else if (db) {
+                db.collection("user").aggregate([{
+                    $match: {
+                        $or: [{
+                            city: "Pune"
                             }, {
-                                city: "Pimpri-Chinchwad"
+                            city: "Pimpri-Chinchwad"
                             }]
-                        }
+                    }
                 }, {
-                        $unwind: "$post"
+                    $unwind: "$post"
                 }, {
-                        $match: {
-                            "post.creationtime": date
-                        }
+                    $match: {
+                        "post.creationtime": date
+                    }
                 }, {
-                        $group: {
-                            _id: "$_id",
-                            favorite: {
-                                $sum: '$post.favorite_count'
-                            },
-                            like: {
-                                $sum: '$post.total_likes'
-                            },
-                            retweet: {
-                                $sum: '$post.retweet_count'
-                            },
-                            share: {
-                                $sum: '$post.total_shares'
-                            },
-                        }
+                    $group: {
+                        _id: "$_id",
+                        city: {
+                            $addToSet: "$city"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        favorite: {
+                            $sum: '$post.favorite_count'
+                        },
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
+                    }
                 }, {
-                        $project: {
-                            _id: 1,
-                            city: 1,
-                            addedfavorite: {
-                                $add: ["$favorite", "$like"]
-                            },
-                            addedshare: {
-                                $add: ["$retweet", "$share"]
-                            }
+                    $project: {
+                        _id: 1,
+                        city: 1,
+                        name: 1,
+                        profilepic: 1,
+                        addedfavorite: {
+                            $add: ["$favorite", "$like"]
                         }
+                    }
                 }, {
-                        $sort: {
-                            sum: -1
-                        }
+                    $sort: {
+                        addedfavorite: -1
+                    }
                 }]).toArray(function (err, data2) {
                     if (err) {
                         console.log(err);
@@ -1113,6 +1228,89 @@ module.exports = {
                         });
                     }
                 });
+            }
+        });
+    },
+    puneShare: function (req, res) {
+            var date = req.param("date");
+            var i = 0;
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    res.json({
+                        value: "false"
+                    });
+                } else if (db) {
+                    db.collection("user").aggregate([{
+                        $match: {
+                            $or: [{
+                                city: "Pune"
+                            }, {
+                                city: "Pimpri-Chinchwad"
+                            }]
+                        }
+                }, {
+                        $unwind: "$post"
+                }, {
+                        $match: {
+                            "post.creationtime": date
+                        }
+                }, {
+                        $group: {
+                            _id: "$_id",
+                            city: {
+                                $addToSet: "$city"
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
+                            },
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            share: {
+                                $sum: '$post.total_shares'
+                            },
+                        }
+                }, {
+                        $project: {
+                            _id: 1,
+                            city: 1,
+                            addedshare: {
+                                $add: ["$retweet", "$share"]
+                            }
+                        }
+                }, {
+                        $sort: {
+                            addedshare: -1
+                        }
+                }]).toArray(function (err, data2) {
+                        if (err) {
+                            console.log(err);
+                            db.close();
+                        } else if (data2 && data2[0]) {
+                            _.each(data2, function (n) {
+                                db.collection('user').find({
+                                    _id: n._id,
+                                    "gallery.uploadedon": date
+                                }, {
+                                    "gallery.$": 1
+                                }).toArray(function (err, galdata) {
+                                    if (err) {
+                                        console.log(err);
+                                    } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
+                                        n.galimage = galdata[0].gallery[0].imagefinal;
+                                        i++;
+                                        if (i == data2.length) {
+                                            res.json(data2);
+                                        }
+                                    }
+                                });
+                            });
+                        }
+                    });
                 }
             });
         }
