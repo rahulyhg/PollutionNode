@@ -1396,7 +1396,7 @@ module.exports = {
                         }
         }, {
                         $project: {
-                            _id: 1,
+                            _id: 0,
                             retweet: 1,
                             favorite: 1,
                             like: 1,
