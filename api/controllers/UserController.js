@@ -1402,11 +1402,11 @@ module.exports = {
                             like: 1,
                             share: 1,
                             name: 1,
-                            fbid: 1,
+                            fbprofile: { $concat: ["http://www.facebook.com/","$fbid"]},
                             tweetid: 1,
                             city: 1,
                             profilepic: 1,
-                            ganpatiImage: 1,
+                            ganpatiImage1: { $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=","$ganpatiImage"]},
                             favoriteandlike: {
                                 $add: ["$like", "$favorite"]
                             },
