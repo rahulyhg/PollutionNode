@@ -1376,10 +1376,10 @@ module.exports = {
                                 $sum: '$post.total_shares'
                             },
                             fbid: {
-                                $push: "$fbid"
+                                $last: "$fbid"
                             },
                             tweetid: {
-                                $push: "$tweetid"
+                                $last: "$tweetid"
                             },
                             name: {
                                 $addToSet: "$name"
