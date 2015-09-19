@@ -1033,8 +1033,8 @@ module.exports = {
                                 if (err) {
                                     i++;
                                     console.log(err);
-                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[galdata[0].gallery.length - 1]) {
-                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length - 1].imagefinal;
+                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
+                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length-1].imagefinal;
                                     i++;
                                     if (i == data2.length) {
                                         res.json(data2);
@@ -1143,8 +1143,8 @@ module.exports = {
                                 if (err) {
                                     i++;
                                     console.log(err);
-                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[galdata[0].gallery.length - 1]) {
-                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length - 1].imagefinal;
+                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
+                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length-1].imagefinal;
                                     i++;
                                     if (i == data2.length) {
                                         res.json(data2);
@@ -1242,8 +1242,8 @@ module.exports = {
                                 if (err) {
                                     i++;
                                     console.log(err);
-                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[galdata[0].gallery.length - 1]) {
-                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length - 1].imagefinal;
+                                } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
+                                    n.galimage = galdata[0].gallery[galdata[0].gallery.length-1].imagefinal;
                                     i++;
                                     if (i == data2.length) {
                                         res.json(data2);
@@ -1329,14 +1329,15 @@ module.exports = {
                             _.each(data2, function (n) {
                                 db.collection('user').find({
                                     _id: n._id,
+                                    "gallery.uploadedon": date
                                 }, {
                                     "gallery.$": 1
                                 }).toArray(function (err, galdata) {
                                     if (err) {
                                         i++;
                                         console.log(err);
-                                    } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[galdata[0].gallery.length - 1]) {
-                                        n.galimage = galdata[0].gallery[galdata[0].gallery.length - 1].imagefinal;
+                                    } else if (galdata && galdata[0] && galdata[0].gallery && galdata[0].gallery[0]) {
+                                        n.galimage = galdata[0].gallery[galdata[0].gallery.length-1].imagefinal;
                                         i++;
                                         if (i == data2.length) {
                                             res.json(data2);
