@@ -1028,7 +1028,7 @@ module.exports = {
                             db.collection('user').find({
                                 _id: n._id
                             }, {
-                                "gallery.$": 1
+                                "gallery": 1
                             }).toArray(function (err, galdata) {
                                 if (err) {
                                     console.log(err);
