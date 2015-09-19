@@ -127,7 +127,7 @@ module.exports = {
     },
     delete: function (data, callback) {
         var user = sails.ObjectID(data.user);
-        if (data.id && data.id != "") {
+        if (data.id && data.id != "" && data.provider == "facebook") {
             sails.query(function (err, db) {
                 if (err) {
                     console.log(err);
@@ -161,7 +161,7 @@ module.exports = {
                     });
                 }
             });
-        } else if (data.id_str && data.id_str != "") {
+        } else if (data.id_str && data.id_str != "" && data.provider == "twitter") {
             sails.query(function (err, db) {
                 if (err) {
                     console.log(err);
