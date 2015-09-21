@@ -1729,8 +1729,6 @@ module.exports = {
             }]
                         }
         }, {
-                        $unwind: "$gallery"
-        }, {
                         $group: {
                             _id: "$_id",
                             retweet: {
@@ -1759,9 +1757,6 @@ module.exports = {
                             },
                             city: {
                                 $addToSet: "$city"
-                            },
-                            ganpatiImage: {
-                                $last: "$gallery.imagefinal"
                             }
                         }
         }, {
@@ -1778,9 +1773,6 @@ module.exports = {
                             tweetid: 1,
                             city: 1,
                             profilepic: 1,
-                            ganpatiImage1: {
-                                $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
-                            },
                             favoriteandlike: {
                                 $add: ["$like", "$favorite"]
                             },
