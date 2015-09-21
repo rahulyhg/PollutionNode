@@ -1842,16 +1842,16 @@ module.exports = {
                         $group: {
                             _id: "$_id",
                             retweet: {
-                                $sum: '$post.retweet_count'
+                                $addToSet: "$retweet"
                             },
                             favorite: {
-                                $sum: '$post.favorite_count'
-                            },
-                            like: {
-                                $sum: '$post.total_likes'
+                                $addToSet: "$favorite"
                             },
                             share: {
-                                $sum: '$post.total_shares'
+                                $addToSet: "$share"
+                            },
+                            like: {
+                                $addToSet: "$like"
                             },
                             fbid: {
                                 $last: "$fbid"
@@ -1872,6 +1872,14 @@ module.exports = {
                                 $last: "$gallery.imagefinal"
                             }
                         }
+        }, {
+                        $unwind: "$retweet"
+        }, {
+                        $unwind: "$like"
+        }, {
+                        $unwind: "$favorite"
+        }, {
+                        $unwind: "$share"
         }, {
                         $project: {
                             _id: 0,
