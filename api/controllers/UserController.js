@@ -1447,7 +1447,6 @@ module.exports = {
     },
     day3excel: function (req, res) {
         var i = 0;
-        var date = req.param("date");
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -1504,9 +1503,6 @@ module.exports = {
                         profilepic: {
                             $addToSet: "$profilepic"
                         },
-                        days: {
-                            $addToSet: "$days"
-                        },
                         city: {
                             $addToSet: "$city"
                         },
@@ -1522,7 +1518,6 @@ module.exports = {
                         like: 1,
                         share: 1,
                         name: 1,
-                        days: 1,
                         fbprofile: {
                             $concat: ["http://www.facebook.com/", "$fbid"]
                         },
@@ -1568,7 +1563,6 @@ module.exports = {
     },
     day5excel: function (req, res) {
         var i = 0;
-        var date = req.param("date");
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -1689,7 +1683,6 @@ module.exports = {
     },
     day10excel: function (req, res) {
             var i = 0;
-            var date = req.param("date");
             sails.query(function (err, db) {
                 if (err) {
                     console.log(err);
