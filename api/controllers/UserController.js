@@ -1887,6 +1887,12 @@ module.exports = {
         }, {
                         $unwind: "$city"
         }, {
+                        $unwind: "$name"
+        }, {
+                        $unwind: "$profilepic"
+        }, {
+                        $unwind: "$city"
+        }, {
                         $project: {
                             _id: 0,
                             retweet: 1,
@@ -1917,7 +1923,7 @@ module.exports = {
                             });
                         } else if (data2 && data2[0]) {
                             res.json(data2);
-//                            createExcel(data2);
+                            //                            createExcel(data2);
 
                             function createExcel(json) {
                                 var xls = sails.json2xls(json);
