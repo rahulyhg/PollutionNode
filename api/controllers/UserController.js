@@ -317,7 +317,6 @@ module.exports = {
         }
 
     },
-
     tracker: function (req, res) {
 
         var responsenum = 0;
@@ -356,7 +355,6 @@ module.exports = {
             });
         }
     },
-
     getdailypost: function (req, res) {
         var date = req.param('date');
         var count = {};
@@ -456,7 +454,6 @@ module.exports = {
             }
         });
     },
-
     date3leaderboard: function (req, res) {
 
         var count = {};
@@ -566,7 +563,6 @@ module.exports = {
             }
         });
     },
-
     date5leaderboard: function (req, res) {
 
         var count = {};
@@ -680,7 +676,6 @@ module.exports = {
             }
         });
     },
-
     date10leaderboard: function (req, res) {
         var count = {};
         var postdata = {};
@@ -1445,7 +1440,7 @@ module.exports = {
             }
         });
     },
-    day10excel: function (req, res) {
+    day3excel: function (req, res) {
         var i = 0;
         sails.query(function (err, db) {
             if (err) {
@@ -1516,16 +1511,16 @@ module.exports = {
                     $group: {
                         _id: "$_id",
                         retweet: {
-                            $sum: '$post.retweet_count'
+                            $addToSet: "$retweet"
                         },
                         favorite: {
-                            $sum: '$post.favorite_count'
-                        },
-                        like: {
-                            $sum: '$post.total_likes'
+                            $addToSet: "$favorite"
                         },
                         share: {
-                            $sum: '$post.total_shares'
+                            $addToSet: "$share"
+                        },
+                        like: {
+                            $addToSet: "$like"
                         },
                         fbid: {
                             $last: "$fbid"
@@ -1546,6 +1541,26 @@ module.exports = {
                             $last: "$gallery.imagefinal"
                         }
                     }
+        }, {
+                    $unwind: "$retweet"
+        }, {
+                    $unwind: "$like"
+        }, {
+                    $unwind: "$favorite"
+        }, {
+                    $unwind: "$share"
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
         }, {
                     $project: {
                         _id: 0,
@@ -1570,12 +1585,6 @@ module.exports = {
                             $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
                         }
                     }
-        }, {
-                    $unwind: "$name"
-        }, {
-                    $unwind: "$profilepic"
-        }, {
-                    $unwind: "$city"
         }]).toArray(function (err, data2) {
                     if (err) {
                         res.json({
@@ -1672,16 +1681,16 @@ module.exports = {
                     $group: {
                         _id: "$_id",
                         retweet: {
-                            $sum: '$post.retweet_count'
+                            $addToSet: "$retweet"
                         },
                         favorite: {
-                            $sum: '$post.favorite_count'
-                        },
-                        like: {
-                            $sum: '$post.total_likes'
+                            $addToSet: "$favorite"
                         },
                         share: {
-                            $sum: '$post.total_shares'
+                            $addToSet: "$share"
+                        },
+                        like: {
+                            $addToSet: "$like"
                         },
                         fbid: {
                             $last: "$fbid"
@@ -1702,6 +1711,26 @@ module.exports = {
                             $last: "$gallery.imagefinal"
                         }
                     }
+        }, {
+                    $unwind: "$retweet"
+        }, {
+                    $unwind: "$like"
+        }, {
+                    $unwind: "$favorite"
+        }, {
+                    $unwind: "$share"
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
         }, {
                     $project: {
                         _id: 0,
@@ -1726,12 +1755,6 @@ module.exports = {
                             $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
                         }
                     }
-        }, {
-                    $unwind: "$name"
-        }, {
-                    $unwind: "$profilepic"
-        }, {
-                    $unwind: "$city"
         }]).toArray(function (err, data2) {
                     if (err) {
                         res.json({
@@ -1922,8 +1945,7 @@ module.exports = {
                                 value: "false"
                             });
                         } else if (data2 && data2[0]) {
-                            res.json(data2);
-                            //                            createExcel(data2);
+                            createExcel(data2);
 
                             function createExcel(json) {
                                 var xls = sails.json2xls(json);
