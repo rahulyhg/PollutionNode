@@ -1445,7 +1445,7 @@ module.exports = {
             }
         });
     },
-    day3excel: function (req, res) {
+    day10excel: function (req, res) {
         var i = 0;
         sails.query(function (err, db) {
             if (err) {
@@ -1474,6 +1474,42 @@ module.exports = {
                             "post.creationtime": '19-09-2015'
             }]
                     }
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        favorite: {
+                            $sum: '$post.favorite_count'
+                        },
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
+                        fbid: {
+                            $last: "$fbid"
+                        },
+                        tweetid: {
+                            $last: "$tweetid"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        city: {
+                            $addToSet: "$city"
+                        },
+                        gallery: {
+                            $addToSet: "$gallery"
+                        }
+                    }
+        }, {
+                    $unwind: "$gallery"
         }, {
                     $unwind: "$gallery"
         }, {
@@ -1506,6 +1542,7 @@ module.exports = {
                         city: {
                             $addToSet: "$city"
                         },
+                        ,
                         ganpatiImage: {
                             $last: "$gallery.imagefinal"
                         }
@@ -1524,14 +1561,14 @@ module.exports = {
                         tweetid: 1,
                         city: 1,
                         profilepic: 1,
-                        ganpatiImage1: {
-                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
-                        },
                         favoriteandlike: {
                             $add: ["$like", "$favorite"]
                         },
                         shareandretweet: {
                             $add: ["$retweet", "$share"]
+                        },
+                        ganpatiImage1: {
+                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
                         }
                     }
         }, {
@@ -1595,6 +1632,42 @@ module.exports = {
             }]
                     }
         }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        favorite: {
+                            $sum: '$post.favorite_count'
+                        },
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
+                        fbid: {
+                            $last: "$fbid"
+                        },
+                        tweetid: {
+                            $last: "$tweetid"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        city: {
+                            $addToSet: "$city"
+                        },
+                        gallery: {
+                            $addToSet: "$gallery"
+                        }
+                    }
+        }, {
+                    $unwind: "$gallery"
+        }, {
                     $unwind: "$gallery"
         }, {
                     $group: {
@@ -1626,6 +1699,7 @@ module.exports = {
                         city: {
                             $addToSet: "$city"
                         },
+                        ,
                         ganpatiImage: {
                             $last: "$gallery.imagefinal"
                         }
@@ -1644,14 +1718,14 @@ module.exports = {
                         tweetid: 1,
                         city: 1,
                         profilepic: 1,
-                        ganpatiImage1: {
-                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
-                        },
                         favoriteandlike: {
                             $add: ["$like", "$favorite"]
                         },
                         shareandretweet: {
                             $add: ["$retweet", "$share"]
+                        },
+                        ganpatiImage1: {
+                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
                         }
                     }
         }, {
@@ -1757,6 +1831,48 @@ module.exports = {
                             },
                             city: {
                                 $addToSet: "$city"
+                            },
+                            gallery: {
+                                $addToSet: "$gallery"
+                            }
+                        }
+        }, {
+                        $unwind: "$gallery"
+        }, {
+                        $unwind: "$gallery"
+        }, {
+                        $group: {
+                            _id: "$_id",
+                            retweet: {
+                                $sum: '$post.retweet_count'
+                            },
+                            favorite: {
+                                $sum: '$post.favorite_count'
+                            },
+                            like: {
+                                $sum: '$post.total_likes'
+                            },
+                            share: {
+                                $sum: '$post.total_shares'
+                            },
+                            fbid: {
+                                $last: "$fbid"
+                            },
+                            tweetid: {
+                                $last: "$tweetid"
+                            },
+                            name: {
+                                $addToSet: "$name"
+                            },
+                            profilepic: {
+                                $addToSet: "$profilepic"
+                            },
+                            city: {
+                                $addToSet: "$city"
+                            },
+                            ,
+                            ganpatiImage: {
+                                $last: "$gallery.imagefinal"
                             }
                         }
         }, {
@@ -1778,6 +1894,9 @@ module.exports = {
                             },
                             shareandretweet: {
                                 $add: ["$retweet", "$share"]
+                            },
+                            ganpatiImage1: {
+                                $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
                             }
                         }
         }, {
