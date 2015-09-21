@@ -1339,6 +1339,355 @@ module.exports = {
         });
     },
     jsonToExcel: function (req, res) {
+        var i = 0;
+        var date = req.param("date");
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.provider": {
+                            $exists: true
+                        },
+                        "post.creationtime": date
+                    }
+        }, {
+                    $unwind: "$gallery"
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        favorite: {
+                            $sum: '$post.favorite_count'
+                        },
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
+                        fbid: {
+                            $last: "$fbid"
+                        },
+                        tweetid: {
+                            $last: "$tweetid"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        city: {
+                            $addToSet: "$city"
+                        },
+                        ganpatiImage: {
+                            $last: "$gallery.imagefinal"
+                        }
+                    }
+        }, {
+                    $project: {
+                        _id: 0,
+                        retweet: 1,
+                        favorite: 1,
+                        like: 1,
+                        share: 1,
+                        name: 1,
+                        fbprofile: {
+                            $concat: ["http://www.facebook.com/", "$fbid"]
+                        },
+                        tweetid: 1,
+                        city: 1,
+                        profilepic: 1,
+                        ganpatiImage1: {
+                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
+                        },
+                        favoriteandlike: {
+                            $add: ["$like", "$favorite"]
+                        },
+                        shareandretweet: {
+                            $add: ["$retweet", "$share"]
+                        }
+                    }
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
+        }]).toArray(function (err, data2) {
+                    if (err) {
+                        res.json({
+                            value: "false"
+                        });
+                    } else if (data2 && data2[0]) {
+                        createExcel(data2);
+
+                        function createExcel(json) {
+                            var xls = sails.json2xls(json);
+                            sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                            var excel = sails.fs.readFileSync('./data.xlsx');
+                            var mimetype = sails.mime.lookup('./data.xlsx');
+                            res.set('Content-Type', mimetype);
+                            res.send(excel);
+                        }
+                    }
+                });
+            }
+        });
+    },
+    day3excel: function (req, res) {
+        var i = 0;
+        var date = req.param("date");
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                    $match: {
+                        days: 3
+                    }
+        }, {
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.provider": {
+                            $exists: true
+                        },
+                        $or: [{
+                            "post.creationtime": "17-09-2015"
+            }, {
+                            "post.creationtime": '18-09-2015'
+            }, {
+                            "post.creationtime": '19-09-2015'
+            }]
+                    }
+        }, {
+                    $unwind: "$gallery"
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        favorite: {
+                            $sum: '$post.favorite_count'
+                        },
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
+                        fbid: {
+                            $last: "$fbid"
+                        },
+                        tweetid: {
+                            $last: "$tweetid"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        days: {
+                            $addToSet: "$days"
+                        },
+                        city: {
+                            $addToSet: "$city"
+                        },
+                        ganpatiImage: {
+                            $last: "$gallery.imagefinal"
+                        }
+                    }
+        }, {
+                    $project: {
+                        _id: 0,
+                        retweet: 1,
+                        favorite: 1,
+                        like: 1,
+                        share: 1,
+                        name: 1,
+                        days: 1,
+                        fbprofile: {
+                            $concat: ["http://www.facebook.com/", "$fbid"]
+                        },
+                        tweetid: 1,
+                        city: 1,
+                        profilepic: 1,
+                        ganpatiImage1: {
+                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
+                        },
+                        favoriteandlike: {
+                            $add: ["$like", "$favorite"]
+                        },
+                        shareandretweet: {
+                            $add: ["$retweet", "$share"]
+                        }
+                    }
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
+        }]).toArray(function (err, data2) {
+                    if (err) {
+                        res.json({
+                            value: "false"
+                        });
+                    } else if (data2 && data2[0]) {
+                        createExcel(data2);
+
+                        function createExcel(json) {
+                            var xls = sails.json2xls(json);
+                            sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                            var excel = sails.fs.readFileSync('./data.xlsx');
+                            var mimetype = sails.mime.lookup('./data.xlsx');
+                            res.set('Content-Type', mimetype);
+                            res.send(excel);
+                        }
+                    }
+                });
+            }
+        });
+    },
+    day5excel: function (req, res) {
+        var i = 0;
+        var date = req.param("date");
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: "false"
+                });
+            }
+            if (db) {
+                db.collection("user").aggregate([{
+                    $match: {
+                        days: 5
+                    }
+        }, {
+                    $unwind: "$post"
+        }, {
+                    $match: {
+                        "post.provider": {
+                            $exists: true
+                        },
+                        $or: [{
+                            "post.creationtime": "17-09-2015"
+            }, {
+                            "post.creationtime": '18-09-2015'
+            }, {
+                            "post.creationtime": '19-09-2015'
+            }, {
+                            "post.creationtime": '20-09-2015'
+            }, {
+                            "post.creationtime": '21-09-2015'
+            }]
+                    }
+        }, {
+                    $unwind: "$gallery"
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $sum: '$post.retweet_count'
+                        },
+                        favorite: {
+                            $sum: '$post.favorite_count'
+                        },
+                        like: {
+                            $sum: '$post.total_likes'
+                        },
+                        share: {
+                            $sum: '$post.total_shares'
+                        },
+                        fbid: {
+                            $last: "$fbid"
+                        },
+                        tweetid: {
+                            $last: "$tweetid"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        city: {
+                            $addToSet: "$city"
+                        },
+                        ganpatiImage: {
+                            $last: "$gallery.imagefinal"
+                        }
+                    }
+        }, {
+                    $project: {
+                        _id: 0,
+                        retweet: 1,
+                        favorite: 1,
+                        like: 1,
+                        share: 1,
+                        name: 1,
+                        fbprofile: {
+                            $concat: ["http://www.facebook.com/", "$fbid"]
+                        },
+                        tweetid: 1,
+                        city: 1,
+                        profilepic: 1,
+                        ganpatiImage1: {
+                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
+                        },
+                        favoriteandlike: {
+                            $add: ["$like", "$favorite"]
+                        },
+                        shareandretweet: {
+                            $add: ["$retweet", "$share"]
+                        }
+                    }
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
+        }]).toArray(function (err, data2) {
+                    if (err) {
+                        res.json({
+                            value: "false"
+                        });
+                    } else if (data2 && data2[0]) {
+                        createExcel(data2);
+
+                        function createExcel(json) {
+                            var xls = sails.json2xls(json);
+                            sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                            var excel = sails.fs.readFileSync('./data.xlsx');
+                            var mimetype = sails.mime.lookup('./data.xlsx');
+                            res.set('Content-Type', mimetype);
+                            res.send(excel);
+                        }
+                    }
+                });
+            }
+        });
+    },
+    day10excel: function (req, res) {
             var i = 0;
             var date = req.param("date");
             sails.query(function (err, db) {
@@ -1350,13 +1699,41 @@ module.exports = {
                 }
                 if (db) {
                     db.collection("user").aggregate([{
+                        $match: {
+                            $or: [{
+                                days: 10
+                            }, {
+                                days: 1
+                            }]
+                        }
+        }, {
                         $unwind: "$post"
         }, {
                         $match: {
                             "post.provider": {
                                 $exists: true
                             },
-                            "post.creationtime": date
+                            $or: [{
+                                "post.creationtime": "17-09-2015"
+            }, {
+                                "post.creationtime": '18-09-2015'
+            }, {
+                                "post.creationtime": '19-09-2015'
+            }, {
+                                "post.creationtime": '20-09-2015'
+            }, {
+                                "post.creationtime": '21-09-2015'
+            }, {
+                                "post.creationtime": '22-09-2015'
+            }, {
+                                "post.creationtime": '23-09-2015'
+            }, {
+                                "post.creationtime": '24-09-2015'
+            }, {
+                                "post.creationtime": '25-09-2015'
+            }, {
+                                "post.creationtime": '26-09-2015'
+            }]
                         }
         }, {
                         $unwind: "$gallery"
@@ -1402,11 +1779,15 @@ module.exports = {
                             like: 1,
                             share: 1,
                             name: 1,
-                            fbprofile: { $concat: ["http://www.facebook.com/","$fbid"]},
+                            fbprofile: {
+                                $concat: ["http://www.facebook.com/", "$fbid"]
+                            },
                             tweetid: 1,
                             city: 1,
                             profilepic: 1,
-                            ganpatiImage1: { $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=","$ganpatiImage"]},
+                            ganpatiImage1: {
+                                $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
+                            },
                             favoriteandlike: {
                                 $add: ["$like", "$favorite"]
                             },
