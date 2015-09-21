@@ -1916,7 +1916,8 @@ module.exports = {
                                 value: "false"
                             });
                         } else if (data2 && data2[0]) {
-                            createExcel(data2);
+                            res.json(data2);
+//                            createExcel(data2);
 
                             function createExcel(json) {
                                 var xls = sails.json2xls(json);
