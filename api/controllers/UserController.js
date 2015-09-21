@@ -1542,7 +1542,6 @@ module.exports = {
                         city: {
                             $addToSet: "$city"
                         },
-                        ,
                         ganpatiImage: {
                             $last: "$gallery.imagefinal"
                         }
@@ -1699,7 +1698,6 @@ module.exports = {
                         city: {
                             $addToSet: "$city"
                         },
-                        ,
                         ganpatiImage: {
                             $last: "$gallery.imagefinal"
                         }
@@ -1870,7 +1868,6 @@ module.exports = {
                             city: {
                                 $addToSet: "$city"
                             },
-                            ,
                             ganpatiImage: {
                                 $last: "$gallery.imagefinal"
                             }
