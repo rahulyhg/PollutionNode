@@ -1881,6 +1881,12 @@ module.exports = {
         }, {
                         $unwind: "$share"
         }, {
+                        $unwind: "$name"
+        }, {
+                        $unwind: "$profilepic"
+        }, {
+                        $unwind: "$city"
+        }, {
                         $project: {
                             _id: 0,
                             retweet: 1,
@@ -1904,12 +1910,6 @@ module.exports = {
                                 $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
                             }
                         }
-        }, {
-                        $unwind: "$name"
-        }, {
-                        $unwind: "$profilepic"
-        }, {
-                        $unwind: "$city"
         }]).toArray(function (err, data2) {
                         if (err) {
                             res.json({
