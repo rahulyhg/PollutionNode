@@ -1354,8 +1354,6 @@ module.exports = {
                         "post.creationtime": date
                     }
         }, {
-                    $unwind: "$gallery"
-        }, {
                     $group: {
                         _id: "$_id",
                         retweet: {
@@ -1385,10 +1383,68 @@ module.exports = {
                         city: {
                             $addToSet: "$city"
                         },
+                        gallery: {
+                            $addToSet: "$gallery"
+                        }
+                    }
+        }, {
+                    $unwind: "$gallery"
+        }, {
+                    $unwind: "$gallery"
+        }, {
+                    $group: {
+                        _id: "$_id",
+                        retweet: {
+                            $addToSet: "$retweet"
+                        },
+                        favorite: {
+                            $addToSet: "$favorite"
+                        },
+                        share: {
+                            $addToSet: "$share"
+                        },
+                        like: {
+                            $addToSet: "$like"
+                        },
+                        fbid: {
+                            $last: "$fbid"
+                        },
+                        tweetid: {
+                            $last: "$tweetid"
+                        },
+                        name: {
+                            $addToSet: "$name"
+                        },
+                        profilepic: {
+                            $addToSet: "$profilepic"
+                        },
+                        city: {
+                            $addToSet: "$city"
+                        },
                         ganpatiImage: {
                             $last: "$gallery.imagefinal"
                         }
                     }
+        }, {
+                    $unwind: "$retweet"
+        }, {
+                    $unwind: "$like"
+        }, {
+                    $unwind: "$favorite"
+        }, {
+                    $unwind: "$share"
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
+        }, {
+                    $unwind: "$name"
+        }, {
+                    $unwind: "$profilepic"
+        }, {
+                    $unwind: "$city"
         }, {
                     $project: {
                         _id: 0,
@@ -1403,22 +1459,16 @@ module.exports = {
                         tweetid: 1,
                         city: 1,
                         profilepic: 1,
-                        ganpatiImage1: {
-                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
-                        },
                         favoriteandlike: {
                             $add: ["$like", "$favorite"]
                         },
                         shareandretweet: {
                             $add: ["$retweet", "$share"]
+                        },
+                        ganpatiImage1: {
+                            $concat: ["http://timesbappa.com/uploadfile/getuserimage?file=", "$ganpatiImage"]
                         }
                     }
-        }, {
-                    $unwind: "$name"
-        }, {
-                    $unwind: "$profilepic"
-        }, {
-                    $unwind: "$city"
         }]).toArray(function (err, data2) {
                     if (err) {
                         res.json({
@@ -1426,7 +1476,6 @@ module.exports = {
                         });
                     } else if (data2 && data2[0]) {
                         createExcel(data2);
-
                         function createExcel(json) {
                             var xls = sails.json2xls(json);
                             sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
